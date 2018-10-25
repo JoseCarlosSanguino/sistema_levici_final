@@ -1,7 +1,7 @@
 {
-    "name": "laravel/laravel",
-    "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "name": "LVG Manager",
+    "description": "Le Vici Group Manager",
+    "keywords": ["sale", "gestion"],
     "license": "MIT",
     "type": "project",
     "require": {

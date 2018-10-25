@@ -14,3 +14,11 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
+
+Route::get('/provincias', 'ProvinceController@index')->name('Provincias');
+Route::get('/provincia/edit', 'ProvinceController@edit')->name('Provincia');
+Route::resource('destroy', 'ProvinceController');
