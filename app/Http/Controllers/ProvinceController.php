@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace app\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Model\Province as ProvinceModel;
+use app\Model\Province as ProvinceModel;
 
 class ProvinceController extends Controller
 {

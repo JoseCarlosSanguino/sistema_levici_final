@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use App\Model\Ivacondition;
+use app\Model\Ivacondition;
 
 class IvaconditionTableSeeder extends Seeder
 {

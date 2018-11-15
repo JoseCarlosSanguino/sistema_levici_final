@@ -31,6 +31,8 @@ class DatabaseSeeder extends Seeder
         $this->call(StatusTableSeeder::class);
         //unidades de medida
         $this->call(UnittypeTableSeeder::class);
+        //menu
+        $this->call(MenusTableSeeder::class);
 
     }
 }

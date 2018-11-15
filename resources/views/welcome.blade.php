@@ -62,9 +62,27 @@
             .m-b-md {
                 margin-bottom: 30px;
             }
+
+            .dropdown-menu .sub-menu {
+                left: 100%;
+                position: absolute;
+                top: 0;
+                visibility: hidden;
+                margin-top: -1px;
+            }
+
+            .dropdown-menu li:hover .sub-menu {
+                visibility: visible;
+            }
+
+            .dropdown:hover .dropdown-menu {
+                display: block;
+            }
         </style>
+
     </head>
     <body>
+
         <div class="flex-center position-ref full-height">
             @if (Route::has('login'))
                 <div class="top-right links">

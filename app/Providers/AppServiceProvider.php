@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Providers;
+namespace app\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use app\Model\Menu;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -13,7 +14,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        view()->composer('layouts.app', function($view) {
+            $view->with('menus', Menu::menus());
+        });
     }
 
     /**

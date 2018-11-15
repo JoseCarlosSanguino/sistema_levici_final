@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use App\Model\Operationtype;
+use app\Model\Operationtype;
 
 class OperationtypeTableSeeder extends Seeder
 {

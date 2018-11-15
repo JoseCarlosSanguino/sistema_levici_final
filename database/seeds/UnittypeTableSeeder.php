@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use App\Model\Unittype;
+use app\Model\Unittype;
 
 class UnittypeTableSeeder extends Seeder
 {
