@@ -33,6 +33,5 @@ class DatabaseSeeder extends Seeder
         $this->call(UnittypeTableSeeder::class);
         //menu
         $this->call(MenusTableSeeder::class);
-
     }
 }

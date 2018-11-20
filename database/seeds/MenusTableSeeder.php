@@ -21,7 +21,7 @@ class MenusTableSeeder extends Seeder
 
         factory(Menu::class)->create([
             'name' => 'Proveedores',
-            'slug' => 'proveedor',
+            'slug' => 'providers',
             'parent' => $m1->id,
             'order' => 0,
         ]);

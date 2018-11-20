@@ -17,7 +17,7 @@ class CreateCitiesTable extends Migration
             $table->smallIncrements('id');
             $table->smallinteger('province_id')->unsigned();
             $table->foreign('province_id')->references('id')->on('provinces');
-            $table->string('province',64);
+            $table->string('city',64);
             $table->timestamps();
             $table->softDeletes();
         });

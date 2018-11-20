@@ -1,9 +1,11 @@
 <?php
 
+use Faker\Generator as Faker;
+use app\Model\Menu;
 
-$factory->define(app\Model\Menu::class, function (Faker\Generator $faker) {
+$factory->define(Menu::class, function (Faker $faker) {
     $name = $faker->name;
-    $menus = app\Model\Menu::all();
+    $menus = Menu::all();
     return [
         'name' => $name,
         'slug' => str_slug($name),
@@ -11,5 +13,3 @@ $factory->define(app\Model\Menu::class, function (Faker\Generator $faker) {
         'order' => 0
     ];
 });
-
-?>

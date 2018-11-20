@@ -24,10 +24,10 @@ class CreatePersonTable extends Migration
             $table->foreign('city_id')->references('id')->on('cities');
             $table->foreign('persontype_id')->references('id')->on('persontypes');
             $table->string('cuit',15)->unique();
-            $table->string('provider', 32);
-            $table->string('address',255);
-            $table->string('telephone', 64);
-            $table->string('web',128);
+            $table->string('provider', 32)->default('');
+            $table->string('address',255)->default('');
+            $table->string('telephone', 64)->default('');
+            $table->string('web',128)->default('');
             $table->decimal('markup', 10,2)->default(0);
             $table->unsignedTinyInteger('current_account')->default(0);
             $table->timestamps();
