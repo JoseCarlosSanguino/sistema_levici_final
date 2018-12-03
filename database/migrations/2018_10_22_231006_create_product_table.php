@@ -18,7 +18,7 @@ class CreateProductTable extends Migration
             $table->unsignedSmallInteger('producttype_id');
             $table->unsignedSmallInteger('ivatype_id');
             $table->unsignedSmallInteger('unittype_id');
-            $table->unsignedInteger('trademark_id');
+            $table->unsignedInteger('trademark_id')->nullable();
             $table->string('code',32)->unique();
             $table->string('product',64);
             $table->string('description',255);
@@ -27,10 +27,10 @@ class CreateProductTable extends Migration
             $table->decimal('min_stock',10,2)->default(0);
             $table->decimal('max_stock',10,2)->default(99999);
             $table->decimal('stock',10,2);
-            $table->decimal('last_cost',10,2);
-            $table->decimal('cost',10,2);
-            $table->decimal('last_price',10,2);
-            $table->decimal('price',10,2);
+            $table->decimal('last_cost',10,2)->nullable();
+            $table->decimal('cost',10,2)->nullable();
+            $table->decimal('last_price',10,2)->nullable();
+            $table->decimal('price',10,2)->nullable();
             $table->timestamps();
             $table->softDeletes();
             $table->foreign('producttype_id')->references('id')->on('producttypes');

@@ -113,7 +113,12 @@ return [
 	*/
 
 	'attributes' => [
-		'username' => 'usuario',
-		'password' => 'contraseña'
+		'username' 	=> 'usuario',
+		'password' 	=> 'contraseña',
+		'code'		=> 'código',
+		'product'	=> 'producto',
+		'ivatype_id'=> 'tipo de IVA',
+		'price'		=> 'precio',
+		'cost'		=> 'costo'
 	],
 ];

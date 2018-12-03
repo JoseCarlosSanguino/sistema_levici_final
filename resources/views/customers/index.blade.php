@@ -32,14 +32,14 @@
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>#</th><th>Razón social</th><th>Cuit</th><th>Teléfono</th><th>Web</th><th>Acciones</th>
+                                    <th>#</th><th>Razón social</th><th>Cuit</th><th>Teléfono</th><th>Dirección</th><th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                            @foreach($providers as $item)
+                            @foreach($customers as $item)
                                 <tr>
                                     <td>{{ $loop->iteration or $item->id }}</td>
-                                    <td>{{ $item->name }}</td><td>{{ $item->cuit }}</td><td>{{ $item->telephone }}</td><td>{{ $item->web }}</td>
+                                    <td>{{ $item->name }}</td><td>{{ $item->cuit }}</td><td>{{ $item->telephone }}</td><td>{{ $item->address }}</td>
                                     <td>
                                         <a href="{{ url('/'.$controller.'/' . $item->id) }}" title="Ver {{$modelName}}"><button class="btn btn-info btn-sm"><i class="fa fa-eye" aria-hidden="true"></i> Ver</button></a>
                                         <a href="{{ url('/'.$controller.'/' . $item->id . '/edit') }}" title="Editar {{$modelName}}"><button class="btn btn-primary btn-sm"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Editar</button></a>
@@ -54,7 +54,7 @@
                             @endforeach
                             </tbody>
                         </table>
-                        <div class="pagination-wrapper"> {!! $providers->appends(['search' => Request::get('search')])->render() !!} </div>
+                        <div class="pagination-wrapper"> {!! $customers->appends(['search' => Request::get('search')])->render() !!} </div>
                     </div>
 
 

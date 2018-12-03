@@ -20,11 +20,11 @@ class CreatePersonTable extends Migration
             $table->unsignedSmallInteger('city_id');
             $table->unsignedSmallInteger('persontype_id');
             $table->foreign('ivacondition_id')->references('id')->on('ivaconditions');
-            $table->foreign('province_id')->references('id')->on('provinces');
-            $table->foreign('city_id')->references('id')->on('cities');
+            $table->foreign('province_id')->references('id')->on('provinces')->nullable();
+            $table->foreign('city_id')->references('id')->on('cities')->nullable();
             $table->foreign('persontype_id')->references('id')->on('persontypes');
             $table->string('cuit',15)->unique();
-            $table->string('provider', 32)->default('');
+            $table->string('name', 32)->default('');
             $table->string('address',255)->default('');
             $table->string('telephone', 64)->default('');
             $table->string('web',128)->default('');

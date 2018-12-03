@@ -3,11 +3,11 @@
 namespace app\Http\Controllers;
 
 use Illuminate\Http\Request;
-use app\Model\Provider;
+use app\Model\Customer;
 use app\Model\Province;
 use app\Model\Ivacondition;
 
-class ProviderController extends Controller
+class CustomerController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -21,23 +21,23 @@ class ProviderController extends Controller
 
         if (!empty($keyword)) 
         {
-            $providers = Provider::where('persontype_id', '=', 2)
+            $customers = Customer::where('persontype_id', '=', 1)
                 ->where('name', 'LIKE', "%$keyword%")
                 ->orWhere('cuit', 'LIKE', "%$keyword%")
                 ->latest()->paginate($perPage);
         }
         else
         {
-            $providers  = Provider::where('persontype_id', '=', 2)
+            $customers  = Customer::where('persontype_id', '=', 1)
                 ->latest()
                 ->paginate($perPage);
         }
 
-        $title      = 'Listado de proveedores';
-        $modelName  = 'Proveedor';
-        $controller = 'providers';
+        $title      = 'Listado de clientes';
+        $modelName  = 'Cliente';
+        $controller = 'customers';
 
-        return view('providers.index',compact('providers', 'title', 'modelName', 'controller'));
+        return view('customers.index',compact('customers', 'title', 'modelName', 'controller'));
     }
 
 
@@ -48,13 +48,13 @@ class ProviderController extends Controller
      */
     public function create()
     {
-        $title      = 'Editar un proveedor';
-        $modelName  = 'Proveedor';
-        $controller = 'providers';
+        $title      = 'Editar un Cliente';
+        $modelName  = 'cliente';
+        $controller = 'customers';
         $provinces = Province::pluck('province','id');
         $ivaconditions = Ivacondition::pluck('ivacondition','id');
 
-        return view('providers.create',compact( 'title', 'modelName', 'controller','ivaconditions','provinces'));
+        return view('customers.create',compact( 'title', 'modelName', 'controller','ivaconditions','provinces'));
     }
 
     /**
@@ -66,9 +66,9 @@ class ProviderController extends Controller
     public function store(Request $request)
     {
         $requestData = $request->all();
-        Provider::create($requestData);
+        Customer::create($requestData);
 
-        return redirect('providers')->with('flash_message', 'Proveedor creado!');
+        return redirect('customers')->with('flash_message', 'Cliente creado!');
     }
 
     /**
@@ -79,12 +79,12 @@ class ProviderController extends Controller
      */
     public function show($id)
     {
-        $title      = 'Ver detalle de un proveedor';
-        $modelName  = 'Proveedor';
-        $controller = 'providers';
+        $title      = 'Ver detalle de un cliente';
+        $modelName  = 'cliente';
+        $controller = 'customers';
 
-        $provider = Provider::findOrFail($id);
-        return view('providers.show', compact('provider','title', 'modelName', 'controller'));
+        $customer = Customer::findOrFail($id);
+        return view('customers.show', compact('customer','title', 'modelName', 'controller'));
     }
 
     /**
@@ -95,15 +95,15 @@ class ProviderController extends Controller
      */
     public function edit($id)
     {
-        $title      = 'Editar un proveedor';
-        $modelName  = 'Proveedor';
-        $controller = 'providers';
+        $title      = 'Editar un cliente';
+        $modelName  = 'cliente';
+        $controller = 'customers';
 
-        $provider = Provider::findOrFail($id);
+        $customer = Customer::findOrFail($id);
         $provinces = Province::pluck('province','id');
         $ivaconditions = Ivacondition::pluck('ivacondition','id');
 
-        return view('providers.edit', compact('provider','title', 'modelName', 'controller', 'ivaconditions','provinces'));
+        return view('customers.edit', compact('customer','title', 'modelName', 'controller','ivaconditions', 'provinces'));
     }
 
     /**
@@ -117,10 +117,10 @@ class ProviderController extends Controller
     {
         $requestData = $request->all();
         
-        $provider = Provider::findOrFail($id);
-        $provider->update($requestData);
+        $Customer = Customer::findOrFail($id);
+        $Customer->update($requestData);
 
-        return redirect('providers')->with('flash_message', 'Proveedor actualizado!');
+        return redirect('customers')->with('flash_message', 'Cliente actualizado!');
     }
 
     /**
@@ -131,8 +131,8 @@ class ProviderController extends Controller
      */
     public function destroy($id)
     {
-        Provider::destroy($id);
+        Customer::destroy($id);
 
-        return redirect('providers')->with('flash_message', 'Proveedor eliminado!');
+        return redirect('customers')->with('flash_message', 'Cliente eliminado!');
     }
 }

@@ -5,9 +5,8 @@ namespace app\Model;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Provider extends Model
+class Customer extends Model
 {
-
     use SoftDeletes;
 
     protected $table = 'persons';
@@ -21,7 +20,7 @@ class Provider extends Model
     ];
 
     protected $attributes = [
-        'persontype_id' => 2
+        'persontype_id' => 1
     ];
 
     public function province()
