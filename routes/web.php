@@ -23,4 +23,6 @@ Route::resource('products', 'ProductController');
 Route::resource('providers', 'ProviderController');
 Route::resource('customers', 'CustomerController');
 
+Route::get('/rentables', 'SaleController@orderCreate');
+
 Route::resource('admin/posts', 'Admin\\PostsController');
