@@ -19,10 +19,18 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-Route::resource('products', 'ProductController');
-Route::resource('providers', 'ProviderController');
-Route::resource('customers', 'CustomerController');
+Route::resource('products'      , 'ProductController'       );
+Route::resource('providers'     , 'ProviderController'      );
+Route::resource('customers'     , 'CustomerController'      );
+Route::resource('provinces'     , 'ProvinceController'      );
+Route::resource('cities'        , 'CityController'          );
+Route::resource('ivatypes'      , 'IvatypeController'       );
 
-Route::get('/rentables', 'SaleController@orderCreate');
-
-Route::resource('admin/posts', 'Admin\\PostsController');
+Route::resource('producttypes'  , 'ProducttypeController'   );
+Route::resource('users'         , 'UserController'          );
+Route::resource('roles'         , 'RoleController'          );
+Route::resource('unittypes'     , 'UnittypeController'      );
+Route::resource('trademarks'    , 'TrademarkController'     );
+Route::resource('cylindertypes' , 'CylindertypeController'  );
+Route::resource('cylinders'     , 'CylinderController'      );
+Route::resource('permissions'   , 'PermissionController'    );

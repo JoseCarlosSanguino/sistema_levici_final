@@ -3,16 +3,14 @@
 @section('content')
     <div class="container">
         <div class="row">
-
-            <div class="col-md-9">
-                <div class="card">
-                    <div class="card-header"><h3>Editar {{$modelName}}</h3> </div>
-                    <br />
-                    <div class="card-body">
+            <div class="col-md-10">
+                <div class="panel panel-default col-md-8">
+                    <h3>Editar {{$modelName}} : {{$customer->name}}</h3>
+                    <div class="panel-body">
                         <a href="{{ url('/'.$controller) }}" title="Atrás"><button class="btn btn-warning btn-sm"><i class="fa fa-arrow-left" aria-hidden="true"></i> Atrás</button></a>
                         <br />
                         <br />
-
+                        
                         @if ($errors->any())
                             <ul class="alert alert-danger">
                                 @foreach ($errors->all() as $error)
@@ -20,15 +18,12 @@
                                 @endforeach
                             </ul>
                         @endif
-
                         <form method="POST" action="{{ url('/'.$controller .'/'. $customer->id) }}" accept-charset="UTF-8" class="form-horizontal" enctype="multipart/form-data">
                             {{ method_field('PATCH') }}
                             {{ csrf_field() }}
 
                             @include ('customers.form', ['formMode' => 'edit'])
-
                         </form>
-
                     </div>
                 </div>
             </div>

@@ -7,18 +7,21 @@
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
-    <!--<title>{{ config('app.name', 'Laravel') }}</title>-->
-    <title> LVGestion</title>
+    <title>{{ config('app.title', 'LVG Manager') }}</title>
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-    <link href="{{ asset('bootstrap/css/bootstrap-datepicker3.min.css') }}" rel="stylesheet">
-
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}"></script>
-    <script src="{{ asset('js/jquery-3.3.1.min.js') }}"></script>
-    <script src="{{ asset('bootstrap/js/bootstrap-datepicker.min.js') }}"></script>
+
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+        
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+    <script src="//use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+
 </head>
 <body>
     <div id="app">
@@ -36,31 +39,24 @@
 
                     <!-- Branding Image -->
                     <a class="navbar-brand" href="{{ url('/') }}">
-                        LVGestion
+                        {{ config('app.title', 'MANAGER') }}
                     </a>
                 </div>
 
                 <div class="collapse navbar-collapse" id="app-navbar-collapse">
                     <!-- Left Side Of Navbar -->
-                    <ul class="nav navbar-nav">
+                    @auth
+                        <ul class="nav navbar-nav">
+                            @foreach ($menus as $key => $item)
+                                @if ($item['parent'] != 0)
+                                    @break
+                                @endif
+                                @include('partials.menu-item', ['item' => $item])
+                            @endforeach
+                        </ul>
 
-                        @auth
-                            <div class="container-fluid">
-                                <div class="collapse navbar-collapse">
-                                    <ul class="nav navbar-nav">
-                                        @foreach ($menus as $key => $item)
-                                            @if ($item['parent'] != 0)
-                                                @break
-                                            @endif
-                                            @include('partials.menu-item', ['item' => $item])
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            </div>
-                        @endauth
-                        
-                    </ul>
-
+                    @endauth
+                    
                     <!-- Right Side Of Navbar -->
                     <ul class="nav navbar-nav navbar-right">
                         <!-- Authentication Links -->
@@ -78,7 +74,7 @@
                                         <a href="{{ route('logout') }}"
                                             onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
-                                            Salir
+                                            Logout
                                         </a>
 
                                         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
@@ -97,6 +93,5 @@
     </div>
 
     
-
 </body>
 </html>

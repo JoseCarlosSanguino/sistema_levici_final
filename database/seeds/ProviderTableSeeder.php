@@ -12,7 +12,7 @@ class ProviderTableSeeder extends Seeder
      */
     public function run()
     {
-        factory(Provider::class, 10)->create()->each(function ($p) {
+        factory(Provider::class, 100000)->create()->each(function ($p) {
             factory(Provider::class)->make();
         });
     }

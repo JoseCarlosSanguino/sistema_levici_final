@@ -3,12 +3,13 @@
 namespace app\Http\Controllers;
 
 use Illuminate\Http\Request;
-use app\Model\Product;
-use app\Model\Province;
-use app\Model\Ivatype;
-use app\Model\Producttype;
-use app\Model\Unittype;
-use app\Model\Trademark;
+use app\Models\Product;
+use app\Models\Province;
+use app\Models\Provider;
+use app\Models\Ivatype;
+use app\Models\Producttype;
+use app\Models\Unittype;
+use app\Models\Trademark;
 
 class ProductController extends Controller
 {
@@ -55,6 +56,7 @@ class ProductController extends Controller
         $unittypes = Unittype::pluck('unittype','id');
         $ivatypes = Ivatype::pluck('ivatype','id');
         $trademarks = Trademark::pluck('trademark','id');
+        $providers = Provider::where('persontype_id',2)->pluck('name','id');
 
         return view('products.create',compact( 
             'title', 
@@ -63,7 +65,8 @@ class ProductController extends Controller
             'unittypes',
             'producttypes',
             'ivatypes',
-            'trademarks'
+            'trademarks',
+            'providers'
         ));
     }
 
@@ -83,7 +86,16 @@ class ProductController extends Controller
             ]);
     
         $requestData = $request->all();
-        Product::create($requestData);
+        $product = Product::create($requestData);
+
+        $product->providers()->detach();
+
+        if ($request->has('providers')) {
+            foreach ($request->providers as $provider_name) {
+                $provider = Provider::findOrFail($provider_name);
+                $product->giveProviderTo($provider);
+            }
+        }
 
         return redirect('products')->with('flash_message', 'Producto creado!');
     }
@@ -121,6 +133,7 @@ class ProductController extends Controller
         $unittypes = Unittype::pluck('unittype','id');
         $ivatypes = Ivatype::pluck('ivatype','id');
         $trademarks = Trademark::pluck('trademark','id');
+        $providers = Provider::where('persontype_id',2)->pluck('name','id');
 
         return view('products.edit', compact(
             'product',
@@ -130,7 +143,8 @@ class ProductController extends Controller
             'unittypes',
             'producttypes',
             'ivatypes',
-            'trademarks'));
+            'trademarks',
+            'providers'));
     }
 
     /**
@@ -146,6 +160,15 @@ class ProductController extends Controller
         
         $product = Product::findOrFail($id);
         $product->update($requestData);
+        
+        $product->providers()->detach();
+
+        if ($request->has('providers')) {
+            foreach ($request->providers as $provider_name) {
+                $provider = Provider::findOrFail($provider_name);
+                $product->giveProviderTo($provider);
+            }
+        }
 
         return redirect('products')->with('flash_message', 'Producto actualizado!');
     }

@@ -4,15 +4,15 @@
     <div class="container">
         <div class="row">
 
-            <div class="col-md-9">
-                <div class="card">
-                    <div class="card-header"><h3>Editar {{$modelName}}</h3> </div>
-                    <br />
-                    <div class="card-body">
-                        <a href="{{ url('/'.$controller) }}" title="Atrás"><button class="btn btn-warning btn-sm"><i class="fa fa-arrow-left" aria-hidden="true"></i> Atrás</button></a>
-                        <br />
-                        <br />
-
+            <div class="panel-header"><h3>Editar {{$modelName}}: {{$provider->name}}</h3> </div>
+            <a href="{{ url('/'.$controller) }}" title="Atrás"><button class="btn btn-warning btn-sm"><i class="fa fa-arrow-left" aria-hidden="true"></i> Atrás</button></a>
+            <br />
+            <br />
+            
+            <div class="col-md-10">
+                <div class="panel panel-default col-md-8">
+                    <div class="panel-body">
+                        
                         @if ($errors->any())
                             <ul class="alert alert-danger">
                                 @foreach ($errors->all() as $error)

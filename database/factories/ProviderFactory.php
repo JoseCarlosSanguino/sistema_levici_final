@@ -10,7 +10,7 @@ $factory->define(Provider::class, function (Faker $faker) {
         'province_id'       => 1,
         'city_id'           => 1,
         'cuit'              => rand(20000000000,90000000000),
-        'provider'          => $faker->name,
+        'name'              => $faker->name,
         'address'           => $faker->address,
         'markup'            => rand(10,120),
     ];

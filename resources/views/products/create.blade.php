@@ -4,11 +4,11 @@
     <div class="container">
         <div class="row">
 
-            <div class="col-md-9">
-                <div class="card">
-                    <div class="card-header"><h3>Crear nuevo Artículo</h3></div>
+            <div class="col-md-10">
+                <div class="panel panel-default col-md-10">
+                <div class="panel-header"><h3>Nuevo {{$modelName}}</h3></div>
                     <br/>
-                    <div class="card-body">
+                    <div class="panel-body">
                         <a href="{{ url('/'.$controller) }}" title="Atrás"><button class="btn btn-warning btn-sm"><i class="fa fa-arrow-left" aria-hidden="true"></i> Atrás</button></a>
                         <br />
                         <br />

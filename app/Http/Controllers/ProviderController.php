@@ -3,9 +3,9 @@
 namespace app\Http\Controllers;
 
 use Illuminate\Http\Request;
-use app\Model\Provider;
-use app\Model\Province;
-use app\Model\Ivacondition;
+use app\Models\Provider;
+use app\Models\Province;
+use app\Models\Ivacondition;
 
 class ProviderController extends Controller
 {

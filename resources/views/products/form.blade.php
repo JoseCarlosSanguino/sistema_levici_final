@@ -26,6 +26,16 @@
 <br>
 <div class="form-group">
     <div class="col-xs-2">
+        {!! Form::label('expiration', 'Vencimiento:'); !!}
+    </div>
+    <div class="col-xs-4">
+        {!! Form::text('expiration', isset($product->expiration) ? $product->expiration : '',['class'=>'form-control datepicker']);!!}
+    </div>
+</div>
+
+<br>
+<div class="form-group">
+    <div class="col-xs-2">
         {!! Form::label('producttype','Tipo:'); !!}
     </div>
     <div class="col-xs-4">
@@ -129,8 +139,31 @@
         </div>
     </div>
     <br>
+    
 
 @endif
 <div class="form-group">
+    <div class="col-xs-2">
+        {!! Form::label('providers','Proveedores:'); !!}
+    </div>
+    <div class="col-xs-4">
+        {!! Form::select('providers[]', $providers, isset($product) ? $product->providers->pluck('id') : [], ['class' => 'form-control', 'multiple' => true]) !!}
+        {!! $errors->first('name', '<p class="help-block">:message</p>') !!}
+    </div>
+</div>
+
+<div class="form-group">
     <input class="btn btn-primary" type="submit" value="{{ $formMode === 'edit' ? 'Actualizar' : 'Crear' }}">
 </div>
+<script type="text/javascript">
+    $(function() {
+      $( ".datepicker" ).datepicker({
+        changeMonth: true,
+        changeYear: true,
+        language: "es",
+        autoclose: true,
+        todayHighlight: true,
+        dateFormat: 'dd/mm/yy'
+      });
+    });
+    </script>

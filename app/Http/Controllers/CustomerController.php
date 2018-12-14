@@ -3,9 +3,9 @@
 namespace app\Http\Controllers;
 
 use Illuminate\Http\Request;
-use app\Model\Customer;
-use app\Model\Province;
-use app\Model\Ivacondition;
+use app\Models\Customer;
+use app\Models\Province;
+use app\Models\Ivacondition;
 
 class CustomerController extends Controller
 {

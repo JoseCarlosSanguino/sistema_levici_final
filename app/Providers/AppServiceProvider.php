@@ -3,7 +3,7 @@
 namespace app\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use app\Model\Menu;
+use app\Models\Menu;
 
 class AppServiceProvider extends ServiceProvider
 {
