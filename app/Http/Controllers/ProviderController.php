@@ -53,8 +53,9 @@ class ProviderController extends Controller
         $controller = 'providers';
         $provinces = Province::pluck('province','id');
         $ivaconditions = Ivacondition::pluck('ivacondition','id');
+        $cities = [];
 
-        return view('providers.create',compact( 'title', 'modelName', 'controller','ivaconditions','provinces'));
+        return view('providers.create',compact( 'title', 'modelName', 'controller','ivaconditions','provinces','cities'));
     }
 
     /**
@@ -66,6 +67,13 @@ class ProviderController extends Controller
     public function store(Request $request)
     {
         $requestData = $request->all();
+        $requestData['persontype_id'] = 2;
+
+        $validatedData = $request->validate([
+            'cuit' => 'required|max:13|unique:persons,cuit,persontype_id=2',
+            'name' => 'required',
+        ]);
+
         Provider::create($requestData);
 
         return redirect('providers')->with('flash_message', 'Proveedor creado!');
@@ -102,8 +110,9 @@ class ProviderController extends Controller
         $provider = Provider::findOrFail($id);
         $provinces = Province::pluck('province','id');
         $ivaconditions = Ivacondition::pluck('ivacondition','id');
+        $cities = [];
 
-        return view('providers.edit', compact('provider','title', 'modelName', 'controller', 'ivaconditions','provinces'));
+        return view('providers.edit', compact('provider','title', 'modelName', 'controller', 'ivaconditions','provinces','cities'));
     }
 
     /**
@@ -116,6 +125,11 @@ class ProviderController extends Controller
     public function update(Request $request, $id)
     {
         $requestData = $request->all();
+
+        $validatedData = $request->validate([
+            'cuit' => 'required|max:13',
+            'name' => 'required',
+        ]);
         
         $provider = Provider::findOrFail($id);
         $provider->update($requestData);

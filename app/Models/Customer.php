@@ -2,35 +2,23 @@
 
 namespace app\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Customer extends Model
+class Customer extends Person
 {
-    use SoftDeletes;
 
     protected $table = 'persons';
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
+
     protected $fillable = [
-        'ivacondition_id','province_id','city_id','cuit','name','address','telephone','web','markup'
+        'ivacondition_id','persontype_id','province_id','city_id','cuit','name','address','telephone','web','markup', 'email','observation'
     ];
 
-    protected $attributes = [
-        'persontype_id' => 1
-    ];
-
-    public function province()
+    public static function boot()
     {
-        return $this->belongsTo('app\Models\Province');
-    }
+        parent::boot();
 
-    public function ivacondition()
-    {
-        return $this->belongsTo('app\Models\Ivacondition');
+        static::addGlobalScope(function ($query) {
+            $query->where('persontype_id', 1);
+        });
     }
 
 }

@@ -32,7 +32,7 @@
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>#</th><th>Código</th><th>Código externo</th><th>Tipo</th><th>Vencimiento</th><th>Propietario</th><th>Acciones</th>
+                                    <th>#</th><th>Código</th><th>Código externo</th><th>Tipo</th><th>Vencimiento</th><th>Propietario</th><th>Estado</th></th><th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -44,6 +44,7 @@
                                     <td>{{ $item->cylindertype->cylindertype }}</td>
                                     <td>{{ $item->expiration or '' }}</td>
                                     <td> @if($item->is_own == 1) Propio @else @if(!is_null($item->provider_id)) {{$item->provider->name or ''}} @endif @endif</td>
+                                    <td>{{ $item->status->status}}</td>
                                     <td>
                                         <a href="{{ url('/'.$controller.'/' . $item->id) }}" title="Ver {{$modelName}}"><button class="btn btn-info btn-sm"><i class="fa fa-eye" aria-hidden="true"></i> Ver</button></a>
                                         <a href="{{ url('/'.$controller.'/' . $item->id . '/edit') }}" title="Editar {{$modelName}}"><button class="btn btn-primary btn-sm"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Editar</button></a>

@@ -34,3 +34,16 @@ Route::resource('trademarks'    , 'TrademarkController'     );
 Route::resource('cylindertypes' , 'CylindertypeController'  );
 Route::resource('cylinders'     , 'CylinderController'      );
 Route::resource('permissions'   , 'PermissionController'    );
+
+Route::resource('sales'         , 'SaleController'          );
+
+Route::get('remito','SaleController@create');
+Route::get('remitos','SaleController@index');
+Route::get('remitopdf/{id}','SaleController@remitoPDF');
+
+Route::get('customerAutocomplete',array('as'=>'customerAutocomplete','uses'=>'CustomerController@autocomplete'));
+Route::get('productAutocomplete',array('as'=>'productAutocomplete','uses'=>'ProductController@autocomplete'));
+Route::get('nextSaleNumber', array('as'=> 'nextSaleNumber', 'uses' => 'SaleController@nextNumber'));
+Route::get('cityJson', array('as'=>'cityJson','uses'=>'CityController@json'));
+Route::get('cylinderJson',array('as'=> 'cylinderJson', 'uses' => 'CylinderController@json'));
+

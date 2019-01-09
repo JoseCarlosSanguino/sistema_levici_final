@@ -3,6 +3,7 @@
 namespace app\Http\Controllers;
 
 use Illuminate\Http\Request;
+use DB;
 use app\Models\Product;
 use app\Models\Province;
 use app\Models\Provider;
@@ -10,6 +11,7 @@ use app\Models\Ivatype;
 use app\Models\Producttype;
 use app\Models\Unittype;
 use app\Models\Trademark;
+use app\Models\Cylindertype;
 
 class ProductController extends Controller
 {
@@ -57,6 +59,7 @@ class ProductController extends Controller
         $ivatypes = Ivatype::pluck('ivatype','id');
         $trademarks = Trademark::pluck('trademark','id');
         $providers = Provider::where('persontype_id',2)->pluck('name','id');
+        $cylindertypes = Cylindertype::pluck('cylindertype','id');
 
         return view('products.create',compact( 
             'title', 
@@ -66,7 +69,8 @@ class ProductController extends Controller
             'producttypes',
             'ivatypes',
             'trademarks',
-            'providers'
+            'providers',
+            'cylindertypes'
         ));
     }
 
@@ -134,6 +138,7 @@ class ProductController extends Controller
         $ivatypes = Ivatype::pluck('ivatype','id');
         $trademarks = Trademark::pluck('trademark','id');
         $providers = Provider::where('persontype_id',2)->pluck('name','id');
+        $cylindertypes = Cylindertype::pluck('cylindertype','id');
 
         return view('products.edit', compact(
             'product',
@@ -144,7 +149,8 @@ class ProductController extends Controller
             'producttypes',
             'ivatypes',
             'trademarks',
-            'providers'));
+            'providers',
+            'cylindertypes'));
     }
 
     /**
@@ -184,5 +190,20 @@ class ProductController extends Controller
         Product::destroy($id);
 
         return redirect('products')->with('flash_message', 'Producto eliminado!');
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function autocomplete(Request $request)
+    {
+        $data = Product::select("id","code","product", "price", "stock", "cylindertype_id",DB::raw('CONCAT(code," - ", product) AS name'))
+            ->orWhere("product","LIKE","%{$request->input('query')}%")
+            ->orWhere("code","LIKE","%{$request->input('query')}%")
+            ->get();
+
+        return response()->json($data);
     }
 }

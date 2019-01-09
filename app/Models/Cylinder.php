@@ -9,8 +9,15 @@ class Cylinder extends Model
 {
     use SoftDeletes;
 
+    CONST STATUS=[
+        'DISPONIBLE'    => 10,
+        'EN CLIENTE'    => 11,
+        'EN PROVEEDOR'  => 12,
+        'NO DISPONIBLE' => 13
+    ];
+
     protected $fillable = [
-        'code','external_code','cylindertype_id','expiration','is_own','provider_id', 'observation'
+        'code','external_code','cylindertype_id','expiration','is_own','provider_id', 'observation', 'status_id'
     ];
 
     protected $hidden = [
@@ -51,7 +58,13 @@ class Cylinder extends Model
 
     public function operations()
     {
-        return $this->belongsToMany('app\Models\Operation');
+        return $this->belongsToMany(Operation::Class)
+            ->withPivot()->withTimestamps();
+    }
+
+    public function status()
+    {
+        return $this->belongsTo(Status::Class);
     }
 
     protected static function boot()

@@ -11,8 +11,9 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+
     <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}"></script>
+    <!--<script src="{{ asset('js/app.js') }}"></script>-->
 
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
         
@@ -20,6 +21,10 @@
 
     <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
     <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+
+    <!-- es este o el que está comentado arriba-->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+
     <script src="//use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
 
 </head>

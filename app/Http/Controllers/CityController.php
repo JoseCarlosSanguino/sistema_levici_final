@@ -133,4 +133,18 @@ class CityController extends Controller
 
         return redirect('cities')->with('flash_message', 'ciudad eliminado!');
     }
+
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function json(Request $request)
+    {
+        $data = City::select("id","city")
+            ->where("province_id",$request->input('province_id'))
+            ->get();
+        return response()->json($data);
+    }
 }

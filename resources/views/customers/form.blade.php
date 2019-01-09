@@ -28,6 +28,12 @@
     {!! $errors->first('web', '<p class="help-block">:message</p>') !!}
 </div>
 
+<div class="form-group {{ $errors->has('email') ? 'has-error' : ''}}">
+    <label for="email" class="control-label">{{ 'Email' }}</label>
+    <input class="form-control" name="email" type="text" id="email" value="{{ $customer->email or ''}}" >
+    {!! $errors->first('email', '<p class="help-block">:message</p>') !!}
+</div>
+
 <div class="form-group {{ $errors->has('ivacondition_id') ? 'has-error' : ''}}">
     <label for="ivacondition_id" class="control-label">{{ 'Condición de IVA' }}</label>
     <select name="ivacondition_id" class="form-control" id="ivacondition_id" >
@@ -36,6 +42,18 @@
     @endforeach
 </select>
     {!! $errors->first('ivacondition_id', '<p class="help-block">:message</p>') !!}
+</div>
+
+<div class="form-group {{ $errors->has('markup') ? 'has-error' : ''}}">
+    <label for="markup" class="control-label">{{ 'Margen de ganancia' }}</label>
+    <input class="form-control" type="number" name="markup" type="text" id="markup" value="{{ $customer->markup or '0'}}" >
+    {!! $errors->first('markup', '<p class="help-block">:message</p>') !!}
+</div>
+
+<div class="form-group {{ $errors->has('observation') ? 'has-error' : ''}}">
+    <label for="observation" class="control-label">{{ 'Observaciones' }}</label>
+    <input class="form-control" name="observation" type="text" id="observation" value="{{ $customer->observation or ''}}" >
+    {!! $errors->first('observation', '<p class="help-block">:message</p>') !!}
 </div>
 
 <div class="form-group {{ $errors->has('province_id') ? 'has-error' : ''}}">
@@ -48,7 +66,49 @@
     {!! $errors->first('province_id', '<p class="help-block">:message</p>') !!}
 </div>
 
+<div class="form-group {{ $errors->has('city_id') ? 'has-error' : ''}}">
+    <label for="city_id" class="control-label">{{ 'Ciudad' }}</label>
+    <select name="city_id" class="form-control" id="city_id" >
+    </select>
+    {!! $errors->first('city_id', '<p class="help-block">:message</p>') !!}
+</div>
+
 
 <div class="form-group">
     <input class="btn btn-primary" type="submit" value="{{ $formMode === 'edit' ? 'Actualizar' : 'Crear' }}">
 </div>
+
+
+<script type="text/javascript">
+
+    var path_city = "{{ route('cityJson') }}";
+    var city_initial_val = {{ $customer->city_id or ''}}
+
+    $(function(){
+        
+        if($("#province_id").val() >0 ){
+            rellenarSelectCity();
+        }
+    });
+
+
+    $("#province_id").change(function(){
+        rellenarSelectCity();
+    });
+
+    function rellenarSelectCity(){
+        return $.get(path_city, { province_id : $("#province_id").val() }, function (data) {
+            $('#city_id').empty();
+            $('#city_id').append('<option value="">Select ...</option>');
+            $.each(data, function(k, v) {
+                var option = new Option(v.city, v.id); 
+                if(city_initial_val == v.id){
+                    option.selected = true;
+                }
+                $('#city_id').append($(option));               
+            });
+        });
+    }
+
+
+</script>

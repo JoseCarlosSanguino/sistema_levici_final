@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use app\Model\Province;
+use app\Models\Province;
 
 class ProvinceTableSeeder extends Seeder
 {

@@ -1,105 +1,370 @@
 
-<div class="form-group">
-    <div class="col-xs-2">
-        {!! Form::label('Codigo','Código:'); !!}
-    </div>
-    <div class="col-xs-4">
-        {!! Form::text('code', isset($product->code) ? $product->code : '',['class'=>'form-control']); !!}
-    </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>  
+<!-- Es este o el que está en layout/app.blade.php-->
+<!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>-->
 
+
+<div class="form-group">
+    
     <div class="col-xs-2">
-        {!! Form::label('product','Producto:'); !!}
+        {!! Form::label('number','Número:'); !!}
     </div>
-    <div class="col-xs-4">
-        {!! Form::text('product', isset($product->product) ? $product->product : '',['class'=>'form-control']); !!}
+    <div class="col-xs-2">
+        {!! Form::text('number', '',['readonly' => 'readonly', 'class'=>'form-control']); !!}
+        {!! Form::hidden('operationtype_id' , $operationtype_id, ['id' => 'operationtype_id']) !!}
     </div>
 </div>
 
 <div class="form-group">
+
     <div class="col-xs-2">
-        {!! Form::label('description', 'Descripción:'); !!}
+        {!! Form::label('date','Fecha:'); !!}
+    </div>
+    <div class="col-xs-2">
+        {!! Form::text('date_of', isset($sale->date_of) ? $sale->date_of : date('d/m/Y'),['class'=>'form-control datepicker']); !!}
+    </div>
+</div>
+</br>
+<div class="form-group">
+    
+    <div class="col-xs-2">
+        {!! Form::label('customer','Cliente:'); !!}
+    </div>
+    <div class="col-xs-4">
+        {!! Form::text('customer_ac', '',['id'=>'customer_ac', 'autocomplete' => 'off' ,'class'=>'typeahead form-control']); !!}
+        {!! Form::hidden('customer_id', '', ['id' => 'customer_id']) !!}
+    </div>
+</div>
+</br>
+
+<div class="form-group">
+    <div class="col-xs-2">
+        {!! Form::label('observation', 'Observaciones:'); !!}
     </div>
     <div class="col-xs-10">
-        {!! Form::text('description', isset($product->description) ? $product->description : '',['class'=>'form-control']);!!}
+        {!! Form::text('observation', isset($product->observation) ? $product->observation : '',['class'=>'form-control']);!!}
     </div>
 </div>
 <br>
-
-
-
-<div class="form-group">
-    <div class="col-xs-2">
-        {!! Form::label('min_stock','Stock Min:'); !!}
-    </div>
-    <div class="col-xs-4">
-        {!! Form::number('min_stock', isset($product->min_stock) ? $product->min_stock : '',['class'=>'form-control']); !!}
-    </div>
-
-    <div class="col-xs-2">
-        {!! Form::label('max_stock','Stock Max:'); !!}
-    </div>
-    <div class="col-xs-4">
-        {!! Form::number('max_stock', isset($product->max_stock) ? $product->max_stock : '',['class'=>'form-control']); !!}
-    </div>
-</div>
+<h4>Detalle</h4>
 <br>
 <div class="form-group">
-    <div class="col-xs-2">
-        {!! Form::label('position','Posición:'); !!}
+    <div class="col-xs-1">
+        {!! Form::label('product','Artículo:'); !!}
     </div>
-    <div class="col-xs-4">
-        {!! Form::text('position', isset($product->position) ? $product->position : '',['class'=>'form-control']); !!}
+    <div class="col-xs-4" style="width:30%">
+        {!! Form::text('prod_ac', '',[ 'id' => 'prod_ac', 'autocomplete' => 'off' , 'class'=>'typeahead form-control']); !!}
+
+        {!! Form::hidden('prod_id'               , '', ['id' => 'prod_id']) !!}
+        {!! Form::hidden('prod_code'             , '', ['id' => 'prod_code']) !!}
+        {!! Form::hidden('prod_product'          , '', ['id' => 'prod_product']) !!}
+        {!! Form::hidden('prod_description'      , '', ['id' => 'prod_description']) !!}
+        {!! Form::hidden('prod_cylindertype_id'  , '', ['id' => 'prod_cylindertype_id']) !!}
+    </div>
+    <div class="col-xs-1">
+        {!! Form::label('stock','Stock:'); !!}
+    </div>
+    <div class="col-xs-1">
+        {!! Form::number('stock', '',[ 'id' => 'stock', 'readonly'=> 'readonly', 'class'=>'form-control']); !!}
+    </div>
+    <div class="col-xs-1">
+        {!! Form::label('price','Precio:'); !!}
+    </div>
+    <div class="col-xs-1"  style="width:11%" >
+        {!! Form::number('price', '',[ 'id' => 'price', 'class'=>'form-control','step' => '0.1', 'min' => '0']); !!}
+    </div>
+    <div class="col-xs-1">
+        {!! Form::label('quantity','Cantidad:'); !!}
+    </div>
+    <div class="col-xs-1" style="width:9%" >
+        {!! Form::number('quantity', '',[ 'id' => 'quantity', 'class'=>'form-control','step' => '0.1', 'min' => '0']); !!}
+    </div>
+    <div class="col-xs-1">
+        <a href="#" id="addProductToDetail" class="btn btn-success" >
+            <i class="fa fa-plus" aria-hidden="true"></i> 
+        </a>    
     </div>
 </div>
 <br>
 
-@if($formMode === 'edit')
-    <div class="form-group">
-        <div class="col-xs-2">
-            {!! Form::label('stock','Stock:'); !!}
-        </div>
-        <div class="col-xs-4">
-            {!! Form::number('stock', isset($product->stock) ? $product->stock : 0,['class'=>'form-control']); !!}
-        </div>
+<div class="table-responsive">
+    <table class="table" id="productDetail">
+        <thead>
+            <tr>
+                <th>#</th><th>Código</th><th>Producto</th><th>Precio</th><th>Cantidad</th><th>Subtotal</th><th></th>
+            </tr>
+        </thead>
+        <tbody>
+            
+        </tbody>
+    </table>
+</div>
+</br>
+<div class="table-responsive">
+    <table class="table" id="totalDetail">
+        <tbody>
+            <tr>
+                <td width="70%" align="right"><b>TOTAL</b></td>
+                <td id="tdTotal" style="font-size: 16px; font-weight: bold"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</br>
 
-    </div>
-    <br>
-
-    <div class="form-group">
-        <div class="col-xs-2">
-            {!! Form::label('price','Precio:'); !!}
-        </div>
-        <div class="col-xs-4">
-            {!! Form::number('price', isset($product->price) ? $product->price : 0,['class'=>'form-control']); !!}
-        </div>
-
-        <div class="col-xs-2">
-            {!! Form::label('last_price','Último precio:'); !!}
-        </div>
-        <div class="col-xs-4">
-            {!! Form::number('last_price', isset($product->last_price) ? $product->last_price : 0,['class'=>'form-control']); !!}
-        </div>
-    </div>
-    <br>
-
-    <div class="form-group">
-        <div class="col-xs-2">
-            {!! Form::label('cost','Costo:'); !!}
-        </div>
-        <div class="col-xs-4">
-            {!! Form::number('cost', isset($product->cost) ? $product->cost : 0,['class'=>'form-control']); !!}
-        </div>
-
-        <div class="col-xs-2">
-            {!! Form::label('last_cost','Último costo:'); !!}
-        </div>
-        <div class="col-xs-4">
-            {!! Form::number('last_cost', isset($product->last_cost) ? $product->last_cost : 0,['class'=>'form-control']); !!}
-        </div>
-    </div>
-    <br>
-
-@endif
 <div class="form-group">
     <input class="btn btn-primary" type="submit" value="{{ $formMode === 'edit' ? 'Actualizar' : 'Crear' }}">
 </div>
+
+
+<div class="modal fade" id="cylinderModal" tabindex="-1" role="dialog" aria-labelledby="Elección de cilindro">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;        </span></button>
+                <h4 class="modal-title" id="myModalLabel">Elegir cilindro</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table" id="tableCylinder">
+                    <thead>
+                        <tr>
+                            <th>Código</th><th>Código externo</th><th>Vencimiento</th><th>Obs</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script type="text/javascript">
+
+    var numerador = 1;
+    var total = 0;
+
+    $(function(){
+        $( ".datepicker" ).datepicker({
+            changeMonth: true,
+            changeYear: true,
+            language: "es",
+            autoclose: true,
+            todayHighlight: true,
+            dateFormat: 'dd/mm/yy'
+        });
+
+        var path = "{{ route('nextSaleNumber') }}";
+        $.get(path, { operationtype_id: {{ $operationtype_id }} } , function (data) {
+            $("#number").val(data);
+        });
+    });
+
+    $('form input').on('keypress', function(e) {
+        return e.which !== 13;
+    });
+
+
+    /**
+     * Add product to table
+     */
+    $("#addProductToDetail").click(function(e){
+        e.preventDefault();
+        
+        if($("#prod_id").val() > 0)
+        {
+            var path_cylinder = "{{ route('cylinderJson') }}";
+            if($("#prod_cylindertype_id").val() > 0){
+
+                $.get(path_cylinder, { cylindertype_id: $("#prod_cylindertype_id").val() } , function (data) {
+                    $("#tableCylinder tbody").empty();
+                    $.each(data, function(i, item) {
+                        var line = "<tr id="+item.id+"><td class='code'>"+item.code+"</td>"+
+                            "<td class='ext_code'>"+item.external_code+"</td>"+
+                            "<td class='expiration'>"+item.expiration+"</td>"+
+                            "<td class='obs'>"+item.observation+"</td>"+
+                            "<td><a href='#' id="+item.id+" class='add btn btn-success' ><i class='fa fa-plus' aria-hidden='true'></i></a> </td></tr>";
+                        $("#tableCylinder tbody").append(line);
+                    });
+                });
+
+                $("#cylinderModal").modal('show');
+
+            }else{
+
+                var line = "<tr>"+
+                        "<td>"+numerador+
+                        "<input type='hidden' name='product_id[]' value='"+$("#prod_id").val()+"'/>"+
+                        "<input type='hidden' name='product_quantity[]' value='"+$("#quantity").val()+"'/>"+
+                        "<input type='hidden' name='product_price[]' value='"+$("#price").val()+"'/>"+
+                        "</td>"+
+                        "<td>"+$("#prod_code").val()+"</td>"+
+                        "<td>"+$("#prod_product").val()+"</td>"+
+                        "<td>"+$("#price").val()+"</td>"+
+                        "<td>"+$("#quantity").val()+"</td>"+
+                        "<td>"+parseFloat($("#price").val()*$("#quantity").val()).toFixed(2)+"</td>"+
+                        "<td><a href='#' class='del btn btn-danger' ><i class='add fa fa-minus' aria-hidden='true'></i></a> </td>"+
+                        "</tr>";
+
+                total = (parseFloat(total) + parseFloat($("#price").val()*$("#quantity").val())).toFixed(2);
+                $("#tdTotal").html(total); 
+
+                $("#productDetail tbody").append(line); 
+                cleanProductElement();
+                numerador++;
+                $("#prod_ac").focus();
+            }
+        }
+    });
+
+    $("#tableCylinder").on("click",".add", function(e){
+        e.preventDefault();
+        var cylinderid  = $(this).closest('tr').attr('id');
+        var code        = $(this).closest('tr').find(".code").text();
+        var ext_code    = $(this).closest('tr').find(".ext_code").text();
+        var obs         = $(this).closest('tr').find(".obs").text();
+        var expiration  = $(this).closest('tr').find(".expiration").text();
+
+        var line = "<tr id='tr"+numerador+"'>"+
+                "<td>"+numerador+
+                "<input type='hidden' name='product_id[]' value='"+$("#prod_id").val()+"'/>"+
+                "<input type='hidden' name='product_quantity[]' value='"+$("#quantity").val()+"'/>"+
+                "<input type='hidden' name='product_price[]' value='"+$("#price").val()+"'/>"+
+                "</td>"+
+                "<td>"+$("#prod_code").val()+"</td>"+
+                "<td>"+$("#prod_product").val()+"</td>"+
+                "<td>"+$("#price").val()+"</td>"+
+                "<td>"+$("#quantity").val()+"</td>"+
+                "<td>"+parseFloat($("#price").val()*$("#quantity").val()).toFixed(2)+"</td>"+
+                "<td></td>"+
+                "</tr>";
+
+        total = (parseFloat(total) + parseFloat($("#price").val()*$("#quantity").val())).toFixed(2);
+        $("#tdTotal").html(total); 
+
+        $("#productDetail tbody").append(line); 
+
+        var line_c = "<tr id='"+numerador+"'>"+
+            "<td>"+
+            "<input type='hidden' name='cylinder_id[]' value='"+cylinderid+"'/>"+
+            "</td>"+
+            "<td></td>"+
+            "<td colspan='4'>"+
+            "CILINDRO - COD: <b>"+code+"</b> - "+
+            "COD EXT: <b>"+ext_code+"</b> - "+
+            "Vencimiento: <b>"+expiration+"</b> "+
+            "Obs: <b>"+obs+"</b></td>"+
+            "<td><a href='#' class='del2 btn btn-danger' ><i class='fa fa-minus' aria-hidden='true'></i></a> </td>"+
+            "</tr>";
+
+        $("#productDetail tbody").append(line_c);
+        numerador++;
+
+        $("#cylinderModal").modal('hide');
+        $("#prod_ac").focus();
+        cleanProductElement();
+    });
+
+
+    /**
+     * delete item
+     */
+    $("#productDetail").on("click", ".del", function(e){
+        e.preventDefault();
+        $(this).parents("tr").remove();
+    });
+
+    /**
+     * delete item and cylinder
+     */
+    $("#productDetail").on("click", ".del2", function(e){
+        e.preventDefault();
+        var idx = $(this).closest("tr").attr('id');
+        $(this).parents("tr").remove();
+        $("#tr"+idx).remove();
+
+    });
+
+
+    /**
+     *autocomplete de customer
+     */
+    var path_c = "{{ route('customerAutocomplete') }}";
+    $('#customer_ac').typeahead({
+        minLength: 4,
+        hint: true,
+        highlight: true,  
+        freeInput: false,
+        autoselect: 'first',
+        source:  function (query, process) {
+            return $.get(path_c, { query: query }, function (data) {
+                return process(data);
+            });
+        },
+        updater: function(item){
+            $("#customer_id").val(item.id);
+            return item.name;
+        }
+    }).on('focusout',function(event){ 
+        if($('#customer_ac').val() == ''){
+            $('#customer_id').val('');
+        }
+    });
+
+    /**
+     *autocomplete de product
+     */
+    var path_p = "{{ route('productAutocomplete') }}";
+    $('#prod_ac').typeahead({
+        minLength: 3,
+        hint: true,
+        highlight: true,  
+        freeInput: false,
+        autoselect: 'first',
+        source:  function (query, process) {
+            return $.get(path_p, { query: query }, function (data) {
+                return process(data);
+            });
+        },
+        updater: function(item){
+            $("#prod_id").val(item.id);
+            $("#prod_product").val(item.product);
+            $("#prod_code").val(item.code);
+            $("#prod_description").val(item.description);
+            $("#prod_cylindertype_id").val(item.cylindertype_id);
+            $("#price").val(item.price);
+            $("#stock").val(item.stock);
+
+            $("#quantity").val(0);
+            $("#quantity").attr({
+                'max' : item.stock
+            });
+
+            return item.name;
+        }
+    }).on('focusout',function(event){ 
+        if($('#prod_ac').val() == ''){
+            $('#prod_id').val('');
+        }
+    });
+
+    function cleanProductElement(){
+        $("#prod_id").val('');
+        $("#prod_product").val('');
+        $("#prod_code").val('');
+        $("#prod_description").val('');
+        $("#prod_cylindertype_id").val('');
+        $("#price").val('');
+        $("#stock").val('');
+        $("#quantity").val('');
+        $("#prod_ac").val('');
+    }
+
+</script>

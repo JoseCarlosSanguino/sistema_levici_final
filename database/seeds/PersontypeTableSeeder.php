@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use app\Model\Persontype;
+use app\Models\Persontype;
 
 class PersontypeTableSeeder extends Seeder
 {

@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use app\Model\Ivatype;
+use app\Models\Ivatype;
 
 class IvatypeTableSeeder extends Seeder
 {

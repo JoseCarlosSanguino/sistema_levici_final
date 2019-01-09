@@ -21,15 +21,13 @@ class CustomerController extends Controller
 
         if (!empty($keyword)) 
         {
-            $customers = Customer::where('persontype_id', '=', 1)
-                ->where('name', 'LIKE', "%$keyword%")
+            $customers = Customer::where('name', 'LIKE', "%$keyword%")
                 ->orWhere('cuit', 'LIKE', "%$keyword%")
                 ->latest()->paginate($perPage);
         }
         else
         {
-            $customers  = Customer::where('persontype_id', '=', 1)
-                ->latest()
+            $customers  = Customer::latest()
                 ->paginate($perPage);
         }
 
@@ -66,6 +64,13 @@ class CustomerController extends Controller
     public function store(Request $request)
     {
         $requestData = $request->all();
+        $requestData['persontype_id'] = 1;
+
+        $validatedData = $request->validate([
+            'cuit' => 'required|max:13|unique:persons,cuit,persontype_id=1',
+            'name' => 'required',
+        ]);
+
         Customer::create($requestData);
 
         return redirect('customers')->with('flash_message', 'Cliente creado!');
@@ -116,6 +121,11 @@ class CustomerController extends Controller
     public function update(Request $request, $id)
     {
         $requestData = $request->all();
+
+        $validatedData = $request->validate([
+            'cuit' => 'required|max:13',
+            'name' => 'required',
+        ]);
         
         $Customer = Customer::findOrFail($id);
         $Customer->update($requestData);
@@ -134,5 +144,20 @@ class CustomerController extends Controller
         Customer::destroy($id);
 
         return redirect('customers')->with('flash_message', 'Cliente eliminado!');
+    }
+
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function autocomplete(Request $request)
+    {
+        $data = Customer::select("id","name")
+            ->where('persontype_id',1)
+            ->where("name","LIKE","%{$request->input('query')}%")
+            ->get();
+        return response()->json($data);
     }
 }

@@ -68,12 +68,12 @@
 <script type="text/javascript">
 $(function() {
     $( ".datepicker" ).datepicker({
-    changeMonth: true,
-    changeYear: true,
-    language: "es",
-    autoclose: true,
-    todayHighlight: true,
-    dateFormat: 'dd/mm/yy'
+        changeMonth: true,
+        changeYear: true,
+        language: "es",
+        autoclose: true,
+        todayHighlight: true,
+        dateFormat: 'dd/mm/yy'
     });
 });
 </script>

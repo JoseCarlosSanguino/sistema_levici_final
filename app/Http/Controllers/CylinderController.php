@@ -147,4 +147,20 @@ class CylinderController extends Controller
 
         return redirect('cylinders')->with('flash_message', 'Cilindro eliminado!');
     }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function json(Request $request)
+    {
+        $data = Cylinder::select("id","code","external_code","expiration","observation")
+            ->where("cylindertype_id",$request->input('cylindertype_id'))
+            ->where("status_id", Cylinder::STATUS['DISPONIBLE'])
+            ->get();
+        return response()->json($data);
+    }
+
+
 }

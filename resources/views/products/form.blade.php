@@ -58,6 +58,17 @@
     </div>
 </div>
 <br>
+
+<div class="form-group">
+    <div class="col-xs-2">
+        {!! Form::label('cylindertype_id','Tipo de cilindro:'); !!}
+    </div>
+    <div class="col-xs-4">
+        {!! Form::select('cylindertype_id', $cylindertypes, isset($product->cylindertype_id) ? $product->cylindertype_id : '',['class'=>'form-control', 'placeholder'=>'Tipo de cilindro']); !!}
+    </div>
+</div>
+<br>
+
 <div class="form-group">
     <div class="col-xs-2">
         {!! Form::label('unittype','Medida:'); !!}
