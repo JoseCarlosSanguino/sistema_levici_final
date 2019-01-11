@@ -129,7 +129,7 @@
 </div>
 <br>
 
-<?php if($formMode === 'edit'): ?>
+<!-- if para editar precio y stock -->
     <div class="form-group">
         <div class="col-xs-2">
             <?php echo Form::label('stock','Stock:');; ?>
@@ -184,9 +184,9 @@
         </div>
     </div>
     <br>
-    
 
-<?php endif; ?>
+<!-- end if -->
+
 <div class="form-group">
     <div class="col-xs-2">
         <?php echo Form::label('providers','Proveedores:');; ?>

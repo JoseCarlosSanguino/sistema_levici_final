@@ -105,7 +105,7 @@
 </div>
 <br>
 
-@if($formMode === 'edit')
+<!-- if para editar precio y stock -->
     <div class="form-group">
         <div class="col-xs-2">
             {!! Form::label('stock','Stock:'); !!}
@@ -150,9 +150,9 @@
         </div>
     </div>
     <br>
-    
 
-@endif
+<!-- end if -->
+
 <div class="form-group">
     <div class="col-xs-2">
         {!! Form::label('providers','Proveedores:'); !!}
