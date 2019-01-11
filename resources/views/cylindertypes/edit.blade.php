@@ -23,7 +23,7 @@
                             </ul>
                         @endif
 
-                        <form method="POST" action="{{ url('/'.$controller .'/'. $cylindertype->id) }}" accept-charset="UTF-8" class="form-horizontal" enctype="multipart/form-data">
+                        <form method="POST" action="{{ url('/'.$controller .'/'. $cylindertype->id) }}" accept-charset="UTF-8" class="form-horizontal" enctype="multipart/form-data" autocomplete="off">
                             {{ method_field('PATCH') }}
                             {{ csrf_field() }}
 

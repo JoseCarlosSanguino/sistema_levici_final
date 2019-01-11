@@ -100,6 +100,12 @@ class ProductController extends Controller
                 $product->giveProviderTo($provider);
             }
         }
+        if($request->has('cylindertypes')){
+            foreach ($request->cylindertypes as $cylindertype_name){
+                $cylindertype = CylinderType::findOrFail($cylindertype_name);
+                $product->giveCylindertypeTo($cylindertype);
+            }
+        }
 
         return redirect('products')->with('flash_message', 'Producto creado!');
     }
@@ -173,6 +179,15 @@ class ProductController extends Controller
             foreach ($request->providers as $provider_name) {
                 $provider = Provider::findOrFail($provider_name);
                 $product->giveProviderTo($provider);
+            }
+        }
+
+        $product->cylindertypes()->detach();
+        
+        if($request->has('cylindertypes')){
+            foreach ($request->cylindertypes as $cylindertype_name){
+                $cylindertype = CylinderType::findOrFail($cylindertype_name);
+                $product->giveCylindertypeTo($cylindertype);
             }
         }
 

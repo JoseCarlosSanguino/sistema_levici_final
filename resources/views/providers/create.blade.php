@@ -22,7 +22,7 @@
                             </ul>
                         @endif
 
-                        <form method="POST" action="{{ url('/'.$controller) }}" accept-charset="UTF-8" class="form-horizontal" enctype="multipart/form-data">
+                        <form method="POST" action="{{ url('/'.$controller) }}" accept-charset="UTF-8" class="form-horizontal" enctype="multipart/form-data" autocomplete="off">
                             {{ csrf_field() }}
 
                             @include ('providers.form', ['formMode' => 'create'])

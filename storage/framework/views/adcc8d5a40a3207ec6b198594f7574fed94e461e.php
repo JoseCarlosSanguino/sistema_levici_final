@@ -72,7 +72,7 @@
     </div>
 </div>
 <br>
-
+<!--
 <div class="form-group">
     <div class="col-xs-2">
         <?php echo Form::label('cylindertype_id','Tipo de cilindro:');; ?>
@@ -83,7 +83,22 @@
 
     </div>
 </div>
+-->
+
+<div class="form-group">
+    <div class="col-xs-2">
+        <?php echo Form::label('cylindertypes','Tipos de cilindros:');; ?>
+
+    </div>
+    <div class="col-xs-4">
+        <?php echo Form::select('cylindertypes[]', $cylindertypes, isset($product) ? $product->cylindertypes->pluck('id') : [], ['class' => 'form-control', 'multiple' => true]); ?>
+
+        <?php echo $errors->first('name', '<p class="help-block">:message</p>'); ?>
+
+    </div>
+</div>
 <br>
+
 
 <div class="form-group">
     <div class="col-xs-2">

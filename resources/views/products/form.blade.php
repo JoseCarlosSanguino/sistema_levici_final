@@ -58,7 +58,7 @@
     </div>
 </div>
 <br>
-
+<!--
 <div class="form-group">
     <div class="col-xs-2">
         {!! Form::label('cylindertype_id','Tipo de cilindro:'); !!}
@@ -67,7 +67,19 @@
         {!! Form::select('cylindertype_id', $cylindertypes, isset($product->cylindertype_id) ? $product->cylindertype_id : '',['class'=>'form-control', 'placeholder'=>'Tipo de cilindro']); !!}
     </div>
 </div>
+-->
+
+<div class="form-group">
+    <div class="col-xs-2">
+        {!! Form::label('cylindertypes','Tipos de cilindros:'); !!}
+    </div>
+    <div class="col-xs-4">
+        {!! Form::select('cylindertypes[]', $cylindertypes, isset($product) ? $product->cylindertypes->pluck('id') : [], ['class' => 'form-control', 'multiple' => true]) !!}
+        {!! $errors->first('name', '<p class="help-block">:message</p>') !!}
+    </div>
+</div>
 <br>
+
 
 <div class="form-group">
     <div class="col-xs-2">
