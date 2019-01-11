@@ -72,7 +72,8 @@ class CylinderController extends Controller
             'code'          => 'required|unique:cylinders|max:32',
             ]);
     
-        $requestData = $request->all();
+	$requestData = $request->all();
+	$requestData['status_id'] = Cylinder::STATUS['DISPONIBLE'];
         Cylinder::create($requestData);
 
         return redirect('cylinders')->with('flash_message', 'Cilindro creado!');
