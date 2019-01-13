@@ -8,12 +8,14 @@
         <?php echo Form::text('code', isset($product->code) ? $product->code : '',['class'=>'form-control']);; ?>
 
     </div>
+</div>
 
-    <div class="col-xs-2">
+<div class="form-group">
+     <div class="col-xs-2">
         <?php echo Form::label('product','Producto:');; ?>
 
     </div>
-    <div class="col-xs-4">
+    <div class="col-xs-10">
         <?php echo Form::text('product', isset($product->product) ? $product->product : '',['class'=>'form-control']);; ?>
 
     </div>
