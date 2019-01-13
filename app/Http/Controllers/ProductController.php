@@ -84,7 +84,7 @@ class ProductController extends Controller
     {
         $this->validate($request, [
             'code'          => 'required|unique:products|max:32',
-            'product'       => 'required|max:32',
+            'product'       => 'required|max:128',
             'ivatype_id'    => 'required',
             'producttype_id'=> 'required'
             ]);
