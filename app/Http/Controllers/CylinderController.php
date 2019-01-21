@@ -72,8 +72,8 @@ class CylinderController extends Controller
             'code'          => 'required|unique:cylinders|max:32',
             ]);
     
-	$requestData = $request->all();
-	$requestData['status_id'] = Cylinder::STATUS['DISPONIBLE'];
+    	$requestData = $request->all();
+    	$requestData['status_id'] = Cylinder::STATUS['DISPONIBLE'];
         Cylinder::create($requestData);
 
         return redirect('cylinders')->with('flash_message', 'Cilindro creado!');
@@ -92,6 +92,7 @@ class CylinderController extends Controller
         $controller = 'cylinders';
 
         $cylinder = Cylinder::findOrFail($id);
+
         return view('cylinders.show', compact('cylinder','title', 'modelName', 'controller'));
     }
 
@@ -157,9 +158,10 @@ class CylinderController extends Controller
     public function json(Request $request)
     {
         $data = Cylinder::select("id","code","external_code","expiration","observation")
-            ->where("cylindertype_id",$request->input('cylindertype_id'))
+            ->wherein("cylindertype_id",explode(',',$request->input('cylindertype_id')))
             ->where("status_id", Cylinder::STATUS['DISPONIBLE'])
             ->get();
+
         return response()->json($data);
     }
 

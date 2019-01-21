@@ -72,7 +72,7 @@ class Product extends Model
 
     public function ivatype()
     {
-        return $this->belongsTo('app\Models\Ivatype');
+        return $this->belongsTo(Ivatype::Class);
     }
 
     public function trademark()
@@ -97,7 +97,7 @@ class Product extends Model
 
     public function cylindertypes()
     {
-        return $this->belongsToMany(Cylindertype::class);
+        return $this->belongsToMany(Cylindertype::Class);
     }
 
     public function giveCylindertypeTo(Cylindertype $cylindertype)

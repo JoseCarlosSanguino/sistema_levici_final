@@ -25,7 +25,7 @@ class Sale extends Model
 	protected $table = 'sales';
 
 	protected $fillable = [
-        'id','operation_id','customer_id','cae_number','cae_expired','condition'
+        'id','operation_id','customer_id','cae_number','cae_expired','conditions'
     ];
 
     protected $hidden = [

@@ -51,9 +51,27 @@ class Cylinder extends Model
         return $this->belongsTo('app\Models\Cylindertype');
     }
 
-    public function cylindermoves()
+    public function moves()
     {
-        return $this->hasMany('app\Models\Cylindermove');
+        return $this->hasMany(Cylindermove::Class);
+    }
+
+    public function movetypes()
+    {
+        return $this->belongsToMany(Movetype::Class, 'cylindermoves')
+            ->withPivot(['date_of','cylinder_id','person_id','movetype_id'])->withTimestamps();
+    }
+
+    public function customers()
+    {
+        return $this->belongsToMany(Customer::Class, 'cylindermoves')
+            ->withPivot(['date_of','cylinder_id','person_id','movetype_id'])->withTimestamps();
+    }
+
+    public function providers()
+    {
+        return $this->belongsToMany(Providers::Class, 'cylindermoves')
+            ->withPivot(['date_of','cylinder_id','person_id','movetype_id'])->withTimestamps();
     }
 
     public function operations()

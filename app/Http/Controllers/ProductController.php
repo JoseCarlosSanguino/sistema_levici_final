@@ -214,7 +214,9 @@ class ProductController extends Controller
      */
     public function autocomplete(Request $request)
     {
-        $data = Product::select("id","code","product", "price", "stock", "cylindertype_id",DB::raw('CONCAT(code," - ", product) AS name'))
+
+        $data = Product::select("id","code","product", "price", "stock","ivatype_id", DB::raw('CONCAT(code," - ", product) AS name'))
+            ->with(['cylindertypes','ivatype'])
             ->orWhere("product","LIKE","%{$request->input('query')}%")
             ->orWhere("code","LIKE","%{$request->input('query')}%")
             ->get();

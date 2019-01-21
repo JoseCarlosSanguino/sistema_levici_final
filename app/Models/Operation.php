@@ -10,7 +10,7 @@ class Operation extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'id','operationtype_id','status_id','user_id','pointofsale','number','dateof','amount','discount','observation'
+        'id','operationtype_id','status_id','user_id','pointofsale','number','dateof','amount','discount','iva105','iva21','observation'
     ];
 
     protected $hidden = [
@@ -22,7 +22,6 @@ class Operation extends Model
             $newValue = explode('/',$value)[2] . '-' . explode('/',$value)[1] . '-' . explode('/',$value)[0];    
             $this->attributes['dateof'] = $newValue;
         }
-        dd($value);
     }
 
     public function getDateofAttribute( $value ) {

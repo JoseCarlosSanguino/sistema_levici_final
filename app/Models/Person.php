@@ -28,4 +28,9 @@ class Person extends Model
         return $this->belongsTo('app\Models\Ivacondition');
     }
 
+    public function city()
+    {
+        return $this->belongsTo(City::Class);
+    }
+
 }

@@ -24,8 +24,7 @@
                         <form method="POST" action="{{ url('/'.$controller) }}" accept-charset="UTF-8" class="form-horizontal" enctype="multipart/form-data" autocomplete="off" >
                             {{ csrf_field() }}
 
-                            @include ('sales.form', ['formMode' => 'create'])
-
+                            @include ('remitos.form', ['formMode' => 'create'])
 
                         </form>
 

@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use app\Models\Customer;
 use app\Models\Province;
 use app\Models\Ivacondition;
+use app\Models\Sale;
+use app\Models\Operation;
+use DB;
 
 class CustomerController extends Controller
 {
@@ -154,10 +157,68 @@ class CustomerController extends Controller
      */
     public function autocomplete(Request $request)
     {
-        $data = Customer::select("id","name")
+        $data = Customer::select("id","name", "ivacondition_id", "markup")
             ->where('persontype_id',1)
             ->where("name","LIKE","%{$request->input('query')}%")
             ->get();
         return response()->json($data);
+    }
+
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function ctacte(Request $request)
+    {
+        $keyword = $request->get('search');
+        $perPage = 25;
+
+        $where = '';
+        if (!empty($keyword)) 
+        {
+            $where = 'and c.name like "%'.$keyword.'%" or c.cuit like "%'.$keyword.'%"';
+        }
+
+        $query = 'select sum(amount) monto, count(o.id) cant, customer_id, c.name, c.cuit ';
+        $query.= 'From operations o join sales s on (s.operation_id = o.id) join persons c on (c.id = s.customer_id) ';
+        $query.= 'where operationtype_id in (1,2) and status_id in (1) ';
+        $query.= $where; 
+        $query.= 'group by s.customer_id, c.name, c.cuit order by monto desc ';
+
+        $rows = DB::select($query);
+
+        $title      = 'Listado de cuentas corrientes';
+        $modelName  = 'Cliente';
+        $controller = 'customers';
+
+        return view('customers.ctacte',compact('customers', 'title', 'modelName', 'controller','rows'));
+    }
+
+
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function detallectacte($id)
+    {
+        
+        $operations = Sale::whereHas("operation", function($q){
+                $q->wherein('operationtype_id',[1,2,3, 15,16,17,18]);
+                $q->wherein('status_id', [1,2]);
+            })
+            ->where('customer_id',$id)
+            ->with(['customer','operation'])
+            ->latest()
+            ->get();
+
+        $title      = 'Facturas pendientes';
+        $modelName  = 'Cliente';
+        $controller = 'customers';
+
+        return view('customers.detallectacte',compact('customers', 'title', 'modelName', 'controller','operations'));
     }
 }

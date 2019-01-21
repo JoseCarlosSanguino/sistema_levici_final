@@ -39,13 +39,16 @@
                             @foreach($operations as $sale)
                                 <tr>
                                     <td>{{ $loop->iteration or $sale->id }}</td>
-                                    <td>{{ $sale->operation->operationtype->letter . $sale->operation->FullNumber}}</td>
+                                    <td>{{ $sale->operation->FullNumber or ''}}</td>
                                     <td>{{ $sale->operation->date_of }}</td>
                                     <td>{{ $sale->customer->name or '' }}</td>
                                     <td>{{ $sale->operation->amount }}</td>
                                     <td>{{ $sale->operation->status->status or '' }}</td>
                                     <td>
-                                        <a href="{{ url('/facturapdf/' . $sale->id) }}" target="_blank" title="Ver {{$modelName}}"><button class="btn btn-info btn-sm"><i class="fa fa-print" aria-hidden="true"></i> Imprimir</button></a>
+                                        <a href="{{ url('/remitopdf/' . $sale->id) }}" target="_blank" title="Ver {{$modelName}}"><button class="btn btn-info btn-sm"><i class="fa fa-print" aria-hidden="true"></i> Imprimir</button></a>
+                                        @if($sale->operation->status_id == 14)
+                                            <a href="{{ url('/facturar/' . $sale->id) }}" title="Ver {{$modelName}}"><button class="btn btn-info btn-sm"><i class="fa fa-check" aria-hidden="true"></i> Facturar</button></a>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach

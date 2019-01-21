@@ -21,4 +21,9 @@ class Customer extends Person
         });
     }
 
+    public function ivacondition()
+    {
+        return $this->belongsTo(Ivacondition::Class);
+    }
+
 }
