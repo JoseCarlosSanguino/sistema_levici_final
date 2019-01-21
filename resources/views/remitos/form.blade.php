@@ -298,7 +298,7 @@
      */
     var path_c = "{{ route('customerAutocomplete') }}";
     $('#customer_ac').typeahead({
-        minLength: 4,
+        minLength: 3,
         hint: true,
         highlight: true,  
         freeInput: false,

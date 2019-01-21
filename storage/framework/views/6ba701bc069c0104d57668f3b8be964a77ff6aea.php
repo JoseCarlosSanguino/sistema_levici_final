@@ -5,15 +5,26 @@
 
 
 <div class="form-group">
+    <div class="col-xs-2">
+        <?php echo Form::label('Tipo','Tipo de documento:');; ?>
+
+    </div>
+    <div class="col-xs-3">
+        <?php echo Form::select('groupoperationtype_id', $groupoperationtypes,1,['id' => 'groupoperationtype_id', 'class'=>'form-control', 'placeholder'=>'Tipo de documento']);; ?>
+
+    </div>
+</div>
+
+<div class="form-group">
     
     <div class="col-xs-2">
         <?php echo Form::label('number','Número:');; ?>
 
     </div>
-    <div class="col-xs-2">
-        <?php echo Form::text('number', '',['readonly' => 'readonly', 'class'=>'form-control']);; ?>
+    <div class="col-xs-3">
+        <?php echo Form::text('number', isset($number)?$number:'',['readonly' => 'readonly', 'class'=>'form-control']);; ?>
 
-        <?php echo Form::hidden('operationtype_id' , $operationtype_id, ['id' => 'operationtype_id']); ?>
+        <?php echo Form::hidden('operationtype_id' , $operationtype_id or '', ['id' => 'operationtype_id']); ?>
 
     </div>
 </div>
@@ -30,17 +41,39 @@
     </div>
 </div>
 </br>
+
+<div class="form-group">
+
+    <div class="col-xs-2">
+        <?php echo Form::label('condition', 'Condición:');; ?>
+
+    </div>
+    <div class="col-xs-4">
+        <?php echo Form::label('condition', 'Contado');; ?>&nbsp;&nbsp;
+        <?php echo e(Form::radio('conditions', 'contado' , false)); ?>&nbsp;&nbsp;&nbsp;&nbsp;
+        <?php echo Form::label('condition', 'Cuenta Corriente');; ?>&nbsp;&nbsp;
+        <?php echo e(Form::radio('conditions', 'cta cte' , true)); ?>
+
+    </div>
+</div>
+</br>
 <div class="form-group">
     
     <div class="col-xs-2">
         <?php echo Form::label('customer','Cliente:');; ?>
 
     </div>
-    <div class="col-xs-4">
-        <?php echo Form::text('customer_ac', '',['id'=>'customer_ac', 'autocomplete' => 'off' ,'class'=>'typeahead form-control']);; ?>
+    <div class="col-xs-3">
+        <?php echo Form::text('customer_ac', isset($remito->customer->name)?$remito->customer->name:'',['id'=>'customer_ac', 'autocomplete' => 'off' ,'class'=>'typeahead form-control']);; ?>
 
-        <?php echo Form::hidden('customer_id', '', ['id' => 'customer_id']); ?>
+        <?php echo Form::hidden('customer_id', isset($remito->customer_id)?$remito->customer_id:'', ['id' => 'customer_id']); ?>
 
+        <?php echo Form::hidden('ivacondition_id', isset($remito->customer->ivacondition_id)?$remito->customer->ivacondition_id:'', ['id' => 'ivacondition_id']); ?>
+
+        <?php echo Form::hidden('markup', isset($remito->customer->markup)?$remito->customer->markup:0, ['id' => 'markup']); ?>
+
+
+        
     </div>
 </div>
 </br>
@@ -51,7 +84,7 @@
 
     </div>
     <div class="col-xs-10">
-        <?php echo Form::text('observation', isset($product->observation) ? $product->observation : '',['class'=>'form-control']);; ?>
+        <?php echo Form::text('observation', isset($remito->id)?'Remito nº: ' . $remito->operation->fullnumber: '',['class'=>'form-control']);; ?>
 
     </div>
 </div>
@@ -64,18 +97,17 @@
 
     </div>
     <div class="col-xs-4" style="width:30%">
-        <?php echo Form::text('prod_ac', '',[ 'id' => 'prod_ac', 'autocomplete' => 'off' , 'class'=>'typeahead form-control']);; ?>
+        <?php echo Form::text('prod_ac', '',[ 'id' => 'prod_ac', 'autocomplete' => 'off' , 'class'=>'typeahead form-control']);; ?> 
 
+        <?php echo Form::hidden('prod_id'          , '', ['id' => 'prod_id']); ?>
 
-        <?php echo Form::hidden('prod_id'               , '', ['id' => 'prod_id']); ?>
+        <?php echo Form::hidden('prod_code'        , '', ['id' => 'prod_code']); ?>
 
-        <?php echo Form::hidden('prod_code'             , '', ['id' => 'prod_code']); ?>
+        <?php echo Form::hidden('prod_product'     , '', ['id' => 'prod_product']); ?>
 
-        <?php echo Form::hidden('prod_product'          , '', ['id' => 'prod_product']); ?>
+        <?php echo Form::hidden('prod_description' , '', ['id' => 'prod_description']); ?>
 
-        <?php echo Form::hidden('prod_description'      , '', ['id' => 'prod_description']); ?>
-
-        <?php echo Form::hidden('prod_cylindertype_id'  , '', ['id' => 'prod_cylindertype_id']); ?>
+        <?php echo Form::hidden('prod_ivatype'     , '', ['id' => 'prod_ivatype']); ?>
 
     </div>
     <div class="col-xs-1">
@@ -118,17 +150,81 @@
             </tr>
         </thead>
         <tbody>
+            <?php if(isset($remito->id)): ?>
+                <?php 
+                    $total = 0;
+                    $iva21 = 0;
+                    $iva105= 0;
+
+                ?>
+                <?php $__currentLoopData = $remito->operation->products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $prod): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <?php    
+                        $new_price = (floatval($prod->pivot->price) / 100 * floatval($remito->customer->markup) ) + floatval($prod->pivot->price);
+                        $subt = $new_price * floatval($prod->pivot->quantity);
+
+                        $iva = floatval($prod->ivatype->percent) * ($subt / 100);
+                        if($prod->ivatype->percent == '21.00')
+                        {
+                            $iva21 = $iva21 + $iva;
+                        }
+                        else
+                        {
+                            $iva105 = $iva105 + $iva;
+                        }
+
+                        $total = $total + $subt + $iva;
+
+                    ?>
+                    <tr>
+                        <td>1
+                        <input type='hidden' name='product_id[]' value='<?php echo e($prod->id); ?>'/>
+                        <input type='hidden' name='product_quantity[]' value='<?php echo e($prod->pivot->quantity); ?>'/>
+                        <input type='hidden' name='product_price[]' value='<?php echo e($prod->pivot->price); ?>'/>
+                        </td>
+                    <td><?php echo e($prod->code); ?></td>
+                    <td><?php echo e($prod->product); ?></td>
+                    <td><?php echo e($new_price); ?></td>
+                    <td><?php echo e($prod->pivot->quantity); ?></td>
+                    <td><?php echo e($subt); ?></td>
+                    <td><a href='#' class='del btn btn-danger' ><i class='add fa fa-minus' aria-hidden='true'></i></a> </td>
+                    </tr>
+
+
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            <?php endif; ?>
             
         </tbody>
     </table>
 </div>
 </br>
 <div class="table-responsive">
+    <?php echo Form::hidden('amount', isset($total)?$total: 0, ['id'=>'amount']); ?>
+
+    <?php echo Form::hidden('discount', isset($discount)?$discount: 0, ['id'=>'discount']); ?>
+
+    <?php echo Form::hidden('iva105', isset($iva105)?$iva105: 0, ['id'=>'iva105']); ?>
+
+    <?php echo Form::hidden('iva21', isset($iva21)?$iva21: 0, ['id'=>'iva21']); ?>
+
+    <?php echo Form::hidden('remito_id', isset($remito->id)?$remito->id: '', ['id'=>'iva21']); ?>
+
     <table class="table" id="totalDetail">
         <tbody>
             <tr>
+                <td width="70%" align="right"><b>IVA 10,5%</b></td>
+                <td id="tdIva105" style="font-size: 16px; font-weight: bold"><?php echo e(isset($iva105) ? $iva105 : 0); ?></td>
+            </tr>
+            <tr>
+                <td width="70%" align="right"><b>IVA 21%</b></td>
+                <td id="tdIva21" style="font-size: 16px; font-weight: bold"><?php echo e(isset($iva21) ? $iva21 : 0); ?></td>
+            </tr>
+            <tr>
+                <td width="70%" align="right"><b>Descuento</b></td>
+                <td id="tdDescuento" style="font-size: 16px; font-weight: bold">0</td>
+            </tr>
+            <tr>
                 <td width="70%" align="right"><b>TOTAL</b></td>
-                <td id="tdTotal" style="font-size: 16px; font-weight: bold"></td>
+                <td id="tdTotal" style="font-size: 16px; font-weight: bold"><?php echo e(isset($total) ? $total : 0); ?></td>
             </tr>
         </tbody>
     </table>
@@ -140,39 +236,14 @@
 </div>
 
 
-<div class="modal fade" id="cylinderModal" tabindex="-1" role="dialog" aria-labelledby="Elección de cilindro">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;        </span></button>
-                <h4 class="modal-title" id="myModalLabel">Elegir cilindro</h4>
-            </div>
-            <div class="modal-body">
-                <table class="table" id="tableCylinder">
-                    <thead>
-                        <tr>
-                            <th>Código</th><th>Código externo</th><th>Vencimiento</th><th>Obs</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        
-                    </tbody>
-                </table>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
-
 <script type="text/javascript">
 
     var numerador = 1;
     var total = 0;
+    var iva105= 0;
+    var iva21 = 0;
+    var desc  = 0;
+    var pathNextNumber = "<?php echo e(route('nextSaleNumber')); ?>";
 
     $(function(){
         $( ".datepicker" ).datepicker({
@@ -184,10 +255,6 @@
             dateFormat: 'dd/mm/yy'
         });
 
-        var path = "<?php echo e(route('nextSaleNumber')); ?>";
-        $.get(path, { operationtype_id: <?php echo e($operationtype_id); ?> } , function (data) {
-            $("#number").val(data);
-        });
     });
 
     $('form input').on('keypress', function(e) {
@@ -203,98 +270,53 @@
         
         if($("#prod_id").val() > 0)
         {
-            var path_cylinder = "<?php echo e(route('cylinderJson')); ?>";
-            if($("#prod_cylindertype_id").val() > 0){
+            var markup= parseFloat( $("#markup").val()).toFixed(2);
+            var price = parseFloat( $("#price").val()).toFixed(2) ;
+            var quant = parseFloat( $("#quantity").val()).toFixed(2);
 
-                $.get(path_cylinder, { cylindertype_id: $("#prod_cylindertype_id").val() } , function (data) {
-                    $("#tableCylinder tbody").empty();
-                    $.each(data, function(i, item) {
-                        var line = "<tr id="+item.id+"><td class='code'>"+item.code+"</td>"+
-                            "<td class='ext_code'>"+item.external_code+"</td>"+
-                            "<td class='expiration'>"+item.expiration+"</td>"+
-                            "<td class='obs'>"+item.observation+"</td>"+
-                            "<td><a href='#' id="+item.id+" class='add btn btn-success' ><i class='fa fa-plus' aria-hidden='true'></i></a> </td></tr>";
-                        $("#tableCylinder tbody").append(line);
-                    });
-                });
+            var subt  = price * quant;
+            var inter = ( subt / 100 ) * markup;
+            subt = subt + inter;
+            var iva_p = parseFloat( $("#prod_ivatype").val() ).toFixed(2);
+            var iva   = ( subt / 100 ) * iva_p;
 
-                $("#cylinderModal").modal('show');
+            total   = parseFloat(parseFloat(total) + subt + iva).toFixed(2);
 
+            if($("#prod_ivatype").val() == '21.00'){
+                iva21= parseFloat(parseFloat(iva21) + iva).toFixed(2);
             }else{
-
-                var line = "<tr>"+
-                        "<td>"+numerador+
-                        "<input type='hidden' name='product_id[]' value='"+$("#prod_id").val()+"'/>"+
-                        "<input type='hidden' name='product_quantity[]' value='"+$("#quantity").val()+"'/>"+
-                        "<input type='hidden' name='product_price[]' value='"+$("#price").val()+"'/>"+
-                        "</td>"+
-                        "<td>"+$("#prod_code").val()+"</td>"+
-                        "<td>"+$("#prod_product").val()+"</td>"+
-                        "<td>"+$("#price").val()+"</td>"+
-                        "<td>"+$("#quantity").val()+"</td>"+
-                        "<td>"+parseFloat($("#price").val()*$("#quantity").val()).toFixed(2)+"</td>"+
-                        "<td><a href='#' class='del btn btn-danger' ><i class='add fa fa-minus' aria-hidden='true'></i></a> </td>"+
-                        "</tr>";
-
-                total = (parseFloat(total) + parseFloat($("#price").val()*$("#quantity").val())).toFixed(2);
-                $("#tdTotal").html(total); 
-
-                $("#productDetail tbody").append(line); 
-                cleanProductElement();
-                numerador++;
-                $("#prod_ac").focus();
+                iva105= parseFloat(parseFloat(iva105) + iva).toFixed(2);
             }
+            
+            var line = "<tr>"+
+                    "<td>"+numerador+
+                    "<input type='hidden' name='product_id[]' value='"+$("#prod_id").val()+"'/>"+
+                    "<input type='hidden' name='product_quantity[]' value='"+$("#quantity").val()+"'/>"+
+                    "<input type='hidden' name='product_price[]' value='"+$("#price").val()+"'/>"+
+                    "</td>"+
+                    "<td>"+$("#prod_code").val()+"</td>"+
+                    "<td>"+$("#prod_product").val()+"</td>"+
+                    "<td>"+$("#price").val()+"</td>"+
+                    "<td>"+$("#quantity").val()+"</td>"+
+                    "<td>"+subt+"</td>"+
+                    "<td><a href='#' class='del btn btn-danger' ><i class='add fa fa-minus' aria-hidden='true'></i></a> </td>"+
+                    "</tr>";
+
+            $("#tdIva105").html(iva105); 
+            $("#iva105").val(iva105);
+            $("#tdIva21").html(iva21); 
+            $("#iva21").val(iva21); 
+            $("#tdDescuento").html(desc); 
+            $("#discount").val(desc); 
+            $("#tdTotal").html(total); 
+            $("#amount").val(total); 
+
+            $("#productDetail tbody").append(line); 
+            cleanProductElement();
+            numerador++;
+            $("#prod_ac").focus();
         }
     });
-
-    $("#tableCylinder").on("click",".add", function(e){
-        e.preventDefault();
-        var cylinderid  = $(this).closest('tr').attr('id');
-        var code        = $(this).closest('tr').find(".code").text();
-        var ext_code    = $(this).closest('tr').find(".ext_code").text();
-        var obs         = $(this).closest('tr').find(".obs").text();
-        var expiration  = $(this).closest('tr').find(".expiration").text();
-
-        var line = "<tr id='tr"+numerador+"'>"+
-                "<td>"+numerador+
-                "<input type='hidden' name='product_id[]' value='"+$("#prod_id").val()+"'/>"+
-                "<input type='hidden' name='product_quantity[]' value='"+$("#quantity").val()+"'/>"+
-                "<input type='hidden' name='product_price[]' value='"+$("#price").val()+"'/>"+
-                "</td>"+
-                "<td>"+$("#prod_code").val()+"</td>"+
-                "<td>"+$("#prod_product").val()+"</td>"+
-                "<td>"+$("#price").val()+"</td>"+
-                "<td>"+$("#quantity").val()+"</td>"+
-                "<td>"+parseFloat($("#price").val()*$("#quantity").val()).toFixed(2)+"</td>"+
-                "<td></td>"+
-                "</tr>";
-
-        total = (parseFloat(total) + parseFloat($("#price").val()*$("#quantity").val())).toFixed(2);
-        $("#tdTotal").html(total); 
-
-        $("#productDetail tbody").append(line); 
-
-        var line_c = "<tr id='"+numerador+"'>"+
-            "<td>"+
-            "<input type='hidden' name='cylinder_id[]' value='"+cylinderid+"'/>"+
-            "</td>"+
-            "<td></td>"+
-            "<td colspan='4'>"+
-            "CILINDRO - COD: <b>"+code+"</b> - "+
-            "COD EXT: <b>"+ext_code+"</b> - "+
-            "Vencimiento: <b>"+expiration+"</b> "+
-            "Obs: <b>"+obs+"</b></td>"+
-            "<td><a href='#' class='del2 btn btn-danger' ><i class='fa fa-minus' aria-hidden='true'></i></a> </td>"+
-            "</tr>";
-
-        $("#productDetail tbody").append(line_c);
-        numerador++;
-
-        $("#cylinderModal").modal('hide');
-        $("#prod_ac").focus();
-        cleanProductElement();
-    });
-
 
     /**
      * delete item
@@ -302,17 +324,6 @@
     $("#productDetail").on("click", ".del", function(e){
         e.preventDefault();
         $(this).parents("tr").remove();
-    });
-
-    /**
-     * delete item and cylinder
-     */
-    $("#productDetail").on("click", ".del2", function(e){
-        e.preventDefault();
-        var idx = $(this).closest("tr").attr('id');
-        $(this).parents("tr").remove();
-        $("#tr"+idx).remove();
-
     });
 
 
@@ -333,11 +344,22 @@
         },
         updater: function(item){
             $("#customer_id").val(item.id);
+            $("#ivacondition_id").val(item.ivacondition_id);
+            $("#markup").val(item.markup);
+
+            var group_id = $("#groupoperationtype_id").val();
+
+            $.get(pathNextNumber, { group_id : group_id, ivacondition_id : item.ivacondition_id } , function (data) {
+                $("#number").val(data.number);
+                $("#operationtype_id").val(data.operationtype_id);
+            });
             return item.name;
         }
     }).on('focusout',function(event){ 
         if($('#customer_ac').val() == ''){
             $('#customer_id').val('');
+            $("#ivacondition_id").val();
+            $("#markup").val();
         }
     });
 
@@ -357,11 +379,12 @@
             });
         },
         updater: function(item){
+
             $("#prod_id").val(item.id);
             $("#prod_product").val(item.product);
             $("#prod_code").val(item.code);
             $("#prod_description").val(item.description);
-            $("#prod_cylindertype_id").val(item.cylindertype_id);
+            $("#prod_ivatype").val(item.ivatype.percent);
             $("#price").val(item.price);
             $("#stock").val(item.stock);
 
@@ -376,6 +399,18 @@
         if($('#prod_ac').val() == ''){
             $('#prod_id').val('');
         }
+    });
+
+
+    $("#groupoperationtype_id").change(function(){
+
+        var ivacondition_id = $("#ivacondition_id").val();
+        var group_id = $("#groupoperationtype_id").val();
+
+        $.get(pathNextNumber, { group_id : group_id, ivacondition_id : ivacondition_id } , function (data) {
+            $("#number").val(data.number);
+            $("#operationtype_id").val(data.operationtype_id);  
+        });
     });
 
     function cleanProductElement(){

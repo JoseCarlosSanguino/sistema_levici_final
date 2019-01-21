@@ -39,13 +39,13 @@
                             <?php $__currentLoopData = $operations; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $sale): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <tr>
                                     <td><?php echo e(isset($loop->iteration) ? $loop->iteration : $sale->id); ?></td>
-                                    <td><?php echo e(isset($sale->operation->FullNumber) ? $sale->operation->FullNumber : ''); ?></td>
+                                    <td><?php echo e($sale->operation->operationtype->letter . $sale->operation->FullNumber); ?></td>
                                     <td><?php echo e($sale->operation->date_of); ?></td>
                                     <td><?php echo e(isset($sale->customer->name) ? $sale->customer->name : ''); ?></td>
                                     <td><?php echo e($sale->operation->amount); ?></td>
                                     <td><?php echo e(isset($sale->operation->status->status) ? $sale->operation->status->status : ''); ?></td>
                                     <td>
-                                        <a href="<?php echo e(url('/remitopdf/' . $sale->id)); ?>" target="_blank" title="Ver <?php echo e($modelName); ?>"><button class="btn btn-info btn-sm"><i class="fa fa-print" aria-hidden="true"></i> Imprimir</button></a>
+                                        <a href="<?php echo e(url('/facturapdf/' . $sale->id)); ?>" target="_blank" title="Ver <?php echo e($modelName); ?>"><button class="btn btn-info btn-sm"><i class="fa fa-print" aria-hidden="true"></i> Imprimir</button></a>
                                     </td>
                                 </tr>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>

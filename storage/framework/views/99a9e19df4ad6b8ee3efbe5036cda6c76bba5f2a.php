@@ -8,12 +8,14 @@
         <?php echo Form::text('code', isset($product->code) ? $product->code : '',['class'=>'form-control']);; ?>
 
     </div>
+</div>
 
-    <div class="col-xs-2">
+<div class="form-group">
+     <div class="col-xs-2">
         <?php echo Form::label('product','Producto:');; ?>
 
     </div>
-    <div class="col-xs-4">
+    <div class="col-xs-10">
         <?php echo Form::text('product', isset($product->product) ? $product->product : '',['class'=>'form-control']);; ?>
 
     </div>
@@ -72,7 +74,7 @@
     </div>
 </div>
 <br>
-
+<!--
 <div class="form-group">
     <div class="col-xs-2">
         <?php echo Form::label('cylindertype_id','Tipo de cilindro:');; ?>
@@ -83,7 +85,22 @@
 
     </div>
 </div>
+-->
+
+<div class="form-group">
+    <div class="col-xs-2">
+        <?php echo Form::label('cylindertypes','Tipos de cilindros:');; ?>
+
+    </div>
+    <div class="col-xs-4">
+        <?php echo Form::select('cylindertypes[]', $cylindertypes, isset($product) ? $product->cylindertypes->pluck('id') : [], ['class' => 'form-control', 'multiple' => true]); ?>
+
+        <?php echo $errors->first('name', '<p class="help-block">:message</p>'); ?>
+
+    </div>
+</div>
 <br>
+
 
 <div class="form-group">
     <div class="col-xs-2">
@@ -129,7 +146,7 @@
 </div>
 <br>
 
-<?php if($formMode === 'edit'): ?>
+<!-- if para editar precio y stock -->
     <div class="form-group">
         <div class="col-xs-2">
             <?php echo Form::label('stock','Stock:');; ?>
@@ -184,9 +201,9 @@
         </div>
     </div>
     <br>
-    
 
-<?php endif; ?>
+<!-- end if -->
+
 <div class="form-group">
     <div class="col-xs-2">
         <?php echo Form::label('providers','Proveedores:');; ?>

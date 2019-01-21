@@ -265,7 +265,7 @@ class RemitoController extends Controller
         $pdf->Cell(55,4, 'IVA RESPONSABLE INSCRIPTO', $bd,0,'C');
         
         $pdf->SetXY(120,26);
-        $info2 = utf8_decode("CUIT: 30-71434762-0\n Ingresos Brutos: 0698400 \n Establecimiento Nº 06-0698400-00\nInicio de actividades: 15/01/2014.\n DOCUMENTO NO FALIDO COMO FACTURA");
+        $info2 = utf8_decode("CUIT: 30-71434762-0\n Ingresos Brutos: 0698400 \n Establecimiento Nº 06-0698400-00\nInicio de actividades: 15/01/2014.\n DOCUMENTO NO VALIDO COMO FACTURA");
         $pdf->MultiCell(70,4,$info2,$bd,'C');
         
         
@@ -299,7 +299,7 @@ class RemitoController extends Controller
         $pdf->setFont('Times','',13);
         $pdf->Cell(21,6,utf8_decode("Dirección: "), $bd);
         $pdf->setFont('Times','B',13);
-        $pdf->Cell(177,6,$sale->customer->address .  ' - ' . $sale->customer->city->city . ' ('. $sale->customer->province->province .')', $bd);
+        $pdf->Cell(177,6,$sale->customer->address .  ' - ' .' ('. $sale->customer->province->province .')', $bd);
         $pdf->Ln();
         $pdf->SetX(6);
         //CUIT
@@ -359,7 +359,15 @@ class RemitoController extends Controller
             $pdf->Cell(29, 6, $det->pivot->quantity, $bd, 0, 'C');
             $pdf->Ln();
             $quantity = $quantity + $det->pivot->quantity;
-        }
+	}
+
+	foreach($sale->operation->cylinders as $cyl)
+	{
+		$pdf->setX(5);
+		$pdf->Cell(171,6,$cyl->code . ' ' . $cyl->cylindertype->cylindertype, $bd, 0);
+		$pdf->Cell(29,6,'',$bd, 0,'C');
+		$pdf->Ln();
+	}
 
         $pdf->SetXY(5,280);
         $pdf->SetFont('Times','B',16);

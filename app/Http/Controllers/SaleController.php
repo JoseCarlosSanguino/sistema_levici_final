@@ -348,7 +348,7 @@ class SaleController extends Controller
         $pdf->setFont('Times','',13);
         $pdf->Cell(21,6,utf8_decode("Dirección: "), $bd);
         $pdf->setFont('Times','B',13);
-        $pdf->Cell(177,6,$sale->customer->address .  ' - ' . $sale->customer->city->city . ' ('. $sale->customer->province->province .')', $bd);
+        $pdf->Cell(177,6,$sale->customer->address .  ' - ' . ' ('. $sale->customer->province->province .')', $bd);
         $pdf->Ln();
         $pdf->SetX(6);
         //CUIT
