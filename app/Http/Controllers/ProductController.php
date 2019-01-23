@@ -12,6 +12,7 @@ use app\Models\Producttype;
 use app\Models\Unittype;
 use app\Models\Trademark;
 use app\Models\Cylindertype;
+use app\Models\Cylinder;
 
 class ProductController extends Controller
 {
@@ -203,7 +204,6 @@ class ProductController extends Controller
     public function destroy($id)
     {
         Product::destroy($id);
-
         return redirect('products')->with('flash_message', 'Producto eliminado!');
     }
 
@@ -212,15 +212,42 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
     public function autocomplete(Request $request)
     {
-
-        $data = Product::select("id","code","product", "price", "stock","ivatype_id", DB::raw('CONCAT(code," - ", product) AS name'))
-            ->with(['cylindertypes','ivatype'])
+        $data = Product::select("id","code","product", "price","cost", "stock","ivatype_id", DB::raw('CONCAT(code," - ",  product) AS name'))
+            ->with(['cylindertypes','ivatype', 'trademark'])
             ->orWhere("product","LIKE","%{$request->input('query')}%")
             ->orWhere("code","LIKE","%{$request->input('query')}%")
             ->get();
-
         return response()->json($data);
     }
+
+    /*
+    public function autocomplete(Request $request)
+    {
+        $keyword = $request->input('query');
+
+        //productos
+        $query = "SELECT p.id, p.code, p.product, p.price, p.stock, p.ivatype_id, i.percent, p.description,  ";
+        $query.= "CONCAT(code, ' - ' , COALESCE(t.trademark,''), ' ', p.product) as name ";
+        $query.= "FROM products p LEFT JOIN trademarks t on t.id = p.trademark_id JOIN ivatypes i on i.id = p.ivatype_id ";
+        $query.= "WHERE (p.code like '%{$keyword}%' OR p.product like '%{$keyword}%' OR t.trademark like '%{$keyword}%') ";
+     
+        $rows = DB::select($query);
+
+        //cilindros
+        $query = "SELECT c.id, c.code, ct.cylindertype, ct.capacity, p.price ";
+        $query.= " FROM cylinders c JOIN cylindertypes ct on ct.id = c.cylindertype_id ";
+        $query.= " LEFT JOIN cylindertype_product cp ON cp.cylindertype_id = c.cylindertype_id ";
+        $query.= " LEFT JOIN products p on p.id = cp.product_id ";
+        $query.= " WHERE c.status_id = " . Cylinder::STATUS['DISPONIBLE'] . " ";
+        $query.= " AND (c.code LIKE '%{$keyword}%' OR ct.cylindertype LIKE '%{$keyword}%' )";
+
+        $cyls = DB::select($query);
+
+
+        return response()->json($rows);
+    }
+    */
 }

@@ -32,30 +32,27 @@
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>#</th><th>Tipo de cilindro</th><th>Capacidad</th><th>Acciones</th>
+                                    <th>#</th><th>Número</th><th>Fecha</th><th>Proveedor</th><th>Importe</th><th>Estado</th><th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                            @foreach($cylindertypes as $item)
+                            @foreach($operations as $sale)
                                 <tr>
-                                    <td>{{ $loop->iteration or $item->id }}</td>
-                                    <td>{{ $item->cylindertype }}</td>
-                                    <td>{{ $item->capacity }}</td>
+                                    <td>{{ $loop->iteration or $sale->id }}</td>
+                                    <td>{{ $sale->operation->operationtype->letter . $sale->operation->FullNumber}}</td>
+                                    <td>{{ $sale->operation->date_of }}</td>
+                                    <td>{{ $sale->provider->name or '' }}</td>
+                                    <td>{{ $sale->operation->amount }}</td>
+                                    <td>{{ $sale->operation->status->status or '' }}</td>
                                     <td>
-                                        <a href="{{ url('/'.$controller.'/' . $item->id) }}" title="Ver {{$modelName}}"><button class="btn btn-info btn-sm"><i class="fa fa-eye" aria-hidden="true"></i> Ver</button></a>
-                                        <a href="{{ url('/'.$controller.'/' . $item->id . '/edit') }}" title="Editar {{$modelName}}"><button class="btn btn-primary btn-sm"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Editar</button></a>
-
-                                        <form method="POST" action="{{ url('/'.$controller.'' . '/' . $item->id) }}" accept-charset="UTF-8" style="display:inline">
-                                            {{ method_field('DELETE') }}
-                                            {{ csrf_field() }}
-                                            <button type="submit" class="btn btn-danger btn-sm" title="Eliminar {{$modelName}}" onclick="return confirm(&quot;Confirmar Eliminación?&quot;)"><i class="fa fa-trash-o" aria-hidden="true"></i> Eliminar</button>
-                                        </form>
+                                        <a href="{{ url('/facturapdf/' . $sale->id) }}" target="_blank" title="Ver {{$modelName}}"><button class="btn btn-info btn-sm"><i class="fa fa-eye" aria-hidden="true"></i> Ver</button></a>
+                                        <a href="{{ url('/pagarFactura/' . $sale->id) }}" target="_blank" title="Ver {{$modelName}}"><button class="btn btn-info btn-sm"><i class="fa fa-check" aria-hidden="true"></i> Pagar</button></a>
                                     </td>
                                 </tr>
                             @endforeach
                             </tbody>
                         </table>
-                        <div class="pagination-wrapper"> {!! $cylindertypes->appends(['search' => Request::get('search')])->render() !!} </div>
+                        <div class="pagination-wrapper"> {!! $operations->appends(['search' => Request::get('search')])->render() !!} </div>
                     </div>
 
 

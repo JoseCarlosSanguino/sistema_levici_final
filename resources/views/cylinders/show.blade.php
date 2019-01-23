@@ -44,11 +44,34 @@
                                         <td> {{ $cylinder->cylindertype->cylindertype or '' }} </td>
                                     </tr>
                                     <tr>
-                                        <th> Proveedor </th>
-                                        <td> {{ $cylinder->provider->name or '' }} </td>
+                                        <th> Capacidad </th>
+                                        <td> {{ $cylinder->cylindertype->capacity or '' }} </td>
                                     </tr>
+                                    
                                 </tbody>
                             </table>
+                            <h4>Movimientos</h4>
+                            <div class="table-responsive">     
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Movimiento</th>
+                                            <th>Cliente / Proveedor</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($cylinder->moves as $move)
+                                            <tr>
+                                                <td>{{$move->date_of}}</td>
+                                                <td>{{$move->movetype->movetype}}</td>
+                                                <td>{{$move->customer->name or $move->provider->name}}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>     
+                              
                         </div>
 
                     </div>

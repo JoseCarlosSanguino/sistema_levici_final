@@ -14,6 +14,8 @@ class Cylindermove extends Model
         'ENVIO_A_CLIENTE'   => 1,
         'ENVIO_A_PROVEEDOR' => 2,
         'EN_DEPOSITO'       => 3,
+        'RECEPCION_DE_PROV' => 4,
+        'RECEPCION_DE_CTE'  => 5
     ];
 
     protected $fillable = ['id','movetype_id','cylinder_id','person_id','date_of'];

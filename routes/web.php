@@ -37,6 +37,7 @@ Route::resource('permissions'   , 'PermissionController'    );
 
 Route::resource('remitos'       , 'RemitoController'        );
 Route::resource('facturas'		, 'SaleController'			);
+Route::resource('purchases'		, 'PurchaseController'	    );
 
 /*
 Route::get('remito','RemitoController@create')->defaults('slug', 'remito');
@@ -48,6 +49,7 @@ Route::get('factura','SaleController@create')->defaults('slug', 'factura');
 Route::get('ctacte','CustomerController@ctacte')->defaults('slug', 'ctacte');
 Route::get('customers/detallectacte/{id}', 'CustomerController@detallectacte')->defaults('slug','detallectacte');
 Route::get('facturar/{id}', 'SaleController@facturarRemito');
+Route::get('purchase', 'PurchaseController@create');
 
 //Impresiones
 Route::get('remitopdf/{id}','RemitoController@remitoPDF');
@@ -55,6 +57,8 @@ Route::get('facturapdf/{id}','SaleController@salePDF');
 
 Route::get('customerAutocomplete',array('as'=>'customerAutocomplete','uses'=>'CustomerController@autocomplete'));
 Route::get('productAutocomplete',array('as'=>'productAutocomplete','uses'=>'ProductController@autocomplete'));
+Route::get('providerAutocomplete',array('as'=>'providerAutocomplete','uses'=>'ProviderController@autocomplete'));
+
 
 Route::get('nextNumber', array('as'=> 'nextNumber', 'uses' => 'OperationController@nextNumber'));
 Route::get('nextSaleNumber', array('as'=> 'nextSaleNumber', 'uses' => 'OperationController@nextSaleNumber'));

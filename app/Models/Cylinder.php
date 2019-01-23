@@ -53,7 +53,7 @@ class Cylinder extends Model
 
     public function moves()
     {
-        return $this->hasMany(Cylindermove::Class);
+        return $this->hasMany(Cylindermove::Class)->orderBy('date_of', 'DESC');
     }
 
     public function movetypes()

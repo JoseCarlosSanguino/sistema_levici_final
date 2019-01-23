@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use app\Models\Cylinder;
 use app\Models\Cylindertype;
 use app\Models\Provider;
+use DB;
 
 class CylinderController extends Controller
 {
@@ -157,10 +158,32 @@ class CylinderController extends Controller
      */
     public function json(Request $request)
     {
+        if(is_null($request->input('status_id')))
+        {
+            $status_where = ' and c.status_id in ('.$request->input('status_id').')';
+        }
+        else
+        {
+            $status_where = ' and c.status_id in (10)';
+        }
+
+        $query = "select c.id,  c.code, c.external_code, ct.capacity, ct.cylindertype, COALESCE(c.observation,'') as observation ";
+        $query.= "from cylinders c join cylindertypes ct on (c.cylindertype_id = ct.id) ";
+        $query.= "where c.cylindertype_id IN (".$request->input('cylindertype_id').") ";
+        $query.= $status_where;
+
+        $data = DB::select($query);
+        
+        /*
         $data = Cylinder::select("id","code","external_code","expiration","observation")
+            ->with(['cylindertype' => function ($query) {
+                        $query->select(['capacity', 'cylindertype']);
+                    }])
             ->wherein("cylindertype_id",explode(',',$request->input('cylindertype_id')))
             ->where("status_id", Cylinder::STATUS['DISPONIBLE'])
             ->get();
+        */
+
 
         return response()->json($data);
     }

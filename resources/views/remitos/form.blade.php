@@ -1,4 +1,3 @@
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>  
 <!-- Es este o el que está en layout/app.blade.php-->
 <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>-->
@@ -42,7 +41,16 @@
         {!! Form::label('observation', 'Observaciones:'); !!}
     </div>
     <div class="col-xs-10">
-        {!! Form::text('observation', isset($product->observation) ? $product->observation : '',['class'=>'form-control']);!!}
+        {!! Form::text('observation', isset($sale->operation->observation) ? $sale->operation->observation : '',['class'=>'form-control']);!!}
+    </div>
+</div>
+<br>
+<div class="form-group">
+    <div class="col-xs-2">
+        {!! Form::label('order_number', 'Orden de compra:'); !!}
+    </div>
+    <div class="col-xs-2">
+        {!! Form::text('order_number', isset($sale->order_number) ? $sale->order_number : '',['class'=>'form-control']);!!}
     </div>
 </div>
 <br>
@@ -113,7 +121,7 @@
 </br>
 
 <div class="form-group">
-    <input class="btn btn-primary" type="submit" value="{{ $formMode === 'edit' ? 'Actualizar' : 'Crear' }}">
+    <input class="btn btn-primary" type="submit" value="Crear">
 </div>
 
 
@@ -128,7 +136,7 @@
                 <table class="table" id="tableCylinder">
                     <thead>
                         <tr>
-                            <th>Código</th><th>Código externo</th><th>Vencimiento</th><th>Obs</th>
+                            <th>Código</th><th>Capacidad</th><th>Tipo</th><th>Obs</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -150,6 +158,7 @@
 
     var numerador = 1;
     var total = 0;
+    var cylinders = [];
 
     $(function(){
         $( ".datepicker" ).datepicker({
@@ -186,12 +195,17 @@
                 $.get(path_cylinder, { cylindertype_id: $("#prod_cylindertype_id").val() } , function (data) {
                     $("#tableCylinder tbody").empty();
                     $.each(data, function(i, item) {
-                        var line = "<tr id="+item.id+"><td class='code'>"+item.code+"</td>"+
-                            "<td class='ext_code'>"+item.external_code+"</td>"+
-                            "<td class='expiration'>"+item.expiration+"</td>"+
-                            "<td class='obs'>"+item.observation+"</td>"+
-                            "<td><a href='#' id="+item.id+" class='add btn btn-success' ><i class='fa fa-plus' aria-hidden='true'></i></a> </td></tr>";
-                        $("#tableCylinder tbody").append(line);
+                        console.log(cylinders);
+                        console.log(item.id);
+                        console.log($.inArray(item.id, cylinders) );
+                        if($.inArray(item.id, cylinders) < 0){
+                            var line = "<tr id="+item.id+"><td class='code'>"+item.code+"</td>"+
+                                "<td class='capacity'>"+item.capacity+"</td>"+
+                                "<td class='cylindertype'>"+item.cylindertype+"</td>"+
+                                "<td class='obs'>"+item.observation+"</td>"+
+                                "<td><a href='#' id="+item.id+" class='add btn btn-success' ><i class='fa fa-plus' aria-hidden='true'></i></a> </td></tr>";
+                            $("#tableCylinder tbody").append(line);
+                        }
                     });
                 });
 
@@ -204,6 +218,7 @@
                         "<input type='hidden' name='product_id[]' value='"+$("#prod_id").val()+"'/>"+
                         "<input type='hidden' name='product_quantity[]' value='"+$("#quantity").val()+"'/>"+
                         "<input type='hidden' name='product_price[]' value='"+$("#price").val()+"'/>"+
+                        "<input type='hidden' id='subtotal' name='subtotal' value='"+parseFloat($("#price").val()*$("#quantity").val()).toFixed(2)+"'/>"+
                         "</td>"+
                         "<td>"+$("#prod_code").val()+"</td>"+
                         "<td>"+$("#prod_product").val()+"</td>"+
@@ -228,29 +243,34 @@
         e.preventDefault();
         var cylinderid  = $(this).closest('tr').attr('id');
         var code        = $(this).closest('tr').find(".code").text();
-        var ext_code    = $(this).closest('tr').find(".ext_code").text();
+        var capacity    = $(this).closest('tr').find(".capacity").text();
         var obs         = $(this).closest('tr').find(".obs").text();
-        var expiration  = $(this).closest('tr').find(".expiration").text();
+        var cylindertype= $(this).closest('tr').find(".cylindertype").text();
 
         var line = "<tr id='tr"+numerador+"'>"+
                 "<td>"+numerador+
                 "<input type='hidden' name='product_id[]' value='"+$("#prod_id").val()+"'/>"+
-                "<input type='hidden' name='product_quantity[]' value='"+$("#quantity").val()+"'/>"+
+                "<input type='hidden' name='product_quantity[]' value='"+parseFloat(capacity)+"'/>"+
                 "<input type='hidden' name='product_price[]' value='"+$("#price").val()+"'/>"+
+                "<input type='hidden' id='cylinder_id' name='cylinder_id[]' value='"+cylinderid+"'/>"+
+                "<input type='hidden' id='subtotal' name='subtotal' value='"+parseFloat($("#price").val()*parseFloat(capacity)).toFixed(2)+"'/>"+
                 "</td>"+
                 "<td>"+$("#prod_code").val()+"</td>"+
-                "<td>"+$("#prod_product").val()+"</td>"+
+                "<td>"+$("#prod_product").val()+" " + cylindertype + "(Cod: " + code + ")</td>"+
                 "<td>"+$("#price").val()+"</td>"+
-                "<td>"+$("#quantity").val()+"</td>"+
-                "<td>"+parseFloat($("#price").val()*$("#quantity").val()).toFixed(2)+"</td>"+
-                "<td></td>"+
+                "<td>"+capacity+"</td>"+
+                "<td>"+parseFloat($("#price").val()*parseFloat(capacity)).toFixed(2)+"</td>"+
+                "<td><a href='#' class='del btn btn-danger' ><i class='fa fa-minus' aria-hidden='true'></i></a> </td>"+
                 "</tr>";
 
-        total = (parseFloat(total) + parseFloat($("#price").val()*$("#quantity").val())).toFixed(2);
+        total = (parseFloat(total) + parseFloat($("#price").val()*parseFloat(capacity))).toFixed(2);
         $("#tdTotal").html(total); 
 
         $("#productDetail tbody").append(line); 
 
+        $(this).parents("tr").remove();
+        cylinders.push(parseInt(cylinderid));
+/*
         var line_c = "<tr id='"+numerador+"'>"+
             "<td>"+
             "<input type='hidden' name='cylinder_id[]' value='"+cylinderid+"'/>"+
@@ -266,10 +286,10 @@
 
         $("#productDetail tbody").append(line_c);
         numerador++;
-
-        $("#cylinderModal").modal('hide');
-        $("#prod_ac").focus();
-        cleanProductElement();
+*/
+        //$("#cylinderModal").modal('hide');
+        //$("#prod_ac").focus();
+        //cleanProductElement();
     });
 
 
@@ -278,6 +298,16 @@
      */
     $("#productDetail").on("click", ".del", function(e){
         e.preventDefault();
+
+        var subt = $(this).closest('tr').find("td input[id='subtotal']").val();
+        total = (parseFloat(total) - parseFloat(subt)).toFixed(2);
+        $("#tdTotal").html(total); 
+
+        var cyl_id = $(this).closest('tr').find("td input[id='cylinder_id']").val();
+        if(cyl_id != null){
+            cylinders.splice( $.inArray(cyl_id, cylinders), 1 );
+        }
+
         $(this).parents("tr").remove();
     });
 
@@ -290,6 +320,11 @@
         $(this).parents("tr").remove();
         $("#tr"+idx).remove();
 
+    });
+
+    $("#cylinderModal").on("hidden.bs.modal", function () {
+        $("#prod_ac").focus();
+        cleanProductElement();
     });
 
 
@@ -338,7 +373,6 @@
             $.each(item.cylindertypes, function(i,ct){
                 cyltype.push(ct.id);
             });
-
             $("#prod_id").val(item.id);
             $("#prod_product").val(item.product);
             $("#prod_code").val(item.code);

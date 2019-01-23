@@ -10,7 +10,7 @@ class Cylindertype extends Model
     use softDeletes;
     //
 
-    protected $fillable = ['id','cylindertype'];
+    protected $fillable = ['id','cylindertype', 'capacity'];
 
     protected $hidden = ['created_at','updated_at','deleted_at'];
 }

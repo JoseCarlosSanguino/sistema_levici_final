@@ -10,7 +10,7 @@ class Operation extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'id','operationtype_id','status_id','user_id','pointofsale','number','dateof','amount','discount','iva105','iva21','observation'
+        'id','operationtype_id','status_id','user_id','pointofsale','number','dateof','amount','discount','iva105','iva21','observation','order_number'
     ];
 
     protected $hidden = [

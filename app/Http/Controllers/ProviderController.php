@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use app\Models\Provider;
 use app\Models\Province;
 use app\Models\Ivacondition;
+use DB;
 
 class ProviderController extends Controller
 {
@@ -148,5 +149,20 @@ class ProviderController extends Controller
         Provider::destroy($id);
 
         return redirect('providers')->with('flash_message', 'Proveedor eliminado!');
+    }
+
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function autocomplete(Request $request)
+    {
+        $data = Provider::select("id","ivacondition_id", "markup",DB::raw('CONCAT(name," - ", cuit) AS name'))
+            ->orWhere("name","LIKE","%{$request->input('query')}%")
+            ->orWhere("cuit","LIKE","%{$request->input('query')}%")
+            ->get();
+        return response()->json($data);
     }
 }
