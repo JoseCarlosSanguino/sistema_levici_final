@@ -136,14 +136,14 @@
             {!! Form::label('price','Precio:'); !!}
         </div>
         <div class="col-xs-4">
-            {!! Form::number('price', isset($product->price) ? $product->price : 0,['class'=>'form-control']); !!}
+            {!! Form::number('price', isset($product->price) ? $product->price : 0,['step' => '0.01','class'=>'form-control']); !!}
         </div>
 
         <div class="col-xs-2">
             {!! Form::label('last_price','Último precio:'); !!}
         </div>
         <div class="col-xs-4">
-            {!! Form::number('last_price', isset($product->last_price) ? $product->last_price : 0,['class'=>'form-control']); !!}
+            {!! Form::number('last_price', isset($product->last_price) ? $product->last_price : 0,['step' => '0.01', 'class'=>'form-control']); !!}
         </div>
     </div>
     <br>
@@ -153,14 +153,14 @@
             {!! Form::label('cost','Costo:'); !!}
         </div>
         <div class="col-xs-4">
-            {!! Form::number('cost', isset($product->cost) ? $product->cost : 0,['class'=>'form-control']); !!}
+            {!! Form::number('cost', isset($product->cost) ? $product->cost : 0,['step' => '0.01','class'=>'form-control']); !!}
         </div>
 
         <div class="col-xs-2">
             {!! Form::label('last_cost','Último costo:'); !!}
         </div>
         <div class="col-xs-4">
-            {!! Form::number('last_cost', isset($product->last_cost) ? $product->last_cost : 0,['class'=>'form-control']); !!}
+            {!! Form::number('last_cost', isset($product->last_cost) ? $product->last_cost : 0,['step' => '0.01','class'=>'form-control']); !!}
         </div>
     </div>
     <br>
