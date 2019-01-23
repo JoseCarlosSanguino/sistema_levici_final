@@ -60,7 +60,7 @@ class Cylindermove extends Model
 
     public function customer()
     {
-        return $this->belongsTo(Customer::Class, 'customer_id');
+        return $this->belongsTo(Customer::Class, 'person_id');
     }
 
     public function provider()
