@@ -228,12 +228,12 @@ class RemitoController extends Controller
         $pdf->SetFont('Times','',10);
         
         //marco exterior
-        $pdf->SetLineWidth(0.6);
+        $pdf->SetLineWidth(0.5);
         $pdf->setXY(5,5);
         $pdf->Cell(200, 287,"",1);
         $pdf->Ln();
         $pdf->setXY(10,15);
-        $pdf->SetLineWidth(0.5);
+        $pdf->SetLineWidth(0.4);
 
         /*
         * CABECERA
@@ -354,20 +354,24 @@ class RemitoController extends Controller
         $quantity = 0;
         foreach($sale->operation->products as $det)
         {
-            $pdf->setX(5);
-            $pdf->Cell(171,6,$det->product . $det->descripcion, $bd, 0);
-            $pdf->Cell(29, 6, $det->pivot->quantity, $bd, 0, 'C');
-            $pdf->Ln();
-            $quantity = $quantity + $det->pivot->quantity;
-	}
+            if(count($det->cylindertypes) == 0)
+            {
+                $pdf->setX(5);
+                $pdf->Cell(171,6,$det->product . $det->descripcion, $bd, 0);
+                $pdf->Cell(29, 6, $det->pivot->quantity, $bd, 0, 'C');
+                $pdf->Ln();
+                $quantity = $quantity + $det->pivot->quantity;
+            }
+    	}
 
-	foreach($sale->operation->cylinders as $cyl)
-	{
-		$pdf->setX(5);
-		$pdf->Cell(171,6,$cyl->code . ' ' . $cyl->cylindertype->cylindertype, $bd, 0);
-		$pdf->Cell(29,6,'',$bd, 0,'C');
-		$pdf->Ln();
-	}
+    	foreach($sale->operation->cylinders as $cyl)
+    	{
+    		$pdf->setX(5);
+    		$pdf->Cell(171,6,$cyl->cylindertype->products[0]->product . '. Cod: ' . $cyl->code . '. Capacidad: ' . $cyl->cylindertype->capacity . $cyl->cylindertype->products[0]->unittype->abrev , $bd, 0);
+    		$pdf->Cell(29,6,1,$bd, 0,'C');
+    		$pdf->Ln();
+            $quantity++;
+    	}
 
         $pdf->SetXY(5,280);
         $pdf->SetFont('Times','B',16);

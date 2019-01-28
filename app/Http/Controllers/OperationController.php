@@ -7,6 +7,7 @@ use app\Models\Operation;
 use app\Models\Sale;
 use app\Models\Operationtype;
 
+use app\Libs\My_afip;
 
 class OperationController extends Controller
 {
@@ -43,30 +44,39 @@ class OperationController extends Controller
                     })
                 ->where('groupoperationtype_id', $group_id)
                 ->first();
-        
+
         if(!is_null($ot))
         {
-            $lastId = Operation::where('operationtype_id',$ot->id)
-                                ->max('id');
-            if(is_null($lastId))
+
+            $myafip = NEW My_afip();
+            $number =$myafip->getNextNumber($ot->pointofsale, $ot->afip_id);
+
+            if(is_null($number))
             {
-                $number = 1;
-            }
-            else
-            {
-                $number = Operation::find($lastId)->number+1;
+                $lastId = Operation::where('operationtype_id',$ot->id)
+                                    ->max('id');
+                if(is_null($lastId))
+                {
+                    $number = 1;
+                }
+                else
+                {
+                    $number = Operation::find($lastId)->number+1;
+                }
             }
 
-            $nextNumber = $ot->letter . '0002-' . str_pad($number,9,'0',STR_PAD_LEFT);
+            $nextNumber = $ot->letter . str_pad($ot->pointofsale,4,'0',STR_PAD_LEFT) . '-' . str_pad($number,9,'0',STR_PAD_LEFT);
+            $operationtype_id = $ot->id;
         }
         else
         {
             $nextNumber = 'X0000-000000000';
+            $operationtype_id = null;
         }
 
         return response()->json([
             'number'            => $nextNumber,
-            'operationtype_id'  => $ot->id
+            'operationtype_id'  => $operationtype_id
         ]);
 
     }

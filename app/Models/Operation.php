@@ -43,6 +43,16 @@ class Operation extends Model
             ->withPivot(['price', 'quantity', 'product_id','operation_id'])->withTimestamps();
     }
 
+    public function paychecks()
+    {
+        return $this->belongsToMany(Paycheck::Class)->withTimestamps();
+    }
+
+    public function transfers()
+    {
+        return $this->belongsToMany(Transfer::Class)->withTimestamps();
+    }
+
     public function cylinders()
     {
         return $this->belongsToMany(Cylinder::Class, 'operation_cylinder')
@@ -67,6 +77,16 @@ class Operation extends Model
     public function sale()
     {
         return $this->hasOne(Sale::Class);
+    }
+
+    public function payment()
+    {
+        return $this->hasOne(Payment::Class);
+    }
+
+    public function purchase()
+    {
+        return $this->hasOne(Purchase::Class);
     }
 
     

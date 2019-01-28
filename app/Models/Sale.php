@@ -39,7 +39,14 @@ class Sale extends Model
 
     public function customer()
     {
-        return $this->belongsTo(Customer::Class);
+        return $this->BelongsTo(Customer::Class);
+    }
+
+    public function payments()
+    {
+        return $this->BelongsToMany(Payment::Class)
+            ->withPivot(['payment_id','sale_id','canceled','total','residue'])
+            ->withTimestamps();
     }
 
 }

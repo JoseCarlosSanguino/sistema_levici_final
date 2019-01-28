@@ -11,11 +11,14 @@ use app\Models\Product;
 use app\Models\Cylinder;
 use app\Models\Cylindermove;
 use app\Models\Sale;
-use App;
+
+use app\Libs\My_afip;
 
 use DB;
 use Fpdf\Fpdf;
 use URL;
+
+
 
 class SaleController extends Controller
 {
@@ -94,38 +97,22 @@ class SaleController extends Controller
         $title              = 'FACTURA';
         $modelName          = 'Venta';
         $controller         = 'facturas';
-        $remito             = Sale::find($id);
+        $sale               = Sale::find($id);
 
-        //ordernar esta negrada
-        $ot = Operationtype::WhereHas("ivaconditions", function($q) use ($remito){
-                        $q->where('ivacondition_id', $remito->customer->ivacondition_id);
-                    })
-                ->where('groupoperationtype_id', 1)
-                ->first();
-        
-        $lastId = Operation::where('operationtype_id',$ot->id)
-                            ->max('id');
-        if(is_null($lastId))
-        {
-            $number = 1;
-        }
-        else
-        {
-            $number = Operation::find($lastId)->number+1;
-        }
-        $number = $ot->letter . '0002-' . str_pad($number,9,'0',STR_PAD_LEFT);
-        $operationtype_id = $ot->id;
-        
-        $groupoperationtypes= Groupoperationtype::whereIn('id',[1,3,4])->pluck('groupoperationtype','id');
+        $groupoperationtypes    = Groupoperationtype::whereIn('id',[1,3,4])->pluck('groupoperationtype','id');
+        $ivacondition_id        = $sale->customer->ivacondition_id;
+        $groupoperationtype_id  = 1;
+
 
         return view('sales.create',compact( 
             'title', 
             'modelName', 
             'controller',
             'groupoperationtypes',
-            'remito',
+            'sale',
             'number',
-            'operationtype_id'
+            'ivacondition_id',
+            'groupoperationtype_id'
         ));
     }
 
@@ -149,7 +136,7 @@ class SaleController extends Controller
         $data['user_id'] = \Auth::user()->id;
 
         //limpio el numero
-        $data['number']      = explode('-',$data['number'])[1];
+        $data['number']      = 0;
         $data['pointofsale'] = substr(explode('-', $data['number'])[0],-1);
 
         if($data['conditions'] == 'cta cte')
@@ -171,8 +158,6 @@ class SaleController extends Controller
             $sale->operation_id = $operation->id;
             $sale->save();
 
-
-
             //products
             foreach($data['product_id'] as $idx => $prod_id)
             {
@@ -187,7 +172,6 @@ class SaleController extends Controller
                     $prod->stock = $prod->stock - $data['product_quantity'][$idx];
                     $prod->save();
                 }
-              
             }
             $operation->save();
 
@@ -199,12 +183,47 @@ class SaleController extends Controller
                 $remito->operation->save();
             }
 
+            //afip
+            $my_afip = NEW My_afip();
+            $afip_auth = $my_afip->generateVoucher($operation);
+
+            $sale->cae_number = $afip_auth['CAE'];
+            $sale->cae_expired= $afip_auth['CAEFchVto'];
+            $sale->save();
+
+            $operation->number     = $afip_auth['voucher_number'];
+            $operation->pointofsale= $operation->operationtype->pointofsale;
+            $operation->save();
+
             DB::commit();
 
 
         } catch (\Exception $e){
-            dd($e);
+            
             DB::rollBack();
+
+            $title              = 'FACTURA';
+            $modelName          = 'Venta';
+            $controller         = 'facturas';
+
+            $groupoperationtypes    = Groupoperationtype::whereIn('id',[1,3,4])->pluck('groupoperationtype','id');
+            $ivacondition_id        = $sale->customer->ivacondition_id;
+            $groupoperationtype_id  = 1;
+            $sale->operation = $operation;
+
+
+            return view('sales.create',compact( 
+                'afip_auth',
+                'e',
+                'title', 
+                'modelName', 
+                'controller',
+                'groupoperationtypes',
+                'sale',
+                'number',
+                'ivacondition_id',
+                'groupoperationtype_id'
+            ));
         }
 
         //return redirect('sales/create')->with('operationtype_id', $data['operationtype_id']);
@@ -219,9 +238,11 @@ class SaleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show()
     {
-        //
+        $my_afip = NEw My_afip();
+        dd($my_afip->afip->ElectronicBilling->GetDocumentTypes());
+        
     }
 
     /**
@@ -271,140 +292,238 @@ class SaleController extends Controller
 
         $pdf->SetMargins(0,0,0);
         $pdf->SetAutoPageBreak(false);
+
+        $pages = ['ORIGINAL','DUPLICADO','TRIPLICADO'];
             
-        $pdf->Addpage();
-        //$pdf->cMargin = 0;
-        $pdf->SetFont('Times','',10);
-        
-        //marco exterior
-        $pdf->SetLineWidth(0.6);
-        $pdf->setXY(5,5);
-        $pdf->Cell(200, 287,"",1);
-        $pdf->Ln();
-        $pdf->setXY(10,15);
-        $pdf->SetLineWidth(0.5);
-
-        /*
-        * CABECERA
-        */
-
-        //X (tipo de documento)
-        $pdf->setFont('Courier','B',30);
-        $pdf->setXY(101,5);
-        $pdf->Cell(8,12,$sale->operation->operationtype->letter,1,0,"C");
-        $pdf->Line(109,5,109,47);
-
-        //logo
-        //$pdf->image(URL::to('img/logo.jpeg'), 12,7,0,12);
-        $pdf->setXY(6,6);
-        $pdf->Cell(40,40, 'LOGO',1);
-        
-        //titulo
-        $pdf->setFont('Arial','B',18);
-        $pdf->setXY(115,8);
-        $pdf->Cell(28,6,"FACTURA",$bd);
-            
-        //info empresa
-        $pdf->SetFont('Times','',9);
-        $pdf->SetXY(48,15);
-        $info = utf8_decode('Administración: Patricios 256. (5507) Luján de Cuyo. Mendoza. Base: Terrada y callejón Los Olivos 1. Perdriel. Luján de Cuyo. Mendoza. Tel: 0261 4987490 / 261 534-4469. E-mail: levicigroupsa@gmail.com');
-        
-        $pdf->MultiCell(51,4,$info,$bd,'R');
-        $pdf->SetXY(48,42);
-        $pdf->Cell(55,4, 'IVA RESPONSABLE INSCRIPTO', $bd,0,'C');
-        
-        $pdf->SetXY(120,26);
-        $info2 = utf8_decode("CUIT: 30-71434762-0\n Ingresos Brutos: 0698400 \n Establecimiento Nº 06-0698400-00\nInicio de actividades: 15/01/2014.");
-        $pdf->MultiCell(70,4,$info2,$bd,'C');
-        
-        
-        
-        //numero
-        $pdf->setFont('Arial','B',18);
-        $pdf->SetXY(146,8);
-        $pdf->Cell(13,6,utf8_decode("Nº ") . $sale->operation->fullNumber,$bd);
-        
-        //fecha
-        $pdf->SetXY(115,17);
-        $pdf->Cell(38,6,"FECHA: ", $bd,0);
-        $pdf->Cell(20,6,$sale->operation->date_of, $bd,0,'C');
-        $pdf->Ln();
-                
-        //linea divisora
-        $pdf->Line(5,47,205,47);
-
-        /*
-        * DATOS DEL CLIENTE
-        */
-        $pdf->SetXY(6,48);
-        //cliente
-        $pdf->setFont('Times','',13);
-        $pdf->Cell(45,6,utf8_decode("Señor(es) destinatarios: ") , $bd);
-        $pdf->setFont('Times','B',13);
-        $pdf->Cell(153,6,$sale->customer->name,$bd);
-        $pdf->Ln();
-        $pdf->SetX(6);
-        //direccion
-        $pdf->setFont('Times','',13);
-        $pdf->Cell(21,6,utf8_decode("Dirección: "), $bd);
-        $pdf->setFont('Times','B',13);
-        $pdf->Cell(177,6,$sale->customer->address .  ' - ' . ' ('. $sale->customer->province->province .')', $bd);
-        $pdf->Ln();
-        $pdf->SetX(6);
-        //CUIT
-        $pdf->setFont('Times','',13);
-        $pdf->Cell(15,6,utf8_decode("CUIT: "), $bd);
-        $pdf->setFont('Times','B',13);
-        $pdf->Cell(183,6,$sale->customer->cuit, $bd);
-        $pdf->Line(5,67,205,67);
-
-        
-        /*
-        * DETALLE DEL PRESUPUESTO
-        */
-        
-        $pdf->setXY(5,87);
-        $pdf->SetFont('Times','B',13);
-        $pdf->Cell(30,6,"CODIGO", 1,0,'C');
-        $pdf->Cell(83,6,"DESCRIPCION",1,0,'C');
-        $pdf->Cell(29,6,"CANTIDAD",1,0,'C');
-        $pdf->Cell(29,6,"PRECIO",1,0,'C');
-        $pdf->Cell(29,6,"SUBTOTAL",1,0,'C');
-        $pdf->Line(176,87,176,292);
-        $pdf->Line(35,87,35,292);
-        $pdf->Line(118,87,118,292);
-        $pdf->Line(147,87,147,292);
-        $pdf->Line(176,87,176,292);
-        
-        $pdf->SetFont('Times','',13);
-        $pdf->SetLineWidth(0.2);
-
-        $pdf->SetXY(5,93);
-        $pdf->setFont('Times','',12);
-
-        $quantity = 0;
-        foreach($sale->operation->products as $det)
+        foreach($pages as $page)
         {
-            $pdf->setX(5);
-            $pdf->Cell(171,6,$det->product . $det->descripcion, $bd, 0);
-            $pdf->Cell(29, 6, $det->pivot->quantity, $bd, 0, 'C');
+
+            $pdf->Addpage();
+            //$pdf->cMargin = 0;
+            $pdf->SetFont('Times','B',14);
+            $pdf->SetLineWidth(0.4);
+      
+            //marco exterior
+            //pagina
+            $pdf->setXY(5,5);
+            $pdf->Cell(200, 10,$page,1,0,'C');
             $pdf->Ln();
-            $quantity = $quantity + $det->pivot->quantity;
+            
+            /*
+            * CABECERA
+            */
+            $pdf->setXY(5,5);
+            $pdf->Cell(200, 52,"",1);
+            $pdf->Ln();
+
+
+            //X (tipo de documento)
+            $pdf->setFont('Courier','B',30);
+            $pdf->setXY(99,15);
+            $pdf->Cell(12,12,$sale->operation->operationtype->letter,1,0,"C");
+            $pdf->Line(105,27,105,57);
+
+            //logo
+            //$pdf->image(URL::to('img/logo.jpeg'), 12,7,0,12);
+            $pdf->setXY(6,16);
+            $pdf->Cell(40,40, 'LOGO',1);
+            
+            //titulo
+            $pdf->setFont('Arial','B',18);
+            $pdf->setXY(115,18);
+            $pdf->Cell(28,6,"FACTURA",$bd);
+                
+            //info empresa
+            $pdf->SetFont('Times','',9);
+            $pdf->SetXY(48,25);
+            $info = utf8_decode('Administración: Patricios 256. (5507) Luján de Cuyo. Mendoza. Base: Terrada y callejón Los Olivos 1. Perdriel. Luján de Cuyo. Mendoza. Tel: 0261 4987490 / 261 534-4469. E-mail: levicigroupsa@gmail.com');
+            
+            $pdf->MultiCell(51,4,$info,$bd,'R');
+            $pdf->SetXY(48,52);
+            $pdf->Cell(55,4, 'IVA RESPONSABLE INSCRIPTO', $bd,0,'C');
+            
+            $pdf->SetXY(120,36);
+            $info2 = utf8_decode("CUIT: 30-71434762-0\n Ingresos Brutos: 0698400 \n Establecimiento Nº 06-0698400-00\nInicio de actividades: 15/01/2014.");
+            $pdf->MultiCell(70,4,$info2,$bd,'C');
+            
+            
+            
+            //numero
+            $pdf->setFont('Arial','B',18);
+            $pdf->SetXY(146,18);
+            $pdf->Cell(13,6,utf8_decode("Nº ") . $sale->operation->fullNumber,$bd);
+            
+            //fecha
+            $pdf->SetXY(115,27);
+            $pdf->Cell(38,6,"FECHA: ", $bd,0);
+            $pdf->Cell(20,6,$sale->operation->date_of, $bd,0,'C');
+            $pdf->Ln();
+                    
+
+            /*
+            * DATOS DEL CLIENTE
+            */
+            $pdf->SetXY(5,58);
+            $pdf->Cell(200,20,"",1);
+            
+            //cliente
+            $pdf->setXY(6,59);
+            $pdf->setFont('Times','',12);
+            $pdf->Cell(21,6,utf8_decode("CUIT: ") , $bd);
+            $pdf->setFont('Times','B',12);
+            $pdf->Cell(50,6,$sale->customer->cuit,$bd);
+
+            $pdf->setFont('Times','',12);
+            $pdf->Cell(28,6,utf8_decode("Razón social: ") , $bd);
+            $pdf->setFont('Times','B',12);
+            $pdf->Cell(80,6,$sale->customer->name,$bd);
+            $pdf->Ln();
+
+            //Condicion de iva
+            $pdf->SetX(6);
+            $pdf->setFont('Times','',12);
+            $pdf->Cell(48,6,utf8_decode("Condición frente al IVA: ") , $bd);
+            $pdf->setFont('Times','B',12);
+            $pdf->Cell(60,6,$sale->customer->ivacondition->ivacondition,$bd);
+
+            //condicion de venta
+            $pdf->setFont('Times','',12);
+            $pdf->Cell(40,6,utf8_decode("Condición de venta: ") , $bd);
+            $pdf->setFont('Times','B',12);
+            $pdf->Cell(60,6,$sale->conditions,$bd);
+            $pdf->Ln();
+
+            //direccion
+            $pdf->SetX(6);
+            $pdf->setFont('Times','',12);
+            $pdf->Cell(21,6,utf8_decode("Dirección: "), $bd);
+            $pdf->setFont('Times','B',12);
+            $pdf->Cell(177,6,$sale->customer->address .  ' - ' . ' ('. $sale->customer->province->province .')', $bd);
+            $pdf->Ln();
+            $pdf->SetX(6);
+            
+            /*
+            * DETALLE DE LA FACTURA
+            */
+            
+            $pdf->setXY(5,79);
+            $pdf->SetFont('Times','',12);
+            $pdf->Cell(23,8,utf8_decode("Código"), 1,0,'C');
+            $pdf->Cell(58,8,"Producto",1,0,'C');
+            $pdf->Cell(17,8,"Cantidad",1,0,'C');
+            $pdf->Cell(20,8,"U. Medida",1,0,'C');
+            $pdf->Cell(23,8,"Precio unit",1,0,'C');
+            $pdf->Cell(17,8,"% Bonif",1,0,'C');
+            $pdf->Cell(17,8,"$ Bonif",1,0,'C');
+            $pdf->Cell(25,8,"$ Subtotal",1,0,'C');
+
+            $pdf->SetLineWidth(0.2);
+            $pdf->Line(5,81,5,240);
+            $pdf->Line(28,81,28,240);
+            $pdf->Line(86,81,86,240);
+            $pdf->Line(103,81,103,240);
+            $pdf->Line(123,81,123,240);
+            $pdf->Line(146,81,146,240);
+            $pdf->Line(163,81,163,240);
+            $pdf->Line(180,81,180,240);
+            $pdf->Line(205,81,205,240);
+            
+            $pdf->Ln();
+            $pdf->SetFont('Times','',11);
+
+            foreach($sale->operation->products as $p)
+            {
+                $pdf->setX(5);
+                $pdf->Cell(23,6,$p->code, $bd, 0, 'C');
+                $pdf->Cell(58,6, utf8_decode($p->product), $bd,0);
+                $pdf->Cell(17,6,$p->pivot->quantity, $bd,0,'R');
+                $pdf->Cell(20,6,$p->unittype->abrev, $bd,0,'C');
+                $pdf->Cell(23,6,'$' . $p->pivot->price, $bd,0,'R');
+                $pdf->Cell(17,6,"0%", $bd,0,'C');
+                $pdf->Cell(17,6,"$0", $bd,0,'R');
+                $pdf->Cell(25,6,"$" . $p->pivot->quantity * $p->pivot->price, $bd,0,'R');
+                $pdf->Ln();
+            }
+
+            $pdf->SetXY(5,240);
+            //marco totales
+            $pdf->SetLineWidth(0.4);
+            $pdf->Cell(200, 26,"",1);
+            $pdf->setXY(130, 241);
+            $pdf->SetFont('Times','B',11);
+            $pdf->Cell(40,5,"Importe Neto Grabado: $");
+            $pdf->SetFont('Times','',11);
+            $pdf->Cell(35, 5 , $sale->operation->amount - $sale->operation->iva21 - $sale->operation->iva105, 0,0,'R');
+            $pdf->Ln();
+            $pdf->setX(130);
+            $pdf->SetFont('Times','B',11);
+            $pdf->Cell(40,5,"IVA 10.5%: $");
+            $pdf->SetFont('Times','',11);
+            $pdf->Cell(35, 5 , $sale->operation->iva105, 0,0,'R');
+            $pdf->Ln();
+            $pdf->setX(130);
+            $pdf->SetFont('Times','B',11);
+            $pdf->Cell(40,5,"IVA 21%: $");
+            $pdf->SetFont('Times','',11);
+            $pdf->Cell(35, 5 , $sale->operation->iva21, 0,0,'R');
+            $pdf->Ln();
+            $pdf->setX(130);
+            $pdf->SetFont('Times','B',11);
+            $pdf->Cell(40,5,"Importe Neto No Grabado: $");
+            $pdf->SetFont('Times','',11);
+            $pdf->Cell(35, 5 , 0, 0,0,'R');
+            $pdf->Ln();
+            $pdf->setX(130);
+            $pdf->SetFont('Times','B',12);
+            $pdf->Cell(40,5,"Importe total: $");
+            $pdf->SetFont('Times','B',12);
+            $pdf->Cell(35, 5 , $sale->operation->amount, 0,0,'R');
+            $pdf->Ln();
+
         }
 
-        $pdf->SetXY(5,272);
-        $pdf->SetFont('Times','B',16);
-        $pdf->Cell(30,6,"IVA21", 1,0,'C');
-        $pdf->Cell(83,6,"IVA105",1,0,'C');
-        $pdf->Cell(29,6,"DESCUENTOS",1,0,'C');
-        $pdf->Cell(29,6,"TOTAL",1,0,'C');
-        $pdf->Cell(171,12,"TOTAL",1,0,'R');
-        $pdf->Line(176,87,176,292);
-        $pdf->Cell(29,12, $quantity,1,0,'C');
+        
 
         $pdf->Output();
         exit();
 
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function json(Request $request)
+    {
+        if(!is_null($request->input('order')))
+        {
+            $operations = Sale::whereHas("operation", function($q) use ($request){
+                $q->wherein('operationtype_id',[1,2,3]);
+                $q->wherein('status_id', explode(',',$request->input('status_id')));
+                $q->orderby('date_of',$request->input('order'));
+            })
+            ->where('customer_id',$request->input('customer_id'))
+            ->with(['customer','operation','payments'])
+            ->get();
+        }
+        else
+        {
+            $operations = Sale::whereHas("operation", function($q) use ($request){
+                    $q->wherein('operationtype_id',[1,2,3]);
+                    $q->wherein('status_id', explode(',',$request->input('status_id')));
+                })
+                ->where('customer_id',$request->input('customer_id'))
+                ->with(['customer','operation','payments'])
+                ->get();
+        }   
+
+        foreach($operations as $sale)
+        {
+            $sale->operation->operationtype;
+            $sale->operation->dateof = $sale->operation->date_of;
+        }
+        return response()->json($operations);
     }
 
 }

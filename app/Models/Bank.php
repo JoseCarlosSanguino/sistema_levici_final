@@ -5,16 +5,17 @@ namespace app\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Unittype extends Model
+class Bank extends Model
 {
     use SoftDeletes;
     //
 
     protected $fillable = [
-        'id','unittype', 'abrev'
+        'id','bank'
     ];
 
     protected $hidden = [
         'created_at','updated_at','deleted_at'
     ];
+
 }

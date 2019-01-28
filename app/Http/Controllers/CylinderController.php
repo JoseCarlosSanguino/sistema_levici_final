@@ -158,7 +158,7 @@ class CylinderController extends Controller
      */
     public function json(Request $request)
     {
-        if(is_null($request->input('status_id')))
+        if(!is_null($request->input('status_id')))
         {
             $status_where = ' and c.status_id in ('.$request->input('status_id').')';
         }

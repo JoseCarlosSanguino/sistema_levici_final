@@ -130,13 +130,18 @@ class PurchaseController extends Controller
             foreach($data['product_id'] as $idx => $prod_id)
             {
                 $prod = Product::find($prod_id);
+                //detalle de compra
                 $operation->products()->save($prod, [
                     'quantity'  => $data['product_quantity'][$idx],
                     'price'     => $data['product_price'][$idx]
                 ]);
 
-                $prod->stock = $prod->stock + $data['product_quantity'][$idx];
-                $prod->price = $data['product_price_vta'][$idx];
+                //precio, costo y stock de producto
+                $prod->stock        = $prod->stock + $data['product_quantity'][$idx];
+                $prod->last_price   = $prod->price;
+                $prod->last_cost    = $prod->cost;
+                $prod->cost         = $data['product_price'][$idx];
+                $prod->price        = $data['product_price_vta'][$idx];
                 $prod->save();
               
             }

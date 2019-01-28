@@ -15,16 +15,29 @@
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>#</th><th>Número</th><th>Fecha</th><th>Importe</th><th>Estado</th><th>Acciones</th>
+                                    <th>#</th><th>Número</th><th>Fecha</th><th>Importe</th><th>Pendiente</th><th>Estado</th><th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                             @foreach($operations as $sale)
+                                @php
+                                if($sale->operation->status_id == 2)
+                                {
+                                    $amount = $sale->payments[count($sale->payments)-1]->pivot->residue;
+                                }
+                                else
+                                {
+                                    $amount = $sale->operation->amount;
+                                }
+
+
+                                @endphp
                                 <tr>
                                     <td>{{ $loop->iteration or $sale->id }}</td>
                                     <td>{{ $sale->operation->operationtype->letter . $sale->operation->FullNumber}}</td>
                                     <td>{{ $sale->operation->date_of }}</td>
                                     <td>{{ $sale->operation->amount }}</td>
+                                    <td>{{ $amount }}</td>
                                     <td>{{ $sale->operation->status->status or '' }}</td>
                                     <td>
                                         <a href="{{ url('/facturapdf/' . $sale->id) }}" target="_blank" title="Ver {{$modelName}}"><button class="btn btn-info btn-sm"><i class="fa fa-print" aria-hidden="true"></i> Imprimir</button></a>

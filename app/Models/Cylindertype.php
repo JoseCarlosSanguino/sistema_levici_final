@@ -13,4 +13,15 @@ class Cylindertype extends Model
     protected $fillable = ['id','cylindertype', 'capacity'];
 
     protected $hidden = ['created_at','updated_at','deleted_at'];
+
+
+    public function products()
+    {
+        return $this->belongsToMany(Product::Class);
+    }
+
+    public function giveProductTo(Cylindertype $product)
+    {
+        return $this->products()->save($product);
+    }
 }

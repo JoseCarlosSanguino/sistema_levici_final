@@ -2,7 +2,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>  
 <!-- Es este o el que está en layout/app.blade.php-->
 <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>-->
-
+@php echo isset($e)?$e->getMessage():''; @endphp
 
 <div class="form-group">
     <div class="col-xs-2">
@@ -20,7 +20,7 @@
     </div>
     <div class="col-xs-3">
         {!! Form::text('number', isset($number)?$number:'',['readonly' => 'readonly', 'class'=>'form-control']); !!}
-        {!! Form::hidden('operationtype_id' , $operationtype_id or '', ['id' => 'operationtype_id']) !!}
+        {!! Form::hidden('operationtype_id' , isset($operationtype_id)?$operationtype_id:'', ['id' => 'operationtype_id']) !!}
     </div>
 </div>
 
@@ -54,10 +54,10 @@
         {!! Form::label('customer','Cliente:'); !!}
     </div>
     <div class="col-xs-3">
-        {!! Form::text('customer_ac', isset($remito->customer->name)?$remito->customer->name:'',['id'=>'customer_ac', 'autocomplete' => 'off' ,'class'=>'typeahead form-control']); !!}
-        {!! Form::hidden('customer_id', isset($remito->customer_id)?$remito->customer_id:'', ['id' => 'customer_id']) !!}
-        {!! Form::hidden('ivacondition_id', isset($remito->customer->ivacondition_id)?$remito->customer->ivacondition_id:'', ['id' => 'ivacondition_id']) !!}
-        {!! Form::hidden('markup', isset($remito->customer->markup)?$remito->customer->markup:0, ['id' => 'markup']) !!}
+        {!! Form::text('customer_ac', isset($sale->customer->name)?$sale->customer->name:'',['id'=>'customer_ac', 'autocomplete' => 'off' ,'class'=>'typeahead form-control']); !!}
+        {!! Form::hidden('customer_id', isset($sale->customer_id)?$sale->customer_id:'', ['id' => 'customer_id']) !!}
+        {!! Form::hidden('ivacondition_id', isset($sale->customer->ivacondition_id)?$sale->customer->ivacondition_id:'', ['id' => 'ivacondition_id']) !!}
+        {!! Form::hidden('markup', isset($sale->customer->markup)?$sale->customer->markup:0, ['id' => 'markup']) !!}
 
         
     </div>
@@ -69,7 +69,7 @@
         {!! Form::label('observation', 'Observaciones:'); !!}
     </div>
     <div class="col-xs-10">
-        {!! Form::text('observation', isset($remito->id)?'Remito nº: ' . $remito->operation->fullnumber: '',['class'=>'form-control']);!!}
+        {!! Form::text('observation', (isset($sale->operation->operationtype_id) && $sale->operation->operationtype_id == 13)?$sale->operation->fullnumber:'',['class'=>'form-control']);!!}
     </div>
 </div>
 <br>
@@ -122,33 +122,35 @@
             </tr>
         </thead>
         <tbody>
-            @if(isset($remito->id))
+            @if(isset($sale->id))
                 @php 
                     $total = 0;
                     $iva21 = 0;
                     $iva105= 0;
 
+                    $numerador=1;
+
                 @endphp
-                @foreach($remito->operation->products as $prod)
+                @foreach($sale->operation->products as $prod)
                     @php    
-                        $new_price = (floatval($prod->pivot->price) / 100 * floatval($remito->customer->markup) ) + floatval($prod->pivot->price);
+                        $new_price = (floatval($prod->pivot->price) / 100 * floatval($sale->customer->markup) ) + floatval($prod->pivot->price);
                         $subt = $new_price * floatval($prod->pivot->quantity);
 
                         $iva = floatval($prod->ivatype->percent) * ($subt / 100);
                         if($prod->ivatype->percent == '21.00')
                         {
-                            $iva21 = $iva21 + $iva;
+                            $iva21 = round($iva21 + $iva,2);
                         }
                         else
                         {
-                            $iva105 = $iva105 + $iva;
+                            $iva105 = round($iva105 + $iva,2);
                         }
 
-                        $total = $total + $subt + $iva;
+                        $total = round($total + $subt + $iva,2);
 
                     @endphp
                     <tr>
-                        <td>1
+                        <td>{{$numerador}}
                         <input type='hidden' name='product_id[]' value='{{$prod->id}}'/>
                         <input type='hidden' name='product_quantity[]' value='{{$prod->pivot->quantity}}'/>
                         <input type='hidden' name='product_price[]' value='{{$prod->pivot->price}}'/>
@@ -160,7 +162,7 @@
                     <td>{{$subt }}</td>
                     <td><a href='#' class='del btn btn-danger' ><i class='add fa fa-minus' aria-hidden='true'></i></a> </td>
                     </tr>
-
+                    {{$numerador++}}
 
                 @endforeach
             @endif
@@ -174,7 +176,7 @@
     {!! Form::hidden('discount', isset($discount)?$discount: 0, ['id'=>'discount']) !!}
     {!! Form::hidden('iva105', isset($iva105)?$iva105: 0, ['id'=>'iva105']) !!}
     {!! Form::hidden('iva21', isset($iva21)?$iva21: 0, ['id'=>'iva21']) !!}
-    {!! Form::hidden('remito_id', isset($remito->id)?$remito->id: '', ['id'=>'iva21']) !!}
+    {!! Form::hidden('remito_id', isset($sale->id)?$sale->id: '', ['id'=>'iva21']) !!}
     <table class="table" id="totalDetail">
         <tbody>
             <tr>
@@ -202,14 +204,13 @@
     <input class="btn btn-primary" type="submit" value="{{ $formMode === 'edit' ? 'Actualizar' : 'Crear' }}">
 </div>
 
-
 <script type="text/javascript">
 
-    var numerador = 1;
-    var total = 0;
-    var iva105= 0;
-    var iva21 = 0;
-    var desc  = 0;
+    var numerador = {{$numerador or 1}};
+    var total = {{$total or 0}};
+    var iva105= {{$iva105 or 0}};
+    var iva21 = {{$iva21 or 0}};
+    var desc  = {{$discount or 0}};
     var pathNextNumber = "{{ route('nextSaleNumber') }}";
 
     $(function(){
@@ -220,6 +221,11 @@
             autoclose: true,
             todayHighlight: true,
             dateFormat: 'dd/mm/yy'
+        });
+
+        $.get(pathNextNumber, { group_id : {{ $groupoperationtype_id or 0 }}, ivacondition_id : {{$ivacondition_id or 0}} } , function (data) {
+            $("#number").val(data.number);
+            $("#operationtype_id").val(data.operationtype_id);
         });
 
     });
@@ -246,13 +252,16 @@
             subt = subt + inter;
             var iva_p = parseFloat( $("#prod_ivatype").val() ).toFixed(2);
             var iva   = ( subt / 100 ) * iva_p;
-
-            total   = parseFloat(parseFloat(total) + subt + iva).toFixed(2);
+            total   = parseFloat(total) + subt + iva;
+            var iva_tmp21 = 0;
+            var iva_tmp105 = 0;
 
             if($("#prod_ivatype").val() == '21.00'){
                 iva21= parseFloat(parseFloat(iva21) + iva).toFixed(2);
+                iva_tmp21 = iva;
             }else{
                 iva105= parseFloat(parseFloat(iva105) + iva).toFixed(2);
+                iva_tmp105 = iva;
             }
             
             var line = "<tr>"+
@@ -260,6 +269,10 @@
                     "<input type='hidden' name='product_id[]' value='"+$("#prod_id").val()+"'/>"+
                     "<input type='hidden' name='product_quantity[]' value='"+$("#quantity").val()+"'/>"+
                     "<input type='hidden' name='product_price[]' value='"+$("#price").val()+"'/>"+
+                    "<input type='hidden' name='prod_iva21[]' id='prod_iva21' value='"+iva_tmp21+"'/>"+
+                    "<input type='hidden' name='prod_iva105[]' id='prod_iva105' value='"+iva_tmp105+"'/>"+
+                    "<input type='hidden' name='product_total[]' id='prod_subtotal' value='"+subt+"'/>"+
+                    "<input type='hidden' name='product_subtotal[]' id='prod_total' value='"+(subt+iva)+"'/>"+
                     "</td>"+
                     "<td>"+$("#prod_code").val()+"</td>"+
                     "<td>"+$("#prod_product").val()+"</td>"+
@@ -290,6 +303,22 @@
      */
     $("#productDetail").on("click", ".del", function(e){
         e.preventDefault();
+
+        var i21 = $(this).closest('tr').find("td input[id='prod_iva21']").val();
+        iva21 = (parseFloat(iva21) - parseFloat(i21)).toFixed(2);
+        $("#tdIva21").html(iva21); 
+        $("#iva21").val(iva21); 
+
+        var i105 = $(this).closest('tr').find("td input[id='prod_iva105']").val();
+        iva105 = (parseFloat(iva105) - parseFloat(i105)).toFixed(2);
+        $("#tdIva105").html(iva105); 
+        $("#iva105").val(iva105);
+
+        var subt = $(this).closest('tr').find("td input[id='prod_total']").val();
+        total = (parseFloat(total) - parseFloat(subt)).toFixed(2);
+        $("#tdTotal").html(total); 
+        $("#amount").val(total); 
+
         $(this).parents("tr").remove();
     });
 
