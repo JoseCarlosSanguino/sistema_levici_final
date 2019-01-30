@@ -166,7 +166,7 @@
 
         </div>
         <div class="col-xs-4">
-            <?php echo Form::number('price', isset($product->price) ? $product->price : 0,['class'=>'form-control']);; ?>
+            <?php echo Form::number('price', isset($product->price) ? $product->price : 0,['step' => '0.01','class'=>'form-control']);; ?>
 
         </div>
 
@@ -175,7 +175,7 @@
 
         </div>
         <div class="col-xs-4">
-            <?php echo Form::number('last_price', isset($product->last_price) ? $product->last_price : 0,['class'=>'form-control']);; ?>
+            <?php echo Form::number('last_price', isset($product->last_price) ? $product->last_price : 0,['step' => '0.01', 'class'=>'form-control']);; ?>
 
         </div>
     </div>
@@ -187,7 +187,7 @@
 
         </div>
         <div class="col-xs-4">
-            <?php echo Form::number('cost', isset($product->cost) ? $product->cost : 0,['class'=>'form-control']);; ?>
+            <?php echo Form::number('cost', isset($product->cost) ? $product->cost : 0,['step' => '0.01','class'=>'form-control']);; ?>
 
         </div>
 
@@ -196,7 +196,7 @@
 
         </div>
         <div class="col-xs-4">
-            <?php echo Form::number('last_cost', isset($product->last_cost) ? $product->last_cost : 0,['class'=>'form-control']);; ?>
+            <?php echo Form::number('last_cost', isset($product->last_cost) ? $product->last_cost : 0,['step' => '0.01','class'=>'form-control']);; ?>
 
         </div>
     </div>

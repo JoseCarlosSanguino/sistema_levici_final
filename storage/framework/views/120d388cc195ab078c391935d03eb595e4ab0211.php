@@ -44,11 +44,34 @@
                                         <td> <?php echo e(isset($cylinder->cylindertype->cylindertype) ? $cylinder->cylindertype->cylindertype : ''); ?> </td>
                                     </tr>
                                     <tr>
-                                        <th> Proveedor </th>
-                                        <td> <?php echo e(isset($cylinder->provider->name) ? $cylinder->provider->name : ''); ?> </td>
+                                        <th> Capacidad </th>
+                                        <td> <?php echo e(isset($cylinder->cylindertype->capacity) ? $cylinder->cylindertype->capacity : ''); ?> </td>
                                     </tr>
+                                    
                                 </tbody>
                             </table>
+                            <h4>Movimientos</h4>
+                            <div class="table-responsive">     
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Movimiento</th>
+                                            <th>Cliente / Proveedor</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php $__currentLoopData = $cylinder->moves; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $move): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <tr>
+                                                <td><?php echo e($move->date_of); ?></td>
+                                                <td><?php echo e($move->movetype->movetype); ?></td>
+                                                <td><?php echo e(isset($move->customer->name) ? $move->customer->name : $move->provider->name); ?></td>
+                                            </tr>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    </tbody>
+                                </table>
+                            </div>     
+                              
                         </div>
 
                     </div>

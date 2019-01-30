@@ -32,7 +32,7 @@
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>#</th><th>Tipo de cilindro</th><th>Acciones</th>
+                                    <th>#</th><th>Tipo de cilindro</th><th>Capacidad</th><th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -40,6 +40,7 @@
                                 <tr>
                                     <td><?php echo e(isset($loop->iteration) ? $loop->iteration : $item->id); ?></td>
                                     <td><?php echo e($item->cylindertype); ?></td>
+                                    <td><?php echo e($item->capacity); ?></td>
                                     <td>
                                         <a href="<?php echo e(url('/'.$controller.'/' . $item->id)); ?>" title="Ver <?php echo e($modelName); ?>"><button class="btn btn-info btn-sm"><i class="fa fa-eye" aria-hidden="true"></i> Ver</button></a>
                                         <a href="<?php echo e(url('/'.$controller.'/' . $item->id . '/edit')); ?>" title="Editar <?php echo e($modelName); ?>"><button class="btn btn-primary btn-sm"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Editar</button></a>
