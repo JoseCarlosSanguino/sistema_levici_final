@@ -241,6 +241,7 @@ class SaleController extends Controller
     public function show()
     {
         $my_afip = NEw My_afip();
+        dd($my_afip);
         dd($my_afip->afip->ElectronicBilling->GetDocumentTypes());
         
     }
