@@ -36,6 +36,11 @@ class Paycheck extends Model
     		->withTimestamps();
     }
 
+    public function bank()
+    {
+        return $this->belongsTo(Bank::Class);
+    }
+
     public function setPaymentdateAttribute( $value ) {
         if(!is_null($value)){
             $newValue = explode('/',$value)[2] . '-' . explode('/',$value)[1] . '-' . explode('/',$value)[0];    

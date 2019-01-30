@@ -41,13 +41,9 @@ Route::resource('purchases'		, 'PurchaseController'	    );
 
 Route::resource('payorders'		, 'PayorderController'	    );
 Route::resource('receives'		, 'ReceiveController'	    );
+Route::resource('payorders'		, 'PayorderController'	    );
 Route::resource('paychecks'		, 'PaycheckController'	    );
 
-/*
-Route::get('remito','RemitoController@create')->defaults('slug', 'remito');
-Route::get('remitos','SaleController@index')->defaults('type', 'remito');
-Route::get('remitopdf/{id}','SaleController@remitoPDF');
-*/
 Route::get('remito','RemitoController@create')->defaults('slug', 'remito');
 Route::get('factura','SaleController@create')->defaults('slug', 'factura');
 Route::get('ctacte','CustomerController@ctacte')->defaults('slug', 'ctacte');
@@ -58,6 +54,7 @@ Route::get('purchase', 'PurchaseController@create');
 //Impresiones
 Route::get('remitopdf/{id}','RemitoController@remitoPDF');
 Route::get('receivepdf/{id}','ReceiveController@reciboPDF');
+Route::get('payorderpdf/{id}','PayorderController@ordenPDF');
 Route::get('facturapdf/{id}','SaleController@salePDF');
 
 Route::get('customerAutocomplete',array('as'=>'customerAutocomplete','uses'=>'CustomerController@autocomplete'));
@@ -68,10 +65,10 @@ Route::get('providerAutocomplete',array('as'=>'providerAutocomplete','uses'=>'Pr
 Route::get('nextNumber', array('as'=> 'nextNumber', 'uses' => 'OperationController@nextNumber'));
 Route::get('nextSaleNumber', array('as'=> 'nextSaleNumber', 'uses' => 'OperationController@nextSaleNumber'));
 
-
 Route::get('cityJson', array('as'=>'cityJson','uses'=>'CityController@json'));
 Route::get('cylinderJson',array('as'=> 'cylinderJson', 'uses' => 'CylinderController@json'));
 Route::get('saleJson', array('as' => 'saleJson' , 'uses' => 'SaleController@json'));
 Route::get('purchaseJson', array('as' => 'purchaseJson' , 'uses' => 'PurchaseController@json'));
+Route::get('paycheckJson', array('as'=>'paycheckJson','uses'=>'PaycheckController@json'));
 
 Route::get('test', 'SaleController@show');

@@ -171,10 +171,10 @@
                 <h4 class="modal-title" id="myModalLabel">Elegir un cheque</h4>
             </div>
             <div class="modal-body">
-                <table class="table" id="tableCylinder">
+                <table class="table" id="tablePaycheck">
                     <thead>
                         <tr>
-                            <th>Número</th><th>Fecha</th><th>Banco</th><th>Propietario</th><th>Tipo</th>
+                            <th>Número</th><th>Fecha</th><th>Monto</th><th>Banco</th><th>Propietario</th><th>Tipo</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -220,6 +220,7 @@
     var transferTotal = parseFloat(0);
     var cashDebTotal = parseFloat(0);
     var total = parseFloat(0);
+    var paychecks = [];
 
 
 	 $(function(){
@@ -271,11 +272,17 @@
 
             //busco las facturas
             $("#facturaDetail tbody").empty();
+
+            if({{$operationtype_id}} == 11){
+                var status = "1,2";
+            }else{
+               var status = "4,5";
+            }
             
-        	$.get(pathFact, {order: 'asc', customer_id: item.id, status_id: '1,2' } , function (data) {
+        	$.get(pathFact, {order: 'asc', person_id: item.id, status_id: status } , function (data) {
         		$.each(data, function(i, sale){
         			var residue=parseFloat(sale.operation.amount);
-        			if(sale.operation.status_id == 2){
+        			if(sale.operation.status_id == 2 || sale.operation.status_id == 5){
         				$.each(sale.payments, function(x,rec){
         					residue = parseFloat(rec.pivot.residue);
         				});
@@ -312,17 +319,65 @@
         if({{$operationtype_id}} == 11){
             $("#chequeModalAlta").modal('show');
         }else{
+            var pathCheque = "{{ route('paycheckJson') }}";
+            $.get(pathCheque, { status_id: 16 } , function (data) {
+
+                $("#tablePaycheck tbody").empty();
+                    $.each(data, function(i, item) {
+                        if($.inArray(item.id, paychecks) < 0){
+                            var line = "<tr id="+item.id+"><td class='number'>"+item.number+"</td>"+
+                                "<td class='paymentdate'>"+item.paymentdate+"</td>"+
+                                "<td class='amount'>"+item.amount+"</td>"+
+                                "<td class='bank'>"+item.bank+"</td>"+
+                                "<td class='owner_name'>"+item.owner_name+"</td>"+
+                                "<td class='type'>"+item.type+"</td>"+
+                                "<td><a href='#' id="+item.id+" class='add btn btn-success' ><i class='fa fa-plus' aria-hidden='true'></i></a> </td></tr>";
+                            $("#tablePaycheck tbody").append(line);
+                        }
+                    });
+            });
+
+
             $("#chequeModalBuscar").modal('show');
         }
     });
 
-    $("#btnCheque").click(function(e){
+    $("#tablePaycheck").on("click",".add", function(e){
         e.preventDefault();
-        if({{$operationtype_id}} == 11){
-            $("#chequeModalAlta").modal('show');
-        }else{
-            $("#chequeModalBuscar").modal('show');
-        }
+        var paycheckid  = $(this).closest('tr').attr('id');
+        var number      = $(this).closest('tr').find(".number").text();
+        var bank_name   = $(this).closest('tr').find(".bank").text();
+        var paymentdate = $(this).closest('tr').find(".paymentdate").text();
+        var amount      = parseFloat($(this).closest('tr').find(".amount").text());
+        var type        = $(this).closest('tr').find(".type").text();
+
+        var line = "<tr>"+
+                        "<td>"+number+
+                        "</td>"+
+                        "<td>"+paymentdate+"</td>"+
+                        "<td>"+bank_name+"</td>"+
+                        "<td>"+type+"</td>"+
+                        "<td align='right'>"+amount+"</td>"+
+                        "<td>"+
+                            "<input type='hidden' name='cheque_id[]' id='cheque_id' value='"+paycheckid+"'></input>"+
+                            "<input type='hidden' name='cheque_amount_ex' id='cheque_amount' value='"+amount+"'></input>"+
+                            "<a href='#' class='del btn btn-danger' ><i class='add fa fa-minus' aria-hidden='true'> </i></a>"+
+                        "</td>"+
+                    "</tr>";
+
+        $("#chequeDetail tbody").append(line);
+
+        paycheckTotal = paycheckTotal + amount;
+        total = total + amount;
+
+        descontarFactura();
+
+        $(this).parents("tr").remove();
+        paychecks.push(parseInt(paycheckid));
+
+        $("#tdTotal").html(total); 
+        $("#tdCheque").html(paycheckTotal); 
+
     });
 
     $("#btnNewPaycheck").click(function(e){
@@ -382,6 +437,12 @@
         e.preventDefault();
         
         var subt = parseFloat($(this).closest('tr').find("td input[id='cheque_amount']").val());
+        var idc = $(this).closest('tr').find("td input[id='cheque_id']").val();
+
+        if(idc != null){
+            paychecks.splice( $.inArray(idc, paychecks), 1 );
+        }
+
         total = total - subt;
         paycheckTotal = paycheckTotal - subt;
         descontarFactura();

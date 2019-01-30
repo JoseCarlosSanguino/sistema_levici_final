@@ -162,6 +162,7 @@ class PaycheckController extends Controller
     {
 
         $data = Paycheck::wherein("status_id", explode(',',$request->input('status_id')))
+                    ->with(['bank'])
                     ->get();
 
         return response()->json($data);

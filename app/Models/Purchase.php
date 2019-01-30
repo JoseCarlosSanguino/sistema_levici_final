@@ -10,9 +10,9 @@ class Purchase extends Model
 	use SoftDeletes;
 
     CONST STATUS = [
-        'COMPRA PENDIENTE DE PAGO'  => 4,
-        'COMPRA PAGO PARCIAL'       => 5,
-        'COMPRA PAGO TOTAL'         => 6
+        'PENDIENTE'     => 4,
+        'PAGO_PARCIAL'  => 5,
+        'PAGO_TOTAL'    => 6
     ];
 
     CONST CONDITION = [
@@ -36,6 +36,13 @@ class Purchase extends Model
     public function provider()
     {
         return $this->belongsTo(Provider::Class);
+    }
+
+    public function payments()
+    {
+        return $this->BelongsToMany(Payment::Class)
+            ->withPivot(['payment_id','purchase_id','canceled','total','residue'])
+            ->withTimestamps();
     }
 
 }

@@ -497,6 +497,12 @@ class SaleController extends Controller
      */
     public function json(Request $request)
     {
+        $customer_id = $request->input('customer_id');
+        if(is_null($customer_id) && !is_null($request->input('person_id') ))
+        {
+            $customer_id = $request->input('person_id');
+        }
+
         if(!is_null($request->input('order')))
         {
             $operations = Sale::whereHas("operation", function($q) use ($request){
@@ -504,7 +510,7 @@ class SaleController extends Controller
                 $q->wherein('status_id', explode(',',$request->input('status_id')));
                 $q->orderby('date_of',$request->input('order'));
             })
-            ->where('customer_id',$request->input('customer_id'))
+            ->where('customer_id',$customer_id)
             ->with(['customer','operation','payments'])
             ->get();
         }
@@ -514,7 +520,7 @@ class SaleController extends Controller
                     $q->wherein('operationtype_id',[1,2,3]);
                     $q->wherein('status_id', explode(',',$request->input('status_id')));
                 })
-                ->where('customer_id',$request->input('customer_id'))
+                ->where('customer_id',$customer_id)
                 ->with(['customer','operation','payments'])
                 ->get();
         }   
