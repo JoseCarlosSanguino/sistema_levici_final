@@ -9,6 +9,7 @@ use app\Models\Purchase;
 use app\Models\Transfer;
 use app\Models\Bank;
 use app\Models\Operation;
+use app\Models\Operationtype;
 
 use DB;
 use Fpdf\Fpdf;
@@ -96,6 +97,7 @@ Class PayorderController extends Controller
         $data['provider_id']= $data['person_id'];
         $data['amount']     = $data['payment_amount'];
         $data['number']     = $data['payment_number'];
+        $data['pointofsale']= Operationtype::Find($data['operationtype_id'])->pointofsale;
 
         try {
             DB::beginTransaction();
@@ -276,7 +278,7 @@ Class PayorderController extends Controller
         $pdf->Line(109,5,109,47);
 
         //logo
-        //$pdf->image(URL::to('img/logo.jpeg'), 12,7,0,12);
+        $pdf->image('img/logo.jpg', 8,8,40,37);
         $pdf->setXY(6,6);
         $pdf->Cell(40,40, 'LOGO',1);
         

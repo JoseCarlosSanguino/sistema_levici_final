@@ -9,6 +9,7 @@ use app\Models\Sale;
 use app\Models\Transfer;
 use app\Models\Bank;
 use app\Models\Operation;
+use app\Models\Operationtype;
 
 use DB;
 use Fpdf\Fpdf;
@@ -96,10 +97,14 @@ Class ReceiveController extends Controller
         $data['customer_id']= $data['person_id'];
         $data['amount']     = $data['payment_amount'];
         $data['number']     = $data['payment_number'];
+        $data['pointofsale']= Operationtype::Find($data['operationtype_id'])->pointofsale;
 
         try {
             DB::beginTransaction();
+
             $operation = new Operation($data);
+
+
             $operation->save();
 
             $payment = new Payment($data);
@@ -265,9 +270,9 @@ Class ReceiveController extends Controller
         $pdf->Line(109,5,109,47);
 
         //logo
-        //$pdf->image(URL::to('img/logo.jpeg'), 12,7,0,12);
+        $pdf->image('img/logo.jpg', 8,8,40,37);
         $pdf->setXY(6,6);
-        $pdf->Cell(40,40, 'LOGO',1);
+        
         
         //titulo
         $pdf->setFont('Arial','B',18);
@@ -344,7 +349,7 @@ Class ReceiveController extends Controller
         $pdf->Cell(40,5,'Fecha',1,0,'C');
         $pdf->Cell(40,5,'Importe',1,0,'C');
         $pdf->Cell(40,5,'Pendiente',1,0,'C');
-        $pdf->Cell(40,5,'A cancelar',1,0,'C');
+        $pdf->Cell(40,5,'Entrega',1,0,'C');
         $pdf->SetFont('Times','',12);
 
         foreach($payment->sales as $sale)

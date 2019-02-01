@@ -391,6 +391,7 @@
         var owner_cuit = $("#chequeModalAlta #owner_cuit").val();
         var observation = $("#chequeModalAlta #observation").val();
         var bank_id = $("#chequeModalAlta #bank_id").val();
+        var branch = $("#chequeModalAlta #branch").val();
         var bank_text = '';
         if(bank_id > 0){
             bank_text = $("#chequeModalAlta #bank_id").text();

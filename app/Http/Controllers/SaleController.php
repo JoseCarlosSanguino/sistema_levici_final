@@ -13,9 +13,9 @@ use app\Models\Cylindermove;
 use app\Models\Sale;
 
 use app\Libs\My_afip;
+use app\Libs\My_fpdf;
 
 use DB;
-use Fpdf\Fpdf;
 use URL;
 
 
@@ -162,14 +162,25 @@ class SaleController extends Controller
             foreach($data['product_id'] as $idx => $prod_id)
             {
                 $prod = Product::find($prod_id);
+                $iva = ($data['product_price'][$idx] - $data['product_discount'][$idx]) / 100 * $prod->ivatype->percent;
+                
                 $operation->products()->save($prod, [
                     'quantity'  => $data['product_quantity'][$idx],
-                    'price'     => $data['product_price'][$idx]
+                    'price'     => $data['product_price'][$idx],
+                    'discount'  => $data['product_discount'][$idx],
+                    'iva'       => $iva
                 ]);
 
                 if(($data['remito_id']!= null))
                 {
-                    $prod->stock = $prod->stock - $data['product_quantity'][$idx];
+                    if($data['groupoperationtype_id'] == 3)
+                    {
+                        $prod->stock = $prod->stock + $data['product_quantity'][$idx];
+                    }
+                    else
+                    {
+                        $prod->stock = $prod->stock - $data['product_quantity'][$idx];
+                    }
                     $prod->save();
                 }
             }
@@ -199,7 +210,7 @@ class SaleController extends Controller
 
 
         } catch (\Exception $e){
-            
+            dd($e);
             DB::rollBack();
 
             $title              = 'FACTURA';
@@ -210,6 +221,8 @@ class SaleController extends Controller
             $ivacondition_id        = $sale->customer->ivacondition_id;
             $groupoperationtype_id  = 1;
             $sale->operation = $operation;
+
+            $remito_id = $data['remito_id'];
 
 
             return view('sales.create',compact( 
@@ -222,7 +235,8 @@ class SaleController extends Controller
                 'sale',
                 'number',
                 'ivacondition_id',
-                'groupoperationtype_id'
+                'groupoperationtype_id',
+                'remito_id'
             ));
         }
 
@@ -289,12 +303,12 @@ class SaleController extends Controller
         $bd = 0; //border debug
         //empiezo a crear el archivo PDF    
 
-        $pdf = new fpdf('p','mm');
+        $pdf = new My_fpdf('p','mm');
 
         $pdf->SetMargins(0,0,0);
         $pdf->SetAutoPageBreak(false);
 
-        $pages = ['ORIGINAL','DUPLICADO','TRIPLICADO'];
+        $pages = ['ORIGINAL','DUPLICADO'];
             
         foreach($pages as $page)
         {
@@ -325,14 +339,13 @@ class SaleController extends Controller
             $pdf->Line(105,27,105,57);
 
             //logo
-            //$pdf->image(URL::to('img/logo.jpeg'), 12,7,0,12);
+            $pdf->image('img/logo.jpg', 8,18,40,37);
             $pdf->setXY(6,16);
-            $pdf->Cell(40,40, 'LOGO',1);
             
             //titulo
             $pdf->setFont('Arial','B',18);
-            $pdf->setXY(115,18);
-            $pdf->Cell(28,6,"FACTURA",$bd);
+            $pdf->setXY(115,16);
+            $pdf->Cell(86,6,$sale->operation->operationtype->groupoperationtype->groupoperationtype,$bd, 0,'C');
                 
             //info empresa
             $pdf->SetFont('Times','',9);
@@ -343,7 +356,7 @@ class SaleController extends Controller
             $pdf->SetXY(48,52);
             $pdf->Cell(55,4, 'IVA RESPONSABLE INSCRIPTO', $bd,0,'C');
             
-            $pdf->SetXY(120,36);
+            $pdf->SetXY(120,40);
             $info2 = utf8_decode("CUIT: 30-71434762-0\n Ingresos Brutos: 0698400 \n Establecimiento Nº 06-0698400-00\nInicio de actividades: 15/01/2014.");
             $pdf->MultiCell(70,4,$info2,$bd,'C');
             
@@ -351,13 +364,14 @@ class SaleController extends Controller
             
             //numero
             $pdf->setFont('Arial','B',18);
-            $pdf->SetXY(146,18);
-            $pdf->Cell(13,6,utf8_decode("Nº ") . $sale->operation->fullNumber,$bd);
+            $pdf->SetXY(120,24);
+            $pdf->Cell(35,6,utf8_decode("Nº: ") ,$bd);
+            $pdf->Cell(40,6,$sale->operation->fullNumber, $bd, 0,'R');
             
             //fecha
-            $pdf->SetXY(115,27);
-            $pdf->Cell(38,6,"FECHA: ", $bd,0);
-            $pdf->Cell(20,6,$sale->operation->date_of, $bd,0,'C');
+            $pdf->SetXY(120,31);
+            $pdf->Cell(35,6,"FECHA: ", $bd,0);
+            $pdf->Cell(40,6,$sale->operation->date_of, $bd,0,'R');
             $pdf->Ln();
                     
 
@@ -434,22 +448,31 @@ class SaleController extends Controller
 
             foreach($sale->operation->products as $p)
             {
+
+
                 $pdf->setX(5);
                 $pdf->Cell(23,6,$p->code, $bd, 0, 'C');
                 $pdf->Cell(58,6, utf8_decode($p->product), $bd,0);
                 $pdf->Cell(17,6,$p->pivot->quantity, $bd,0,'R');
                 $pdf->Cell(20,6,$p->unittype->abrev, $bd,0,'C');
                 $pdf->Cell(23,6,'$' . $p->pivot->price, $bd,0,'R');
-                $pdf->Cell(17,6,"0%", $bd,0,'C');
-                $pdf->Cell(17,6,"$0", $bd,0,'R');
-                $pdf->Cell(25,6,"$" . $p->pivot->quantity * $p->pivot->price, $bd,0,'R');
+                $pdf->Cell(17,6,($p->pivot->discount * 100 / $p->pivot->price).'%', $bd,0,'C');
+                $pdf->Cell(17,6,'$' . $p->pivot->discount, $bd,0,'R');
+                if($sale->operation->operationtype->letter == 'B')
+                {
+                    $pdf->Cell(25,6,"$" . $p->pivot->quantity * ($p->pivot->price + $p->pivot->iva-$p->pivot->discount) , $bd,0,'R');
+                }
+                else
+                {
+                    $pdf->Cell(25,6,"$" . $p->pivot->quantity * ($p->pivot->price-$p->pivot->discount), $bd,0,'R');
+                }
                 $pdf->Ln();
             }
 
             $pdf->SetXY(5,240);
             //marco totales
             $pdf->SetLineWidth(0.4);
-            $pdf->Cell(200, 26,"",1);
+            $pdf->Cell(200, 32,"",1);
             $pdf->setXY(130, 241);
             $pdf->SetFont('Times','B',11);
             $pdf->Cell(40,5,"Importe Neto Grabado: $");
@@ -475,11 +498,35 @@ class SaleController extends Controller
             $pdf->Cell(35, 5 , 0, 0,0,'R');
             $pdf->Ln();
             $pdf->setX(130);
+            $pdf->SetFont('Times','B',11);
+            $pdf->Cell(40,5,utf8_decode('Bonificación: '));
+            $pdf->SetFont('Times','',11);
+            $pdf->Cell(35, 5 , $sale->operation->discount, 0,0,'R');
+            $pdf->Ln();
+            $pdf->setX(130);
             $pdf->SetFont('Times','B',12);
             $pdf->Cell(40,5,"Importe total: $");
             $pdf->SetFont('Times','B',12);
             $pdf->Cell(35, 5 , $sale->operation->amount, 0,0,'R');
             $pdf->Ln();
+
+
+            $pdf->SetXY(5,260);
+            $barcode = env('AFIP_CUIT') . $sale->operation->operationtype->afip_id . str_pad($sale->operation->operationtype->pointofsale,4,0,STR_PAD_LEFT) . $sale->cae_number . str_replace('/','',$sale->cae_expired) . '6';
+
+            $pdf->i25(10,277,$barcode,0.5,8);
+
+            $pdf->SetXY(130,278);
+            $pdf->SetFont('Times','B',12);
+            $pdf->Cell(40, 5, utf8_decode('CAE Nº: '),0,0,'R');
+            $pdf->SetFont('Times','',12);
+            $pdf->Cell(40, 5, $sale->cae_number,0,0);
+            $pdf->Ln();
+            $pdf->SetXY(130,283);
+            $pdf->SetFont('Times','B',12);
+            $pdf->Cell(40, 5, 'Fecha de vencimiento de CAE: ',0,0,'R');
+            $pdf->SetFont('Times','',12);
+            $pdf->Cell(40, 5, $sale->cae_expired,0,0);
 
         }
 

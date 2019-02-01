@@ -1,4 +1,5 @@
 
+{!! Form::hidden('redirects_to', URL::previous()) !!}
 <div class="form-group">
     <div class="col-xs-2">
         {!! Form::label('Codigo','Código:'); !!}
@@ -119,7 +120,7 @@
 </div>
 <br>
 
-<!-- if para editar precio y stock -->
+@if(in_array(1 ,$role))
     <div class="form-group">
         <div class="col-xs-2">
             {!! Form::label('stock','Stock:'); !!}
@@ -164,7 +165,7 @@
         </div>
     </div>
     <br>
-
+@endif
 <!-- end if -->
 
 <div class="form-group">
@@ -180,6 +181,7 @@
 <div class="form-group">
     <input class="btn btn-primary" type="submit" value="{{ $formMode === 'edit' ? 'Actualizar' : 'Crear' }}">
 </div>
+
 <script type="text/javascript">
     $(function() {
       $( ".datepicker" ).datepicker({

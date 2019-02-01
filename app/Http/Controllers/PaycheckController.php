@@ -142,11 +142,18 @@ class PaycheckController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function destroy($id)
+    public function destroy(Request $request,$id)
     {
-
         $paycheck = Paycheck::findOrFail($id);
-        $paycheck->status_id = Paycheck::STATUS['DEPOSITADO'];
+        if(!is_null($request->input('action')) && $request->input('action') == 'descontar')
+        {
+            $paycheck->status_id = Paycheck::STATUS['DESCONTADO'];
+        }
+        else
+        {
+            $paycheck->status_id = Paycheck::STATUS['DEPOSITADO'];
+        }
+
         $paycheck->save();
         //Paycheck::destroy($id);
 
