@@ -491,7 +491,7 @@ class RemitoController extends Controller
         $pdf->Cell(13,6,utf8_decode("Nº ") . $sale->operation->fullNumber,$bd);
         */
         //fecha
-        $pdf->SetXY(150,20);
+        $pdf->SetXY(145,22);
         //$pdf->Cell(38,6,"FECHA: ", $bd,0);
         $pdf->setFont('Arial','B',14);
         $pdf->Cell(20,6,$sale->operation->date_of, $bd,0,'C');
@@ -503,26 +503,26 @@ class RemitoController extends Controller
         /*
         * DATOS DEL CLIENTE
         */
-        $pdf->SetXY(50,53);
+        $pdf->SetXY(47,50);
         //cliente
         //$pdf->setFont('Times','',13);
         //$pdf->Cell(45,6,utf8_decode("Señor(es) destinatarios: ") , $bd);
         $pdf->setFont('Times','B',13);
-        $pdf->Cell(153,6,$sale->customer->name,$bd);
+        $pdf->Cell(153,8,$sale->customer->name,$bd);
         $pdf->Ln();
         $pdf->SetX(30);
         //direccion
         //$pdf->setFont('Times','',13);
         //$pdf->Cell(21,6,utf8_decode("Dirección: "), $bd);
         $pdf->setFont('Times','B',13);
-        $pdf->Cell(177,6,$sale->customer->address .  ' - ' .' ('. $sale->customer->province->province .')', $bd);
+        $pdf->Cell(177,8,$sale->customer->address .  ' - ' .' ('. $sale->customer->province->province .')', $bd);
         $pdf->Ln();
         $pdf->SetX(25);
         //CUIT
         //$pdf->setFont('Times','',13);
         //$pdf->Cell(15,6,utf8_decode("CUIT: "), $bd);
         $pdf->setFont('Times','B',13);
-        $pdf->Cell(183,6,$sale->customer->cuit, $bd);
+        $pdf->Cell(183,8,$sale->customer->cuit, $bd);
         //$pdf->Line(5,67,205,67);
 
         /*
@@ -567,7 +567,7 @@ class RemitoController extends Controller
         $pdf->SetFont('Times','',13);
         $pdf->SetLineWidth(0.2);
 
-        $pdf->SetXY(5,93);
+        $pdf->SetXY(7,103);
         $pdf->setFont('Times','',12);
 
         $quantity = 0;
@@ -592,7 +592,7 @@ class RemitoController extends Controller
             $quantity++;
     	}
 
-        $pdf->SetXY(170,263);
+        $pdf->SetXY(170,257);
         $pdf->SetFont('Times','B',16);
         //$pdf->Cell(171,12,"TOTAL",1,0,'R');
         //$pdf->Line(176,87,176,292);
