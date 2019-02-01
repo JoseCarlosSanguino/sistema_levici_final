@@ -20,7 +20,7 @@
                             </ul>
                         <?php endif; ?>
 
-                        <form method="POST" action="<?php echo e(url('/'.$controller .'/'. $cylinder->id)); ?>" accept-charset="UTF-8" class="form-horizontal" enctype="multipart/form-data">
+                        <form method="POST" action="<?php echo e(url('/'.$controller .'/'. $cylinder->id)); ?>" accept-charset="UTF-8" class="form-horizontal" enctype="multipart/form-data" autocomplete="off">
                             <?php echo e(method_field('PATCH')); ?>
 
                             <?php echo e(csrf_field()); ?>

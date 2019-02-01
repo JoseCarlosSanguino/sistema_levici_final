@@ -109,11 +109,11 @@ class PurchaseController extends Controller
         
         if($data['conditions'] == 'cta cte')
         {
-            $data['status_id'] = Purchase::STATUS['COMPRA PENDIENTE DE PAGO'];
+            $data['status_id'] = Purchase::STATUS['PENDIENTE'];
         }
         else
         {
-            $data['status_id'] = Purchase::STATUS['COMPRA PAGO TOTAL'];
+            $data['status_id'] = Purchase::STATUS['TOTAL'];
         }
 
         try {
