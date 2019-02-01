@@ -376,4 +376,48 @@ class PurchaseController extends Controller
 
     }
 
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function json(Request $request)
+    {
+        $provider_id = $request->input('provider_id');
+        if(is_null($provider_id) && !is_null($request->input('person_id') ))
+        {
+            $provider_id = $request->input('person_id');
+        }
+
+        if(!is_null($request->input('order')))
+        {
+            $operations = Purchase::whereHas("operation", function($q) use ($request){
+                $q->wherein('operationtype_id',[4,5,6]);
+                $q->wherein('status_id', explode(',',$request->input('status_id')));
+                $q->orderby('date_of',$request->input('order'));
+            })
+            ->where('provider_id',$provider_id)
+            ->with(['provider','operation','payments'])
+            ->get();
+        }
+        else
+        {
+            $operations = Purchase::whereHas("operation", function($q) use ($request){
+                    $q->wherein('operationtype_id',[4,5,6]);
+                    $q->wherein('status_id', explode(',',$request->input('status_id')));
+                })
+                ->where('provider_id',$provider_id)
+                ->with(['provider','operation','payments'])
+                ->get();
+        }   
+
+        foreach($operations as $purchase)
+        {
+            $purchase->operation->operationtype;
+            $purchase->operation->dateof = $purchase->operation->date_of;
+        }
+        return response()->json($operations);
+    }
+
 }

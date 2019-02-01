@@ -32,6 +32,15 @@ class Sale extends Model
         'created_at','updated_at','deleted_at'
     ];
 
+    public function getCaeExpiredAttribute( $value ) {
+        if(!is_null($value) && $value != ""){
+            $date = explode(' ', $value)[0];
+            return explode('-',$date)[2] . '/' . explode('-',$date)[1] . '/' . explode('-',$date)[0];
+        }else{
+            return null;
+        }
+    }
+
     public function operation()
     {
     	return $this->BelongsTo(Operation::Class);

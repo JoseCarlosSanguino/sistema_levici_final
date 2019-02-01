@@ -34,13 +34,13 @@ class Operation extends Model
     }
 
     public function getFullNumberAttribute(){
-        return str_pad($this->pointofsale,4,0,STR_PAD_LEFT) . '-' . str_pad($this->number, 9,0,STR_PAD_LEFT);
+        return str_pad($this->pointofsale,4,0,STR_PAD_LEFT) . '-' . str_pad($this->number, 8,0,STR_PAD_LEFT);
     }
 
     public function products()
     {
         return $this->belongsToMany(Product::Class)
-            ->withPivot(['price', 'quantity', 'product_id','operation_id'])->withTimestamps();
+            ->withPivot(['price', 'quantity','iva','discount', 'product_id','operation_id'])->withTimestamps();
     }
 
     public function paychecks()

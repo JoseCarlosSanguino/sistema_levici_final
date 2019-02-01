@@ -23,6 +23,7 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
+
         $keyword = $request->get('search');
         $perPage = 25;
 
@@ -61,6 +62,12 @@ class ProductController extends Controller
         $trademarks = Trademark::pluck('trademark','id');
         $providers = Provider::where('persontype_id',2)->pluck('name','id');
         $cylindertypes = Cylindertype::pluck('cylindertype','id');
+        $role = [];
+
+        foreach(\Auth::user()->roles as $rol)
+        {
+            array_push($role, $rol->id);
+        }
 
         return view('products.create',compact( 
             'title', 
@@ -71,7 +78,8 @@ class ProductController extends Controller
             'ivatypes',
             'trademarks',
             'providers',
-            'cylindertypes'
+            'cylindertypes',
+            'role'
         ));
     }
 
@@ -146,6 +154,12 @@ class ProductController extends Controller
         $trademarks = Trademark::pluck('trademark','id');
         $providers = Provider::where('persontype_id',2)->pluck('name','id');
         $cylindertypes = Cylindertype::pluck('cylindertype','id');
+        $role = [];
+
+        foreach(\Auth::user()->roles as $rol)
+        {
+            array_push($role, $rol->id);
+        }
 
         return view('products.edit', compact(
             'product',
@@ -157,7 +171,8 @@ class ProductController extends Controller
             'ivatypes',
             'trademarks',
             'providers',
-            'cylindertypes'));
+            'cylindertypes',
+            'role'));
     }
 
     /**
@@ -191,8 +206,10 @@ class ProductController extends Controller
                 $product->giveCylindertypeTo($cylindertype);
             }
         }
-
-        return redirect('products')->with('flash_message', 'Producto actualizado!');
+        //return redirect()->back()->with('success', 'Producto actualizado! '); 
+        $url = $request->only('redirects_to');
+        return redirect()->to($url['redirects_to'])->with('flash_message', 'Producto actualizado!');
+        //return redirect('products')->with('flash_message', 'Producto actualizado!');
     }
 
     /**

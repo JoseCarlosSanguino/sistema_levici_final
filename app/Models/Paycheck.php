@@ -14,11 +14,12 @@ class Paycheck extends Model
         'CARTERA'   => 16,
         'ENTREGADO' => 17,
         'DEPOSITADO'=> 18,
-        'COBRADO'	=> 21
+        'COBRADO'	=> 21,
+        'DESCONTADO'=> 22
     ];
 
     protected $fillable = [
-    	'bank_id','status_id','type','number','receipt','paymentdate','expiration','amount','owner_name','owner_cuit','observation'
+    	'bank_id','status_id','type','number','receipt','paymentdate','expiration','amount','owner_name','owner_cuit','branch','observation'
     ];
 
     protected $hidden = [
@@ -34,6 +35,11 @@ class Paycheck extends Model
     {
     	return $this->belongsToMany(Operation::Class)
     		->withTimestamps();
+    }
+
+    public function bank()
+    {
+        return $this->belongsTo(Bank::Class);
     }
 
     public function setPaymentdateAttribute( $value ) {

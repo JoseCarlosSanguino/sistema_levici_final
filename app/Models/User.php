@@ -44,6 +44,7 @@ class User extends Authenticatable
         }
         abort(401, 'Esta acción no está autorizada.');
     }
+    
     public function hasAnyRole($roles)
     {
         if (is_array($roles)) {

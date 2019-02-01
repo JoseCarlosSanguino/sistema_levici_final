@@ -7,7 +7,14 @@
                 <div class="card-header"><h3>{{$title}}</h3></div>
                 <br/>
                 <div class="card-body">
-                
+
+                    @if (\Session::has('success'))
+                        <div class="alert alert-success">
+                            <ul>
+                                <li>{!! \Session::get('flash_message') !!}</li>
+                            </ul>
+                        </div>
+                    @endif
                         
                     <a href="{{ url('/'. $controller . '/create') }}" class="btn btn-success btn-sm" title="Nuevo {{$modelName}}">
                         <i class="fa fa-plus" aria-hidden="true"></i> Nuevo 

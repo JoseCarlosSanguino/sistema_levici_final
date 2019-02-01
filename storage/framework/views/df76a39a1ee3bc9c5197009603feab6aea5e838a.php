@@ -5,7 +5,14 @@
                 <div class="card-header"><h3><?php echo e($title); ?></h3></div>
                 <br/>
                 <div class="card-body">
-                
+
+                    <?php if(\Session::has('success')): ?>
+                        <div class="alert alert-success">
+                            <ul>
+                                <li><?php echo \Session::get('flash_message'); ?></li>
+                            </ul>
+                        </div>
+                    <?php endif; ?>
                         
                     <a href="<?php echo e(url('/'. $controller . '/create')); ?>" class="btn btn-success btn-sm" title="Nuevo <?php echo e($modelName); ?>">
                         <i class="fa fa-plus" aria-hidden="true"></i> Nuevo 

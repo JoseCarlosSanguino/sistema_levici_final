@@ -54,8 +54,15 @@
                                         <form method="POST" action="{{ url('/'.$controller.'' . '/' . $item->id) }}" accept-charset="UTF-8" style="display:inline">
                                             {{ method_field('DELETE') }}
                                             {{ csrf_field() }}
-                                            <button type="submit" class="btn btn-danger btn-sm" title="Depositar {{$modelName}}" onclick="return confirm(&quot;Confirmar deposito del cheque?&quot;)"><i class="fa fa-trash-o" aria-hidden="true"></i> Depositar</button>
+                                            <button type="submit" class="btn btn-success btn-sm" title="Depositar {{$modelName}}" onclick="return confirm(&quot;Confirmar deposito del cheque?&quot;)"><i class="fa fa-trash-o" aria-hidden="true"></i> Depositar</button>
                                         </form>
+                                        <form method="POST" action="{{ url('/'.$controller.'' . '/' . $item->id ) }}" accept-charset="UTF-8" style="display:inline">
+                                            {{ method_field('DELETE') }}
+                                            {{ csrf_field() }}
+                                            {{ Form::hidden('action', 'descontar' )}}
+                                            <button type="submit" class="btn btn-danger btn-sm" title="Descontar {{$modelName}}" onclick="return confirm(&quot;Confirmar descontar del cheque?&quot;)"><i class="fa fa-trash-o" aria-hidden="true"></i> Descontar</button>
+                                        </form>
+
                                         @endif
                                         <!--
                                         <form method="POST" action="{{ url('/'.$controller.'' . '/' . $item->id) . '/cobrar' }}" accept-charset="UTF-8" style="display:inline">

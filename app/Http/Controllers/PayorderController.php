@@ -5,7 +5,7 @@ namespace app\Http\Controllers;
 use Illuminate\Http\Request;
 use app\Models\Payment;
 use app\Models\Paycheck;
-use app\Models\Sale;
+use app\Models\Purchase;
 use app\Models\Transfer;
 use app\Models\Bank;
 use app\Models\Operation;
@@ -14,7 +14,7 @@ use app\Models\Operationtype;
 use DB;
 use Fpdf\Fpdf;
 
-Class ReceiveController extends Controller
+Class PayorderController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -24,7 +24,7 @@ Class ReceiveController extends Controller
     public function index(Request $request)
     {
         $keyword = $request->get('search');
-        $operationtype_id = 11;
+        $operationtype_id = 10;
         $perPage = 25;
 
         if (!empty($keyword)) 
@@ -32,13 +32,13 @@ Class ReceiveController extends Controller
             $operations = Payment::whereHas("operation", function($q) use ($operationtype_id){
                 $q->where('operationtype_id','=', $operationtype_id);
             })
-                ->WhereHas("customer", function($q) use ($keyword){
+                ->WhereHas("provider", function($q) use ($keyword){
                     $q->where('name','like', '%'.$keyword.'%');
                 })
                 ->orWhereHas("operation", function($q) use ($keyword){
                     $q->where('number','=', $keyword);
                 })
-                ->with(['customer','operation'])
+                ->with(['provider','operation'])
                 ->latest()
                 ->paginate($perPage);
         }
@@ -47,14 +47,14 @@ Class ReceiveController extends Controller
             $operations = Payment::whereHas("operation", function($q) use ($operationtype_id){
                 $q->where('operationtype_id','=', $operationtype_id);
             })
-                ->with(['customer','operation'])
+                ->with(['provider','operation'])
                 ->latest()
                 ->paginate($perPage);
         }
 
-        $modelName = 'Recibo';
+        $modelName = 'Orden de pago';
         $title      = 'Listado de ' . $modelName;
-        $controller = 'receives';
+        $controller = 'payorders';
 
         return view('payments.index',compact('operations', 'title', 'modelName', 'controller','operationtype_id'));
     }
@@ -66,10 +66,10 @@ Class ReceiveController extends Controller
      */
     public function create(Request $request)
     {
-        $title              = 'RECIBO';
-        $modelName          = 'Recibo';
-        $controller         = 'receives';
-        $operationtype_id   = 11;
+        $modelName = 'Orden de pago';
+        $title      = 'Orden de pago';
+        $controller = 'payorders';
+        $operationtype_id   = 10;
         $banks = Bank::pluck('bank','id');
 
         return view('payments.create',compact( 
@@ -93,18 +93,15 @@ Class ReceiveController extends Controller
 
         //remito
         $data['user_id']    = \Auth::user()->id;
-        $data['status_id']  = Payment::STATUS['COBRO_EMITIDO'];
-        $data['customer_id']= $data['person_id'];
+        $data['status_id']  = Payment::STATUS['PAGO_EMITIDO'];
+        $data['provider_id']= $data['person_id'];
         $data['amount']     = $data['payment_amount'];
         $data['number']     = $data['payment_number'];
         $data['pointofsale']= Operationtype::Find($data['operationtype_id'])->pointofsale;
 
         try {
             DB::beginTransaction();
-
             $operation = new Operation($data);
-
-
             $operation->save();
 
             $payment = new Payment($data);
@@ -135,6 +132,17 @@ Class ReceiveController extends Controller
                 }
             }
 
+            if(isset($data['cheque_id']))
+            {
+                foreach($data['cheque_id'] as $idcheque)
+                {
+                    $cheque = Paycheck::find($idcheque);
+                    $cheque->status_id = Paycheck::STATUS['ENTREGADO'];
+                    $cheque->save();
+                    $operation->paychecks()->save($cheque);
+                }
+            }
+
             //transferencias
             if(isset($data['transfer_number']))
             {
@@ -158,28 +166,28 @@ Class ReceiveController extends Controller
             {
                 if($data['fact_canceled'][$idx] != 0)
                 {
-                    $sale = Sale::find($factid);
+                    $purchase = Purchase::find($factid);
 
-                    $payment->sales()->attach($sale,[
-                        'total'     => $sale->operation->amount,
+                    $payment->purchases()->attach($purchase,[
+                        'total'     => $purchase->operation->amount,
                         'canceled'  => $data['fact_canceled'][$idx],
                         'residue'   => $data['fact_residue'][$idx] - $data['fact_canceled'][$idx]
                     ]);
 
                     if($data['fact_canceled'][$idx] == $data['fact_residue'][$idx])
                     {
-                        $sale->operation->status_id = Sale::STATUS['VTA_COBRO_TOTAL'];
+                        $purchase->operation->status_id = Purchase::STATUS['PAGO_TOTAL'];
                     }
                     else
                     {
-                        $sale->operation->status_id = Sale::STATUS['VTA_COBRO_PARCIAL'];
+                        $purchase->operation->status_id = Purchase::STATUS['PAGO_PARCIAL'];
                     }
-                    $sale->operation->save();
+                    $purchase->operation->save();
                 }
             }
 
             DB::commit();
-            return redirect('receives');
+            return redirect('payorders');
 
         } catch (\Exception $e){
 
@@ -272,7 +280,7 @@ Class ReceiveController extends Controller
         //logo
         $pdf->image('img/logo.jpg', 8,8,40,37);
         $pdf->setXY(6,6);
-        
+        $pdf->Cell(40,40, 'LOGO',1);
         
         //titulo
         $pdf->setFont('Arial','B',18);
@@ -349,7 +357,7 @@ Class ReceiveController extends Controller
         $pdf->Cell(40,5,'Fecha',1,0,'C');
         $pdf->Cell(40,5,'Importe',1,0,'C');
         $pdf->Cell(40,5,'Pendiente',1,0,'C');
-        $pdf->Cell(40,5,'Entrega',1,0,'C');
+        $pdf->Cell(40,5,'A cancelar',1,0,'C');
         $pdf->SetFont('Times','',12);
 
         foreach($payment->sales as $sale)

@@ -60,7 +60,7 @@ Class My_afip
 			$iva = 0;$debug=[];
 			foreach($oper->products as $prod)
 			{
-				$base_imp = round($prod->pivot->price * $prod->pivot->quantity,2);
+				$base_imp = round(($prod->pivot->price - $prod->pivot->discount) * $prod->pivot->quantity,2);
 				$importe  = round($base_imp / 100 * $prod->ivatype->percent,2);
 
 				$iva_arr[$prod->ivatype_id]['Id'] 		= $prod->ivatype->afip_id;

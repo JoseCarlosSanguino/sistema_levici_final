@@ -82,6 +82,12 @@
     <div class="col-xs-4">
         {!! Form::select('bank_id', $banks, isset($paycheck->bank_id) ? $paycheck->bank_id : false,['class'=>'form-control','placeholder'=>'Elija un banco']); !!}
     </div>
+    <div class="col-xs-2">
+        {!! Form::label('branch', 'Sucursal:'); !!}
+    </div>
+    <div class="col-xs-4">
+        {!! Form::text('branch', isset($paycheck->branch) ? $paycheck->branch : '',['class'=>'form-control']);!!}
+    </div>
 </div>
 
 @if(!isset($operationtype_id))

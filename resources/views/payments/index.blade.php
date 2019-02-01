@@ -32,7 +32,13 @@
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>#</th><th>Número</th><th>Fecha</th><th>Cliente</th><th>Importe</th><th>Acciones</th>
+                                    <th>#</th><th>Número</th><th>Fecha</th>
+                                    @if($operationtype_id == 11)
+                                        <th>Cliente</th>
+                                    @else
+                                        <th>Proveedor</th>
+                                    @endif
+                                    <th>Importe</th><th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -41,7 +47,7 @@
                                     <td>{{ $loop->iteration or $sale->id }}</td>
                                     <td>{{ $receive->operation->FullNumber or ''}}</td>
                                     <td>{{ $receive->operation->date_of }}</td>
-                                    <td>{{ $receive->customer->name or '' }}</td>
+                                    <td>{{ $receive->customer->name or $receive->provider->name  }}</td>
                                     <td>{{ $receive->operation->amount }}</td>
                                     <td>
                                         <a href="{{ url('/receivepdf/' . $receive->id) }}" target="_blank" title="Ver {{$modelName}}"><button class="btn btn-info btn-sm"><i class="fa fa-print" aria-hidden="true"></i> Imprimir</button></a>
