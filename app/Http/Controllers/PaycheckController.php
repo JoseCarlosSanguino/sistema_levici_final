@@ -50,7 +50,7 @@ class PaycheckController extends Controller
         $title      = 'Nuevo cheque';
         $modelName  = 'Cheque';
         $controller = 'paychecks';
-        $banks = Bank::pluck('bank','id');
+        $banks = Bank::orderBy('bank')->pluck('bank','id');
         return view('paychecks.create',compact( 
             'title', 
             'modelName', 

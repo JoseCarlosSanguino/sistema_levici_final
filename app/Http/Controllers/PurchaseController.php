@@ -104,7 +104,7 @@ class PurchaseController extends Controller
         $data['user_id'] = \Auth::user()->id;
 
         //limpio el numero
-        $data['pointofsale'] = explode('-', $data['number'])[0];
+        $data['pointofsale'] = explode('-',$data['number'])[0];
         $data['number']      = explode('-',$data['number'])[1];
         
         if($data['conditions'] == 'cta cte')
