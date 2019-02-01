@@ -5,7 +5,9 @@ namespace app\Http\Controllers;
 use Illuminate\Http\Request;
 use app\Models\Cylinder;
 use app\Models\Cylindertype;
+use app\Models\Cylindermove;
 use app\Models\Provider;
+use app\Models\Customer;
 use DB;
 
 class CylinderController extends Controller
@@ -51,13 +53,15 @@ class CylinderController extends Controller
         $controller = 'cylinders';
         $cylindertypes = Cylindertype::pluck('cylindertype','id');
         $providers = Provider::where('persontype_id',2)->pluck('name','id');
+        $customers = Customer::where('persontype_id',1)->pluck('name','id');
         return view('cylinders.create',compact( 
             'title', 
             'modelName', 
             'controller',
             'unittypes',
             'cylindertypes',
-            'providers'
+            'providers',
+            'customers'
         ));
     }
 
@@ -72,10 +76,29 @@ class CylinderController extends Controller
         $this->validate($request, [
             'code'          => 'required|unique:cylinders|max:32',
             ]);
-    
+
     	$requestData = $request->all();
-    	$requestData['status_id'] = Cylinder::STATUS['DISPONIBLE'];
-        Cylinder::create($requestData);
+        if(is_null($request->input('customer_id')))
+        {
+            $requestData['status_id'] = Cylinder::STATUS['DISPONIBLE'];
+        }
+        else
+        {
+            $requestData['status_id'] = Cylinder::STATUS['EN CLIENTE'];
+        }
+        $cyl = Cylinder::create($requestData);
+
+        if(!is_null($request->input('customer_id')))
+        {
+            //mov
+            $cylmove = NEW Cylindermove([
+                'person_id'  => $request->input('customer_id'),
+                'movetype_id'=> Cylindermove::MOVETYPE['ENVIO_A_CLIENTE'],
+                'date_of'    => date('d/m/Y H:i:s')
+            ]);
+            $cyl->moves()->save($cylmove);
+        }
+
 
         return redirect('cylinders')->with('flash_message', 'Cilindro creado!');
     }

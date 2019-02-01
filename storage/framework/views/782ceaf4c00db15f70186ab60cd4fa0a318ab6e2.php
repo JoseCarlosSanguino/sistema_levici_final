@@ -223,7 +223,7 @@
 <div class="table-responsive">
     <?php echo Form::hidden('amount', isset($total)?$total: 0, ['id'=>'amount']); ?>
 
-    <?php echo Form::text('discount', isset($discount)?$discount: 0, ['id'=>'discount']); ?>
+    <?php echo Form::hidden('discount', isset($discount)?$discount: 0, ['id'=>'discount']); ?>
 
     <?php echo Form::hidden('iva105', isset($iva105)?$iva105: 0, ['id'=>'iva105']); ?>
 

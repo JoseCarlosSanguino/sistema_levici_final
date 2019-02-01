@@ -567,7 +567,7 @@ class RemitoController extends Controller
         $pdf->SetFont('Times','',13);
         $pdf->SetLineWidth(0.2);
 
-        $pdf->SetXY(7,103);
+        $pdf->SetXY(10,106);
         $pdf->setFont('Times','',12);
 
         $quantity = 0;

@@ -73,6 +73,18 @@
     </div>
 </div>
 
+<br>
+<div class="form-group">
+    <div class="col-xs-2">
+        <?php echo Form::label('cliente', 'Cliente:');; ?>
+
+    </div>
+    <div class="col-xs-4">
+        <?php echo Form::select('customer_id', $customers, isset($cylinder->customer_id) ? $cylinder->customer_id : false,['class'=>'form-control','placeholder'=>'Elija cliente']);; ?>
+
+    </div>
+</div>
+
 
 <div class="form-group">
     <input class="btn btn-primary" type="submit" value="<?php echo e($formMode === 'edit' ? 'Actualizar' : 'Crear'); ?>">
