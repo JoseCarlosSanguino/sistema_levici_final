@@ -1,7 +1,7 @@
 
 <div class="form-group">
     <div class="col-xs-2">
-        {!! Form::label('number','Número:'); !!}
+        {!! Form::label('number','Número de cheque:'); !!}
     </div>
     <div class="col-xs-4">
         {!! Form::text('number', isset($paycheck->number) ? $paycheck->number : '',['class'=>'form-control']); !!}
@@ -21,7 +21,7 @@
         {!! Form::label('type','Tipo:'); !!}
     </div>
     <div class="col-xs-4">
-        {!! Form::select('type', ['al portador'=>'Al portador','diferido' => 'Diferido', 'cruzado' => 'Cruzado'], isset($paycheck->type) ? $paycheck->type : 'al portador',['class'=>'form-control']); !!}
+        {!! Form::select('type', ['al portador'=>'Al portador por ventanilla','diferido' => 'Diferido', 'cruzado' => 'Cruzado','no a la orden' => 'no a la orden', 'a levici' => 'a le vici group'], isset($paycheck->type) ? $paycheck->type : 'al portador',['class'=>'form-control']); !!}
     </div>
 
 </div>
