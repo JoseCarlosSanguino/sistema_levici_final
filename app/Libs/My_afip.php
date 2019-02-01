@@ -16,7 +16,7 @@ Class My_afip
             'CUIT'      => env('AFIP_CUIT'),
             'res_folder'=> config_path('afip/'),
             'ta_folder' => config_path('afip/'),
-            'produccion'=> env('AFIP_PROD')
+            'production'=> env('AFIP_PROD')
         ]);
 	}
 
