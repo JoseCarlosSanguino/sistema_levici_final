@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use app\Models\Paycheck;
 use app\Models\Bank;
+use app\Models\Operation;
 
 class PaycheckController extends Controller
 {
@@ -82,6 +83,23 @@ class PaycheckController extends Controller
     }
 
     /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
+    public function discount($id)
+    {
+        $title      = 'Ver detalle de un cheque';
+        $modelName  = 'Cheque';
+        $controller = 'paychecks';
+        $paycheck   = Paycheck::find($id);
+
+        return view('paychecks.discount',compact('paycheck','title', 'modelName', 'controller'));
+
+    }
+
+    /**
      * Display the specified resource.
      *
      * @param  int  $id
@@ -131,6 +149,16 @@ class PaycheckController extends Controller
     {
         $requestData = $request->all();
         $paycheck = Paycheck::findOrFail($id);
+        if($requestData['action'] == 'descontar')
+        {
+            $oper = NEW Operation();
+            $oper->observation      = $requestData['bank_discount'];
+            $oper->operationtype_id = 19;
+            $oper->status_id        = 22;
+            $oper->user_id          = \Auth::user()->id;
+            $oper->save();
+            $oper->paychecks()->save($paycheck);
+        }
         $paycheck->update($requestData);
 
         return redirect('paychecks')->with('flash_message', 'Cheque actualizado!');

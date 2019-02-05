@@ -2,7 +2,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>  
 <!-- Es este o el que está en layout/app.blade.php-->
 <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>-->
-<?php echo isset($e)?$e->getMessage():''; ?>
 
 <div class="form-group">
     <div class="col-xs-2">
@@ -10,7 +9,7 @@
 
     </div>
     <div class="col-xs-3">
-        <?php echo Form::select('groupoperationtype_id', $groupoperationtypes,1,['id' => 'groupoperationtype_id', 'class'=>'form-control', 'placeholder'=>'Tipo de documento']);; ?>
+        <?php echo Form::select('groupoperationtype_id', $groupoperationtypes,old('groupoperationtype_id',1),['id' => 'groupoperationtype_id', 'class'=>'form-control', 'placeholder'=>'Tipo de documento']);; ?>
 
     </div>
 </div>
@@ -24,7 +23,7 @@
     <div class="col-xs-3">
         <?php echo Form::text('number', isset($number)?$number:'',['readonly' => 'readonly', 'class'=>'form-control']);; ?>
 
-        <?php echo Form::hidden('operationtype_id' , isset($operationtype_id)?$operationtype_id:'', ['id' => 'operationtype_id']); ?>
+        <?php echo Form::hidden('operationtype_id' , isset($operationtype_id)?$operationtype_id: old('operationtype_id', ''), ['id' => 'operationtype_id']); ?>
 
     </div>
 </div>
@@ -36,7 +35,7 @@
 
     </div>
     <div class="col-xs-2">
-        <?php echo Form::text('date_of', isset($sale->date_of) ? $sale->date_of : date('d/m/Y'),['class'=>'form-control datepicker']);; ?>
+        <?php echo Form::text('date_of', isset($sale->date_of) ? $sale->date_of : old('date_of', date('d/m/Y')),['class'=>'form-control datepicker']);; ?>
 
     </div>
 </div>
@@ -64,13 +63,13 @@
 
     </div>
     <div class="col-xs-3">
-        <?php echo Form::text('customer_ac', isset($sale->customer->name)?$sale->customer->name:'',['id'=>'customer_ac', 'autocomplete' => 'off' ,'class'=>'typeahead form-control']);; ?>
+        <?php echo Form::text('customer_ac', isset($sale->customer->name)?$sale->customer->name:old('customer_ac',''),['id'=>'customer_ac', 'autocomplete' => 'off' ,'class'=>'typeahead form-control']);; ?>
 
-        <?php echo Form::hidden('customer_id', isset($sale->customer_id)?$sale->customer_id:'', ['id' => 'customer_id']); ?>
+        <?php echo Form::hidden('customer_id', isset($sale->customer_id)?$sale->customer_id:old('customer_id',''), ['id' => 'customer_id']); ?>
 
-        <?php echo Form::hidden('ivacondition_id', isset($sale->customer->ivacondition_id)?$sale->customer->ivacondition_id:'', ['id' => 'ivacondition_id']); ?>
+        <?php echo Form::hidden('ivacondition_id', isset($sale->customer->ivacondition_id)?$sale->customer->ivacondition_id:old('ivacondition_id',''), ['id' => 'ivacondition_id']); ?>
 
-        <?php echo Form::hidden('markup', isset($sale->customer->markup)?$sale->customer->markup:0, ['id' => 'markup']); ?>
+        <?php echo Form::hidden('markup', isset($sale->customer->markup)?$sale->customer->markup:old('markup', 0), ['id' => 'markup']); ?>
 
 
         
@@ -84,7 +83,7 @@
 
     </div>
     <div class="col-xs-10">
-        <?php echo Form::text('observation', (isset($sale->operation->operationtype_id) && $sale->operation->operationtype_id == 13)?$sale->operation->fullnumber:'',['class'=>'form-control']);; ?>
+        <?php echo Form::text('observation', (isset($sale->operation->operationtype_id) && $sale->operation->operationtype_id == 13)?'Remito: '.$sale->operation->fullnumber:old('observation',''),['class'=>'form-control']);; ?>
 
     </div>
 </div>
@@ -158,62 +157,106 @@
             </tr>
         </thead>
         <tbody>
-            <?php if(isset($sale->id)): ?>
+            <?php if(isset($sale->id) || old('product_id')): ?>
                 <?php 
                     $total = 0;
                     $iva21 = 0;
                     $iva105= 0;
                     $discount= 0;
 
-                    $numerador=1;
+                    $numerador=0;
 
                 ?>
-                <?php $__currentLoopData = $sale->operation->products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $prod): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                    <?php    
-                        $new_price = (floatval($prod->pivot->price) / 100 * floatval($sale->customer->markup) ) + floatval($prod->pivot->price);
-                        $subt = $new_price * floatval($prod->pivot->quantity);
 
-                        $iva = floatval($prod->ivatype->percent) * ($subt / 100);
-                        if($prod->ivatype->percent == '21.00')
-                        {
-                            $iva21 = round($iva21 + $iva,2);
-                        }
-                        else
-                        {
-                            $iva105 = round($iva105 + $iva,2);
-                        }
+                <!-- cuando viene de un remito ya seae nuevo con error -->
+                <?php if(isset($sale->operation->products)): ?>
+                    <?php $__currentLoopData = $sale->operation->products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $prod): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <?php    
+                            $numerador++;
+                            $new_price = (floatval($prod->pivot->price) / 100 * floatval($sale->customer->markup) ) + floatval($prod->pivot->price);
+                            $subt = $new_price * floatval($prod->pivot->quantity);
 
-                        $total = round($total + $subt + $iva,2);
-                        $prod_t = round($subt + $iva,2);
+                            $iva = floatval($prod->ivatype->percent / 100) * ($subt);
+                            if($prod->ivatype->percent == '21.00')
+                            {
+                                $iva21 = round($iva21 + $iva,2);
+                                $iva21_tmp= $iva;
+                            }
+                            else
+                            {
+                                $iva105 = round($iva105 + $iva,2);
+                                $iva105_tmp= $iva;
+                            }
 
-                        if($sale->customer->ivacondition_id != 1)
-                        {
-                            $subt = $prod_t;
-                        }
+                            $total = round($total + $subt + $iva,2);
+                            $prod_t = round($subt + $iva,2);
 
-                    ?>
-                    <tr>
-                        <td><?php echo e($numerador); ?>
+                            if($sale->customer->ivacondition_id != 1)
+                            {
+                                $subt = $prod_t;
+                            }
 
-                        <input type='hidden' name='product_id[]' value='<?php echo e($prod->id); ?>'/>
-                        <input type='hidden' name='product_quantity[]' value='<?php echo e($prod->pivot->quantity); ?>'/>
-                        <input type='hidden' name='product_price[]' value='<?php echo e($prod->pivot->price); ?>'/>
-                        <input type='hidden' name='prod_iva21[]' value='<?php echo e(isset($iva21) ? $iva21 : ''); ?>'/>
-                        <input type='hidden' name='prod_iva105[]' value='<?php echo e(isset($iva105) ? $iva105 : ''); ?>'/>
-                        <input type='hidden' name='product_total[]' id='prod_subtotal' value='<?php echo e($subt); ?>'/>
-                        <input type='hidden' name='product_subtotal[]' id='prod_total' value='<?php echo e($prod_t); ?>'/>
-                        </td>
-                    <td><?php echo e($prod->code); ?></td>
-                    <td><?php echo e($prod->product); ?></td>
-                    <td><?php echo e($new_price); ?></td>
-                    <td><?php echo e($prod->pivot->quantity); ?></td>
-                    <td><?php echo e($subt); ?></td>
-                    <td><a href='#' class='del btn btn-danger' ><i class='add fa fa-minus' aria-hidden='true'></i></a> </td>
-                    </tr>
-                    <?php echo e($numerador++); ?>
+                        ?>
+                        <tr>
+                            <td><?php echo e($numerador); ?>
+
+                            <input type='hidden' name='product_id[]' value='<?php echo e($prod->id); ?>'/>
+                            <input type='hidden' name='product_product[]' value='<?php echo e($prod->product); ?>'/>
+                            <input type='hidden' name='product_code[]' value='<?php echo e($prod->code); ?>'/>
+                            <input type='hidden' name='product_quantity[]' value='<?php echo e($prod->pivot->quantity); ?>'/>
+                            <input type='hidden' name='product_price[]' value='<?php echo e($new_price); ?>'/>
+                            <input type='hidden' name='prod_iva21[]' value='<?php echo e(isset($iva21_tmp) ? $iva21_tmp : 0); ?>'/>
+                            <input type='hidden' name='prod_iva105[]' value='<?php echo e(isset($iva105_tmp) ? $iva105_tmp : 0); ?>'/>
+                            <input type='hidden' name='product_discount[]' id='product_discount' value='<?php echo e($prod->pivot->discount); ?>'/>
+                            <input type='hidden' name='product_total[]' id='prod_subtotal' value='<?php echo e($subt); ?>'/>
+                            <input type='hidden' name='product_subtotal[]' id='prod_total' value='<?php echo e($prod_t); ?>'/>
+                            </td>
+                        <td><?php echo e($prod->code); ?></td>
+                        <td><?php echo e($prod->product); ?></td>
+                        <td><?php echo e($new_price); ?></td>
+                        <td><?php echo e($prod->pivot->quantity); ?></td>
+                        <td><?php echo e($subt); ?></td>
+                        <td><a href='#' class='del btn btn-danger' ><i class='add fa fa-minus' aria-hidden='true'></i></a> </td>
+                        </tr>
+
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                
+                <?php elseif(old('product_id')): ?>
+                    <?php $__currentLoopData = old('product_id'); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $idx => $prod_id): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <?php  
+                            $numerador++;
+                            $total = round(old('amount'),2);
+                            $iva21 = round(old('iva21'),2);
+                            $iva105= round(old('iva105'),2);
+                            $discount= round(old('discount'),2);
+
+                        ?>
+                        <tr>
+                            <td><?php echo e($numerador); ?>
+
+                            <input type='hidden' name='product_id[]' value='<?php echo e($prod_id); ?>'/>
+                            <input type='hidden' name='product_product[]' value='<?php echo e(old('product_product')[$idx]); ?>'/>
+                            <input type='hidden' name='product_code[]' value='<?php echo e(old('product_code')[$idx]); ?>'/>
+                            <input type='hidden' name='product_quantity[]' value='<?php echo e(old('product_quantity')[$idx]); ?>'/>
+                            <input type='hidden' name='product_price[]' value='<?php echo e(old('product_price')[$idx]); ?>'/>
+                            <input type='hidden' name='prod_iva21[]' value='<?php echo e(old('prod_iva21')[$idx]); ?>'/>
+                            <input type='hidden' name='prod_iva105[]' value='<?php echo e(old('prod_iva105')[$idx]); ?>'/>
+                            <input type='hidden' name='product_discount[]' id='product_discount' value='<?php echo e(old('product_discount')[$idx]); ?>'/>
+                            <input type='hidden' name='product_total[]' id='prod_subtotal' value='<?php echo e(old('product_total')[$idx]); ?>'/>
+                            <input type='hidden' name='product_subtotal[]' id='prod_total' value='<?php echo e(old('product_subtotal')[$idx]); ?>'/>
+                            </td>
+                        <td><?php echo e(old('product_product')[$idx]); ?></td>
+                        <td><?php echo e(old('product_code')[$idx]); ?></td>
+                        <td><?php echo e(old('product_price')[$idx]); ?></td>
+                        <td><?php echo e(old('product_quantity')[$idx]); ?></td>
+                        <td><?php echo e(old('product_total')[$idx]); ?></td>
+                        <td><a href='#' class='del btn btn-danger' ><i class='add fa fa-minus' aria-hidden='true'></i></a> </td>
+                        </tr>
+
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                <?php endif; ?>
 
 
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             <?php endif; ?>
             
         </tbody>
@@ -243,7 +286,7 @@
             </tr>
             <tr>
                 <td width="70%" align="right"><b>Descuento</b></td>
-                <td id="tdDescuento" style="font-size: 16px; font-weight: bold">0</td>
+                <td id="tdDescuento" style="font-size: 16px; font-weight: bold"><?php echo e(isset($discount) ? $discount : 0); ?></td>
             </tr>
             <tr>
                 <td width="70%" align="right"><b>TOTAL</b></td>
@@ -255,7 +298,11 @@
 </br>
 
 <div class="form-group">
-    <input id="btnCrear" disabled='disabled' class="btn btn-primary" type="submit" value="Crear">
+    <?php if((isset($sale->operation->operationtype_id) && $sale->operation->operationtype_id == 13) || old('operationtype_id')): ?>
+        <input id="btnCrear" class="btn btn-primary" type="submit" value="Crear">
+    <?php else: ?>
+        <input id="btnCrear" disabled='disabled' class="btn btn-primary" type="submit" value="Crear">
+    <?php endif; ?>
 </div>
 
 <script type="text/javascript">
@@ -277,10 +324,14 @@
             dateFormat: 'dd/mm/yy'
         });
 
-        $.get(pathNextNumber, { group_id : <?php echo e(isset($groupoperationtype_id) ? $groupoperationtype_id : 0); ?>, ivacondition_id : <?php echo e(isset($ivacondition_id) ? $ivacondition_id : 0); ?> } , function (data) {
+        $.get(pathNextNumber, { group_id : <?php echo e(isset($groupoperationtype_id) ? $groupoperationtype_id : old('groupoperationtype_id',0)); ?>, ivacondition_id : <?php echo e(isset($ivacondition_id) ? $ivacondition_id : old('ivacondition_id',0)); ?> } , function (data) {
             $("#number").val(data.number);
             $("#operationtype_id").val(data.operationtype_id);
         });
+
+        if($("#customer_id").val() > 0 && $("#customer_id").val() != ""){
+            $("#prod_ac").prop('disabled', false);
+        }
 
     });
 
@@ -297,27 +348,27 @@
         
         if($("#prod_id").val() > 0)
         {
-            var markup= parseFloat( $("#markup").val()).toFixed(2);
-            var price = parseFloat( $("#price").val()).toFixed(2) ;
-            var quant = parseFloat( $("#quantity").val()).toFixed(2);
-            var disc  = parseFloat( $("#disc").val()).toFixed(2);
-
-            if(!(disc > 0)) disc = 0;
-
             var ivacondition_id = $("#ivacondition_id").val();
 
-            var discount = parseFloat(price * (disc / 100) * quant); //descuento
+            var markup= parseFloat( $("#markup").val());
+            var price = parseFloat( $("#price").val());
+            var quant = parseFloat( $("#quantity").val());
+            var disc  = parseFloat( $("#disc").val());
+            var iva_p = parseFloat( $("#prod_ivatype").val());
+            if(!(disc > 0)) disc = 0;
 
-            desc = parseFloat(desc + discount);
+            //calculos
+            var price_unit   = ((price / 100) * markup) + price; //unitario
+            var discount_unit= (disc / 100) * price_unit; // unitario
+            var discount_total= discount_unit * quant; 
+            var iva_unit     = ((price_unit - discount_unit) / 100) * iva_p; // unitario
+            var iva_total    = iva_unit * quant;
+            var subt    = (price_unit - discount_unit) * quant; //subtotal sin iva
+            var prod_t  = subt + iva_total; //subtotal con iva
 
-            var subt  = (price - discount) * quant; //sin iva
-            var inter = ( subt / 100 ) * markup; //sin iva
-            subt = subt + inter; //sin iva
-            var iva_p = parseFloat( $("#prod_ivatype").val() ).toFixed(2);
-            var iva   = ( subt / 100 ) * iva_p; //este es el iva
-            var prod_t= subt + iva;
-
-            total   = parseFloat(total) + subt + iva;
+            desc = parseFloat(desc + discount_total);
+            total= parseFloat(total) + subt + iva_total;
+            
             if(ivacondition_id != 1){
                 subt = prod_t;
             }
@@ -328,20 +379,22 @@
             if(ivacondition_id == 1){
 
                 if($("#prod_ivatype").val() == '21.00'){
-                    iva21= parseFloat(parseFloat(iva21) + iva).toFixed(2);
-                    iva_tmp21 = iva;
+                    iva21= parseFloat(parseFloat(iva21) + iva_total).toFixed(2);
+                    iva_tmp21 = iva_total;
                 }else{
-                    iva105= parseFloat(parseFloat(iva105) + iva).toFixed(2);
-                    iva_tmp105 = iva;
+                    iva105= parseFloat(parseFloat(iva105) + iva_total).toFixed(2);
+                    iva_tmp105 = iva_total;
                 }
             }
             
             var line = "<tr>"+
                     "<td>"+numerador+
                     "<input type='hidden' name='product_id[]' value='"+$("#prod_id").val()+"'/>"+
-                    "<input type='hidden' name='product_quantity[]' value='"+$("#quantity").val()+"'/>"+
-                    "<input type='hidden' name='product_price[]' value='"+$("#price").val()+"'/>"+
-                    "<input type='hidden' name='product_discount[]' id='product_discount' value='"+discount+"'/>"+
+                    "<input type='hidden' name='product_product[]' value='"+$("#prod_product").val()+"'/>"+
+                    "<input type='hidden' name='product_code[]' value='"+$("#prod_code").val()+"'/>"+
+                    "<input type='hidden' name='product_quantity[]' value='"+quant+"'/>"+
+                    "<input type='hidden' name='product_price[]' value='"+price_unit+"'/>"+
+                    "<input type='hidden' name='product_discount[]' id='product_discount' value='"+discount_unit+"'/>"+
                     "<input type='hidden' name='prod_iva21[]' id='prod_iva21' value='"+iva_tmp21+"'/>"+
                     "<input type='hidden' name='prod_iva105[]' id='prod_iva105' value='"+iva_tmp105+"'/>"+
                     "<input type='hidden' name='product_total[]' id='prod_subtotal' value='"+subt+"'/>"+

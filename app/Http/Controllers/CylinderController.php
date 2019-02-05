@@ -135,6 +135,7 @@ class CylinderController extends Controller
         $cylinder = Cylinder::findOrFail($id);
         $cylindertypes = Cylindertype::pluck('cylindertype','id');
         $providers = Provider::where('persontype_id',2)->pluck('name','id');
+        $customers = Customer::where('persontype_id',1)->pluck('name','id');
         return view('cylinders.edit', compact(
             'cylinder',
             'title', 
@@ -142,7 +143,8 @@ class CylinderController extends Controller
             'controller', 
             'unittypes',
             'cylindertypes',
-            'providers'));
+            'providers',
+            'customers'));
     }
 
     /**
@@ -196,17 +198,6 @@ class CylinderController extends Controller
         $query.= $status_where;
 
         $data = DB::select($query);
-        
-        /*
-        $data = Cylinder::select("id","code","external_code","expiration","observation")
-            ->with(['cylindertype' => function ($query) {
-                        $query->select(['capacity', 'cylindertype']);
-                    }])
-            ->wherein("cylindertype_id",explode(',',$request->input('cylindertype_id')))
-            ->where("status_id", Cylinder::STATUS['DISPONIBLE'])
-            ->get();
-        */
-
 
         return response()->json($data);
     }

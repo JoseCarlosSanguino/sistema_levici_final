@@ -34,7 +34,8 @@ class Paycheck extends Model
     public function operations()
     {
     	return $this->belongsToMany(Operation::Class)
-    		->withTimestamps();
+    		->withTimestamps()
+            ->orderby('date_of','DESC');
     }
 
     public function bank()

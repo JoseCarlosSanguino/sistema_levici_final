@@ -12,7 +12,8 @@ class Purchase extends Model
     CONST STATUS = [
         'PENDIENTE'     => 4,
         'PAGO_PARCIAL'  => 5,
-        'PAGO_TOTAL'    => 6
+        'PAGO_TOTAL'    => 6,
+        'REM_CERRADO'   => 25
     ];
 
     CONST CONDITION = [

@@ -102,6 +102,7 @@ class SaleController extends Controller
         $groupoperationtypes    = Groupoperationtype::whereIn('id',[1,3,4])->pluck('groupoperationtype','id');
         $ivacondition_id        = $sale->customer->ivacondition_id;
         $groupoperationtype_id  = 1;
+        $remito_id              = $id;
 
 
         return view('sales.create',compact( 
@@ -110,7 +111,7 @@ class SaleController extends Controller
             'controller',
             'groupoperationtypes',
             'sale',
-            'number',
+            'remito_id',
             'ivacondition_id',
             'groupoperationtype_id'
         ));
@@ -209,40 +210,15 @@ class SaleController extends Controller
             DB::commit();
 
 
+
         } catch (\Exception $e){
-            dd($e);
+
             DB::rollBack();
+            return redirect()->back()->withInput()->withErrors([ $e->getMessage()]);
 
-            $title              = 'FACTURA';
-            $modelName          = 'Venta';
-            $controller         = 'facturas';
-
-            $groupoperationtypes    = Groupoperationtype::whereIn('id',[1,3,4])->pluck('groupoperationtype','id');
-            $ivacondition_id        = $sale->customer->ivacondition_id;
-            $groupoperationtype_id  = 1;
-            $sale->operation = $operation;
-
-            $remito_id = $data['remito_id'];
-
-
-            return view('sales.create',compact( 
-                'afip_auth',
-                'e',
-                'title', 
-                'modelName', 
-                'controller',
-                'groupoperationtypes',
-                'sale',
-                'number',
-                'ivacondition_id',
-                'groupoperationtype_id',
-                'remito_id'
-            ));
         }
-
-        //return redirect('sales/create')->with('operationtype_id', $data['operationtype_id']);
+        
         return redirect('facturas');
-
     }
 
 
@@ -456,7 +432,7 @@ class SaleController extends Controller
                 $pdf->Cell(20,6,$p->unittype->abrev, $bd,0,'C');
                 $pdf->Cell(23,6,'$' . $p->pivot->price, $bd,0,'R');
                 $pdf->Cell(17,6,($p->pivot->discount * 100 / $p->pivot->price).'%', $bd,0,'C');
-                $pdf->Cell(17,6,'$' . $p->pivot->discount, $bd,0,'R');
+                $pdf->Cell(17,6,'$' . $p->pivot->discount * $p->pivot->quantity, $bd,0,'R');
                 if($sale->operation->operationtype->letter == 'B')
                 {
                     $pdf->Cell(25,6,"$" . $p->pivot->quantity * ($p->pivot->price + $p->pivot->iva-$p->pivot->discount) , $bd,0,'R');

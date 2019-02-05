@@ -84,7 +84,11 @@
                                                 <td>{{$operation->date_of  or ''}}</td>
                                                 <td>{{$operation->operationtype->operationtype or ''}}</td>
                                                 <td>{{$operation->fullnumber or ''}}</td>
-                                                <td>{{$operation->payment->customer->name  or $operation->payment->provider->name}}</td>
+                                                @if($operation->operationtype_id == 19)
+                                                    <td>{{$operation->observation}}</td>
+                                                @else
+                                                    <td>{{$operation->payment->customer->name  or $operation->payment->provider->name}}</td>
+                                                @endif  
                                             </tr>
                                         @endforeach
                                     </tbody>

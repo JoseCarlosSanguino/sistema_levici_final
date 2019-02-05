@@ -2,14 +2,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>  
 <!-- Es este o el que está en layout/app.blade.php-->
 <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>-->
-@php echo isset($e)?$e->getMessage():''; @endphp
 
 <div class="form-group">
     <div class="col-xs-2">
         {!! Form::label('Tipo','Tipo de documento:'); !!}
     </div>
     <div class="col-xs-3">
-        {!! Form::select('groupoperationtype_id', $groupoperationtypes,1,['id' => 'groupoperationtype_id', 'class'=>'form-control', 'placeholder'=>'Tipo de documento']); !!}
+        {!! Form::select('groupoperationtype_id', $groupoperationtypes,old('groupoperationtype_id',1),['id' => 'groupoperationtype_id', 'class'=>'form-control', 'placeholder'=>'Tipo de documento']); !!}
     </div>
 </div>
 
@@ -20,7 +19,7 @@
     </div>
     <div class="col-xs-3">
         {!! Form::text('number', isset($number)?$number:'',['readonly' => 'readonly', 'class'=>'form-control']); !!}
-        {!! Form::hidden('operationtype_id' , isset($operationtype_id)?$operationtype_id:'', ['id' => 'operationtype_id']) !!}
+        {!! Form::hidden('operationtype_id' , isset($operationtype_id)?$operationtype_id: old('operationtype_id', ''), ['id' => 'operationtype_id']) !!}
     </div>
 </div>
 
@@ -30,7 +29,7 @@
         {!! Form::label('date','Fecha:'); !!}
     </div>
     <div class="col-xs-2">
-        {!! Form::text('date_of', isset($sale->date_of) ? $sale->date_of : date('d/m/Y'),['class'=>'form-control datepicker']); !!}
+        {!! Form::text('date_of', isset($sale->date_of) ? $sale->date_of : old('date_of', date('d/m/Y')),['class'=>'form-control datepicker']); !!}
     </div>
 </div>
 </br>
@@ -54,10 +53,10 @@
         {!! Form::label('customer','Cliente:'); !!}
     </div>
     <div class="col-xs-3">
-        {!! Form::text('customer_ac', isset($sale->customer->name)?$sale->customer->name:'',['id'=>'customer_ac', 'autocomplete' => 'off' ,'class'=>'typeahead form-control']); !!}
-        {!! Form::hidden('customer_id', isset($sale->customer_id)?$sale->customer_id:'', ['id' => 'customer_id']) !!}
-        {!! Form::hidden('ivacondition_id', isset($sale->customer->ivacondition_id)?$sale->customer->ivacondition_id:'', ['id' => 'ivacondition_id']) !!}
-        {!! Form::hidden('markup', isset($sale->customer->markup)?$sale->customer->markup:0, ['id' => 'markup']) !!}
+        {!! Form::text('customer_ac', isset($sale->customer->name)?$sale->customer->name:old('customer_ac',''),['id'=>'customer_ac', 'autocomplete' => 'off' ,'class'=>'typeahead form-control']); !!}
+        {!! Form::hidden('customer_id', isset($sale->customer_id)?$sale->customer_id:old('customer_id',''), ['id' => 'customer_id']) !!}
+        {!! Form::hidden('ivacondition_id', isset($sale->customer->ivacondition_id)?$sale->customer->ivacondition_id:old('ivacondition_id',''), ['id' => 'ivacondition_id']) !!}
+        {!! Form::hidden('markup', isset($sale->customer->markup)?$sale->customer->markup:old('markup', 0), ['id' => 'markup']) !!}
 
         
     </div>
@@ -69,7 +68,7 @@
         {!! Form::label('observation', 'Observaciones:'); !!}
     </div>
     <div class="col-xs-10">
-        {!! Form::text('observation', (isset($sale->operation->operationtype_id) && $sale->operation->operationtype_id == 13)?$sale->operation->fullnumber:'',['class'=>'form-control']);!!}
+        {!! Form::text('observation', (isset($sale->operation->operationtype_id) && $sale->operation->operationtype_id == 13)?'Remito: '.$sale->operation->fullnumber:old('observation',''),['class'=>'form-control']);!!}
     </div>
 </div>
 <br>
@@ -128,60 +127,104 @@
             </tr>
         </thead>
         <tbody>
-            @if(isset($sale->id))
+            @if(isset($sale->id) || old('product_id'))
                 @php 
                     $total = 0;
                     $iva21 = 0;
                     $iva105= 0;
                     $discount= 0;
 
-                    $numerador=1;
+                    $numerador=0;
 
                 @endphp
-                @foreach($sale->operation->products as $prod)
-                    @php    
-                        $new_price = (floatval($prod->pivot->price) / 100 * floatval($sale->customer->markup) ) + floatval($prod->pivot->price);
-                        $subt = $new_price * floatval($prod->pivot->quantity);
 
-                        $iva = floatval($prod->ivatype->percent) * ($subt / 100);
-                        if($prod->ivatype->percent == '21.00')
-                        {
-                            $iva21 = round($iva21 + $iva,2);
-                        }
-                        else
-                        {
-                            $iva105 = round($iva105 + $iva,2);
-                        }
+                <!-- cuando viene de un remito ya seae nuevo con error -->
+                @if(isset($sale->operation->products))
+                    @foreach($sale->operation->products as $prod)
+                        @php    
+                            $numerador++;
+                            $new_price = (floatval($prod->pivot->price) / 100 * floatval($sale->customer->markup) ) + floatval($prod->pivot->price);
+                            $subt = $new_price * floatval($prod->pivot->quantity);
 
-                        $total = round($total + $subt + $iva,2);
-                        $prod_t = round($subt + $iva,2);
+                            $iva = floatval($prod->ivatype->percent / 100) * ($subt);
+                            if($prod->ivatype->percent == '21.00')
+                            {
+                                $iva21 = round($iva21 + $iva,2);
+                                $iva21_tmp= $iva;
+                            }
+                            else
+                            {
+                                $iva105 = round($iva105 + $iva,2);
+                                $iva105_tmp= $iva;
+                            }
 
-                        if($sale->customer->ivacondition_id != 1)
-                        {
-                            $subt = $prod_t;
-                        }
+                            $total = round($total + $subt + $iva,2);
+                            $prod_t = round($subt + $iva,2);
 
-                    @endphp
-                    <tr>
-                        <td>{{$numerador}}
-                        <input type='hidden' name='product_id[]' value='{{$prod->id}}'/>
-                        <input type='hidden' name='product_quantity[]' value='{{$prod->pivot->quantity}}'/>
-                        <input type='hidden' name='product_price[]' value='{{$prod->pivot->price}}'/>
-                        <input type='hidden' name='prod_iva21[]' value='{{$iva21 or ''}}'/>
-                        <input type='hidden' name='prod_iva105[]' value='{{$iva105 or ''}}'/>
-                        <input type='hidden' name='product_total[]' id='prod_subtotal' value='{{$subt}}'/>
-                        <input type='hidden' name='product_subtotal[]' id='prod_total' value='{{$prod_t}}'/>
-                        </td>
-                    <td>{{$prod->code}}</td>
-                    <td>{{$prod->product}}</td>
-                    <td>{{$new_price}}</td>
-                    <td>{{$prod->pivot->quantity}}</td>
-                    <td>{{$subt }}</td>
-                    <td><a href='#' class='del btn btn-danger' ><i class='add fa fa-minus' aria-hidden='true'></i></a> </td>
-                    </tr>
-                    {{$numerador++}}
+                            if($sale->customer->ivacondition_id != 1)
+                            {
+                                $subt = $prod_t;
+                            }
 
-                @endforeach
+                        @endphp
+                        <tr>
+                            <td>{{$numerador}}
+                            <input type='hidden' name='product_id[]' value='{{$prod->id}}'/>
+                            <input type='hidden' name='product_product[]' value='{{$prod->product}}'/>
+                            <input type='hidden' name='product_code[]' value='{{$prod->code}}'/>
+                            <input type='hidden' name='product_quantity[]' value='{{$prod->pivot->quantity}}'/>
+                            <input type='hidden' name='product_price[]' value='{{$new_price}}'/>
+                            <input type='hidden' name='prod_iva21[]' value='{{$iva21_tmp or 0}}'/>
+                            <input type='hidden' name='prod_iva105[]' value='{{$iva105_tmp or 0}}'/>
+                            <input type='hidden' name='product_discount[]' id='product_discount' value='{{$prod->pivot->discount}}'/>
+                            <input type='hidden' name='product_total[]' id='prod_subtotal' value='{{$subt}}'/>
+                            <input type='hidden' name='product_subtotal[]' id='prod_total' value='{{$prod_t}}'/>
+                            </td>
+                        <td>{{$prod->code}}</td>
+                        <td>{{$prod->product}}</td>
+                        <td>{{$new_price}}</td>
+                        <td>{{$prod->pivot->quantity}}</td>
+                        <td>{{$subt }}</td>
+                        <td><a href='#' class='del btn btn-danger' ><i class='add fa fa-minus' aria-hidden='true'></i></a> </td>
+                        </tr>
+
+                    @endforeach
+                
+                @elseif(old('product_id'))
+                    @foreach(old('product_id') as $idx => $prod_id)
+                        @php  
+                            $numerador++;
+                            $total = round(old('amount'),2);
+                            $iva21 = round(old('iva21'),2);
+                            $iva105= round(old('iva105'),2);
+                            $discount= round(old('discount'),2);
+
+                        @endphp
+                        <tr>
+                            <td>{{$numerador}}
+                            <input type='hidden' name='product_id[]' value='{{$prod_id}}'/>
+                            <input type='hidden' name='product_product[]' value='{{old('product_product')[$idx]}}'/>
+                            <input type='hidden' name='product_code[]' value='{{old('product_code')[$idx]}}'/>
+                            <input type='hidden' name='product_quantity[]' value='{{old('product_quantity')[$idx]}}'/>
+                            <input type='hidden' name='product_price[]' value='{{old('product_price')[$idx]}}'/>
+                            <input type='hidden' name='prod_iva21[]' value='{{old('prod_iva21')[$idx]}}'/>
+                            <input type='hidden' name='prod_iva105[]' value='{{old('prod_iva105')[$idx]}}'/>
+                            <input type='hidden' name='product_discount[]' id='product_discount' value='{{old('product_discount')[$idx]}}'/>
+                            <input type='hidden' name='product_total[]' id='prod_subtotal' value='{{old('product_total')[$idx]}}'/>
+                            <input type='hidden' name='product_subtotal[]' id='prod_total' value='{{old('product_subtotal')[$idx]}}'/>
+                            </td>
+                        <td>{{old('product_product')[$idx]}}</td>
+                        <td>{{old('product_code')[$idx]}}</td>
+                        <td>{{old('product_price')[$idx]}}</td>
+                        <td>{{old('product_quantity')[$idx]}}</td>
+                        <td>{{old('product_total')[$idx]}}</td>
+                        <td><a href='#' class='del btn btn-danger' ><i class='add fa fa-minus' aria-hidden='true'></i></a> </td>
+                        </tr>
+
+                    @endforeach
+                @endif
+
+
             @endif
             
         </tbody>
@@ -206,7 +249,7 @@
             </tr>
             <tr>
                 <td width="70%" align="right"><b>Descuento</b></td>
-                <td id="tdDescuento" style="font-size: 16px; font-weight: bold">0</td>
+                <td id="tdDescuento" style="font-size: 16px; font-weight: bold">{{$discount or 0}}</td>
             </tr>
             <tr>
                 <td width="70%" align="right"><b>TOTAL</b></td>
@@ -218,7 +261,11 @@
 </br>
 
 <div class="form-group">
-    <input id="btnCrear" disabled='disabled' class="btn btn-primary" type="submit" value="Crear">
+    @if ((isset($sale->operation->operationtype_id) && $sale->operation->operationtype_id == 13) || old('operationtype_id'))
+        <input id="btnCrear" class="btn btn-primary" type="submit" value="Crear">
+    @else
+        <input id="btnCrear" disabled='disabled' class="btn btn-primary" type="submit" value="Crear">
+    @endif
 </div>
 
 <script type="text/javascript">
@@ -240,10 +287,14 @@
             dateFormat: 'dd/mm/yy'
         });
 
-        $.get(pathNextNumber, { group_id : {{ $groupoperationtype_id or 0 }}, ivacondition_id : {{$ivacondition_id or 0}} } , function (data) {
+        $.get(pathNextNumber, { group_id : {{ $groupoperationtype_id or old('groupoperationtype_id',0) }}, ivacondition_id : {{$ivacondition_id or old('ivacondition_id',0)}} } , function (data) {
             $("#number").val(data.number);
             $("#operationtype_id").val(data.operationtype_id);
         });
+
+        if($("#customer_id").val() > 0 && $("#customer_id").val() != ""){
+            $("#prod_ac").prop('disabled', false);
+        }
 
     });
 
@@ -260,27 +311,27 @@
         
         if($("#prod_id").val() > 0)
         {
-            var markup= parseFloat( $("#markup").val()).toFixed(2);
-            var price = parseFloat( $("#price").val()).toFixed(2) ;
-            var quant = parseFloat( $("#quantity").val()).toFixed(2);
-            var disc  = parseFloat( $("#disc").val()).toFixed(2);
-
-            if(!(disc > 0)) disc = 0;
-
             var ivacondition_id = $("#ivacondition_id").val();
 
-            var discount = parseFloat(price * (disc / 100) * quant); //descuento
+            var markup= parseFloat( $("#markup").val());
+            var price = parseFloat( $("#price").val());
+            var quant = parseFloat( $("#quantity").val());
+            var disc  = parseFloat( $("#disc").val());
+            var iva_p = parseFloat( $("#prod_ivatype").val());
+            if(!(disc > 0)) disc = 0;
 
-            desc = parseFloat(desc + discount);
+            //calculos
+            var price_unit   = ((price / 100) * markup) + price; //unitario
+            var discount_unit= (disc / 100) * price_unit; // unitario
+            var discount_total= discount_unit * quant; 
+            var iva_unit     = ((price_unit - discount_unit) / 100) * iva_p; // unitario
+            var iva_total    = iva_unit * quant;
+            var subt    = (price_unit - discount_unit) * quant; //subtotal sin iva
+            var prod_t  = subt + iva_total; //subtotal con iva
 
-            var subt  = (price - discount) * quant; //sin iva
-            var inter = ( subt / 100 ) * markup; //sin iva
-            subt = subt + inter; //sin iva
-            var iva_p = parseFloat( $("#prod_ivatype").val() ).toFixed(2);
-            var iva   = ( subt / 100 ) * iva_p; //este es el iva
-            var prod_t= subt + iva;
-
-            total   = parseFloat(total) + subt + iva;
+            desc = parseFloat(desc + discount_total);
+            total= parseFloat(total) + subt + iva_total;
+            
             if(ivacondition_id != 1){
                 subt = prod_t;
             }
@@ -291,20 +342,22 @@
             if(ivacondition_id == 1){
 
                 if($("#prod_ivatype").val() == '21.00'){
-                    iva21= parseFloat(parseFloat(iva21) + iva).toFixed(2);
-                    iva_tmp21 = iva;
+                    iva21= parseFloat(parseFloat(iva21) + iva_total).toFixed(2);
+                    iva_tmp21 = iva_total;
                 }else{
-                    iva105= parseFloat(parseFloat(iva105) + iva).toFixed(2);
-                    iva_tmp105 = iva;
+                    iva105= parseFloat(parseFloat(iva105) + iva_total).toFixed(2);
+                    iva_tmp105 = iva_total;
                 }
             }
             
             var line = "<tr>"+
                     "<td>"+numerador+
                     "<input type='hidden' name='product_id[]' value='"+$("#prod_id").val()+"'/>"+
-                    "<input type='hidden' name='product_quantity[]' value='"+$("#quantity").val()+"'/>"+
-                    "<input type='hidden' name='product_price[]' value='"+$("#price").val()+"'/>"+
-                    "<input type='hidden' name='product_discount[]' id='product_discount' value='"+discount+"'/>"+
+                    "<input type='hidden' name='product_product[]' value='"+$("#prod_product").val()+"'/>"+
+                    "<input type='hidden' name='product_code[]' value='"+$("#prod_code").val()+"'/>"+
+                    "<input type='hidden' name='product_quantity[]' value='"+quant+"'/>"+
+                    "<input type='hidden' name='product_price[]' value='"+price_unit+"'/>"+
+                    "<input type='hidden' name='product_discount[]' id='product_discount' value='"+discount_unit+"'/>"+
                     "<input type='hidden' name='prod_iva21[]' id='prod_iva21' value='"+iva_tmp21+"'/>"+
                     "<input type='hidden' name='prod_iva105[]' id='prod_iva105' value='"+iva_tmp105+"'/>"+
                     "<input type='hidden' name='product_total[]' id='prod_subtotal' value='"+subt+"'/>"+
