@@ -27,7 +27,7 @@
                         <input type="text" class="form-control" name="search" placeholder="Buscar..." value="{{ request('search') }}">
                         <span class="input-group-btn">
                             <button class="btn btn-secondary" type="submit">
-                                    <i class="fa fa-search" aria-hidden="true">&nbsp;</i>
+                                <i class="fa fa-search" aria-hidden="true">&nbsp;</i>
                             </button>
                         </span>
                     </div>
