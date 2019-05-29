@@ -200,13 +200,13 @@
                         <tr>
                             <td><?php echo e($numerador); ?>
 
-                            <input type='hidden' name='product_id[]' value='<?php echo e($prod->id); ?>'/>
-                            <input type='hidden' name='product_product[]' value='<?php echo e($prod->product); ?>'/>
-                            <input type='hidden' name='product_code[]' value='<?php echo e($prod->code); ?>'/>
-                            <input type='hidden' name='product_quantity[]' value='<?php echo e($prod->pivot->quantity); ?>'/>
-                            <input type='hidden' name='product_price[]' value='<?php echo e($new_price); ?>'/>
-                            <input type='hidden' name='prod_iva21[]' value='<?php echo e(isset($iva21_tmp) ? $iva21_tmp : 0); ?>'/>
-                            <input type='hidden' name='prod_iva105[]' value='<?php echo e(isset($iva105_tmp) ? $iva105_tmp : 0); ?>'/>
+                            <input id="product_id" type='hidden' name='product_id[]' value='<?php echo e($prod->id); ?>'/>
+                            <input id="product_product" type='hidden' name='product_product[]' value='<?php echo e($prod->product); ?>'/>
+                            <input id="product_code" type='hidden' name='product_code[]' value='<?php echo e($prod->code); ?>'/>
+                            <input id="product_quantity" type='hidden' name='product_quantity[]' value='<?php echo e($prod->pivot->quantity); ?>'/>
+                            <input id="product_price" type='hidden' name='product_price[]' value='<?php echo e($new_price); ?>'/>
+                            <input id="prod_iva21" type='hidden' name='prod_iva21[]' value='<?php echo e(isset($iva21_tmp) ? $iva21_tmp : 0); ?>'/>
+                            <input id="prod_iva105" type='hidden' name='prod_iva105[]' value='<?php echo e(isset($iva105_tmp) ? $iva105_tmp : 0); ?>'/>
                             <input type='hidden' name='product_discount[]' id='product_discount' value='<?php echo e($prod->pivot->discount); ?>'/>
                             <input type='hidden' name='product_total[]' id='prod_subtotal' value='<?php echo e($subt); ?>'/>
                             <input type='hidden' name='product_subtotal[]' id='prod_total' value='<?php echo e($prod_t); ?>'/>

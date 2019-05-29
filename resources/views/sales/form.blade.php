@@ -169,13 +169,13 @@
                         @endphp
                         <tr>
                             <td>{{$numerador}}
-                            <input type='hidden' name='product_id[]' value='{{$prod->id}}'/>
-                            <input type='hidden' name='product_product[]' value='{{$prod->product}}'/>
-                            <input type='hidden' name='product_code[]' value='{{$prod->code}}'/>
-                            <input type='hidden' name='product_quantity[]' value='{{$prod->pivot->quantity}}'/>
-                            <input type='hidden' name='product_price[]' value='{{$new_price}}'/>
-                            <input type='hidden' name='prod_iva21[]' value='{{$iva21_tmp or 0}}'/>
-                            <input type='hidden' name='prod_iva105[]' value='{{$iva105_tmp or 0}}'/>
+                            <input id="product_id" type='hidden' name='product_id[]' value='{{$prod->id}}'/>
+                            <input id="product_product" type='hidden' name='product_product[]' value='{{$prod->product}}'/>
+                            <input id="product_code" type='hidden' name='product_code[]' value='{{$prod->code}}'/>
+                            <input id="product_quantity" type='hidden' name='product_quantity[]' value='{{$prod->pivot->quantity}}'/>
+                            <input id="product_price" type='hidden' name='product_price[]' value='{{$new_price}}'/>
+                            <input id="prod_iva21" type='hidden' name='prod_iva21[]' value='{{$iva21_tmp or 0}}'/>
+                            <input id="prod_iva105" type='hidden' name='prod_iva105[]' value='{{$iva105_tmp or 0}}'/>
                             <input type='hidden' name='product_discount[]' id='product_discount' value='{{$prod->pivot->discount}}'/>
                             <input type='hidden' name='product_total[]' id='prod_subtotal' value='{{$subt}}'/>
                             <input type='hidden' name='product_subtotal[]' id='prod_total' value='{{$prod_t}}'/>

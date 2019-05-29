@@ -9,7 +9,7 @@
         {!! Form::label('number','Número:'); !!}
     </div>
     <div class="col-xs-2">
-        {!! Form::text('number', '',['readonly' => 'readonly', 'class'=>'form-control']); !!}
+        {!! Form::text('number', '',[ 'class'=>'form-control']); !!}
         {!! Form::hidden('operationtype_id' , $operationtype_id, ['id' => 'operationtype_id']) !!}
     </div>
 </div>
