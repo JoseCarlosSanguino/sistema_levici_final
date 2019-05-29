@@ -325,7 +325,7 @@ class SaleController extends Controller
             //info empresa
             $pdf->SetFont('Times','',9);
             $pdf->SetXY(48,25);
-            $info = utf8_decode('Administración: Patricios 256. (5507) Luján de Cuyo. Mendoza. Base: Terrada y callejón Los Olivos 1. Perdriel. Luján de Cuyo. Mendoza. Tel: 0261 4987490 / 261 534-4469. E-mail: levicigroupsa@gmail.com');
+            $info = utf8_decode('Administración y base: Terrada y callejón Los Olivos 1. Perdriel. Luján de Cuyo. Mendoza. Tel: 0261 4987490 / 261 534-4469. E-mail: levicigroupsa@gmail.com');
             
             $pdf->MultiCell(51,4,$info,$bd,'R');
             $pdf->SetXY(48,52);
