@@ -45,7 +45,9 @@
                                     <td>{{ $sale->operation->amount }}</td>
                                     <td>{{ $sale->operation->status->status or '' }}</td>
                                     <td>
+                                        <!--
                                         <a href="{{ url('/facturapdf/' . $sale->id) }}" target="_blank" title="Ver {{$modelName}}"><button class="btn btn-info btn-sm"><i class="fa fa-eye" aria-hidden="true"></i> Ver</button></a>
+                                        -->
                                         <a href="{{ url('/pagarFactura/' . $sale->id) }}" target="_blank" title="Ver {{$modelName}}"><button class="btn btn-info btn-sm"><i class="fa fa-check" aria-hidden="true"></i> Pagar</button></a>
                                     </td>
                                 </tr>
