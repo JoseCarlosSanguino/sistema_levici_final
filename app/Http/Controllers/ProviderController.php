@@ -52,7 +52,7 @@ class ProviderController extends Controller
         $title      = 'Editar un proveedor';
         $modelName  = 'Proveedor';
         $controller = 'providers';
-        $provinces = Province::pluck('province','id');
+        $provinces = Province::orderBy('province')->pluck('province','id');
         $ivaconditions = Ivacondition::pluck('ivacondition','id');
         $cities = [];
 
@@ -109,7 +109,7 @@ class ProviderController extends Controller
         $controller = 'providers';
 
         $provider = Provider::findOrFail($id);
-        $provinces = Province::pluck('province','id');
+        $provinces = Province::orderBy('province')->pluck('province','id');
         $ivaconditions = Ivacondition::pluck('ivacondition','id');
         $cities = [];
 

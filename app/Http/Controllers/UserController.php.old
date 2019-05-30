@@ -94,7 +94,7 @@ class UserController extends Controller
         $controller = 'users';
 
         $provider = User::findOrFail($id);
-        $provinces = Province::pluck('province','id');
+        $provinces = Province::orderBy('province')->pluck('province','id');
         $ivaconditions = Ivacondition::pluck('ivacondition','id');
 
         return view('users.edit', compact('provider','title', 'modelName', 'controller', 'ivaconditions','provinces'));

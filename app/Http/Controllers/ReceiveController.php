@@ -70,7 +70,7 @@ Class ReceiveController extends Controller
         $modelName          = 'Recibo';
         $controller         = 'receives';
         $operationtype_id   = 11;
-        $banks = Bank::pluck('bank','id');
+        $banks = Bank::orderBy('bank')->pluck('bank','id');
 
         return view('payments.create',compact( 
             'title', 

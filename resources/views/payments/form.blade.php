@@ -394,7 +394,7 @@
         var branch = $("#chequeModalAlta #branch").val();
         var bank_text = '';
         if(bank_id > 0){
-            bank_text = $("#chequeModalAlta #bank_id").text();
+            bank_text = $("#chequeModalAlta #bank_id option:selected").text();
         }
 
         var line = "<tr>"+

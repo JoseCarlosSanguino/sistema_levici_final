@@ -49,7 +49,7 @@ class ProvinceController extends Controller
         $title      = 'Editar una provincia';
         $modelName  = 'Provincia';
         $controller = 'provinces';
-        $provinces = Province::pluck('province','id');
+        $provinces = Province::orderBy('province')->pluck('province','id');
 
         return view('provinces.create',compact( 'title', 'modelName', 'controller'));
     }

@@ -49,7 +49,7 @@ class CityController extends Controller
         $title      = 'Editar una ciudad';
         $modelName  = 'ciudad';
         $controller = 'cities';
-        $provinces = Province::pluck('province','id');
+        $provinces = Province::orderBy('province')->pluck('province','id');
         
 
         return view('cities.create',compact( 'title', 'modelName', 'controller', 'provinces'));
@@ -82,7 +82,7 @@ class CityController extends Controller
         $controller = 'cities';
 
         $city = City::findOrFail($id);
-        $provinces = Province::pluck('province','id');
+        $provinces = Province::orderBy('province')->pluck('province','id');
         return view('cities.show', compact('city','title', 'modelName', 'controller','provinces'));
     }
 
@@ -99,7 +99,7 @@ class CityController extends Controller
         $controller = 'cities';
 
         $city = City::findOrFail($id);
-        $provinces = Province::pluck('province','id');
+        $provinces = Province::orderBy('province')->pluck('province','id');
 
         return view('cities.edit', compact('city','title', 'modelName', 'controller','provinces'));
     }

@@ -49,7 +49,7 @@ class TrademarkController extends Controller
         $title      = 'Editar una marca';
         $modelName  = 'Marca';
         $controller = 'trademarks';
-        $trademarks = trademark::pluck('trademark','id');
+        $trademarks = trademark::orderBy('trademark')->pluck('trademark','id');
 
         return view('trademarks.create',compact( 'title', 'modelName', 'controller'));
     }

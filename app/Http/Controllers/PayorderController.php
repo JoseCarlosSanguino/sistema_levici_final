@@ -70,7 +70,7 @@ Class PayorderController extends Controller
         $title      = 'Orden de pago';
         $controller = 'payorders';
         $operationtype_id   = 10;
-        $banks = Bank::pluck('bank','id');
+        $banks = Bank::orderBy('bank')->pluck('bank','id');
 
         return view('payments.create',compact( 
             'title', 

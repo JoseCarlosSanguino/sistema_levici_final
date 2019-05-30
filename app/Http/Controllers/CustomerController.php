@@ -52,7 +52,7 @@ class CustomerController extends Controller
         $title      = 'Editar un Cliente';
         $modelName  = 'cliente';
         $controller = 'customers';
-        $provinces = Province::pluck('province','id');
+        $provinces = Province::orderBy('province')->pluck('province','id');
         $ivaconditions = Ivacondition::pluck('ivacondition','id');
 
         return view('customers.create',compact( 'title', 'modelName', 'controller','ivaconditions','provinces'));
