@@ -126,13 +126,15 @@ class BudgetController extends Controller
             $operation->save();
 
             //cylinders
-            /*
+            
             if(isset($data['cylinder_id']))
             {
                 foreach($data['cylinder_id'] as $cyl_id)
                 {
+
                     $cyl = Cylinder::find($cyl_id);
                     $operation->cylinders()->save($cyl);
+                    /*
                     $cyl->status_id = $cyl::STATUS['EN CLIENTE'];
                     $cyl->save();
 
@@ -143,9 +145,9 @@ class BudgetController extends Controller
                         'date_of'    => date('d/m/Y H:i:s')
                     ]);
                     $cyl->moves()->save($cylmove);
+                    */
                 }
             }
-            */
 
             DB::commit();
 
@@ -165,15 +167,43 @@ class BudgetController extends Controller
     {
         $budget = Sale::find($id);
         //products
-        foreach($budget->operation->products as $prod)
-        {
-            $prod->stock = $prod->stock - $prod->pivot->quantity;
-            $prod->save();
-        }
-        $budget->operation->status_id = Sale::STATUS['PRESU_RECHAZADO'];
-        $budget->operation->save();
+        try{
+            DB::beginTransaction();
+            foreach($budget->operation->products as $prod)
+            {
+                $prod->stock = $prod->stock - $prod->pivot->quantity;
+                $prod->save();
+            }
+            //cylinders
+            foreach($budget->operation->cylinders as $cyl)
+            {
+                if($cyl->status_id != $cyl::STATUS['DISPONIBLE'])
+                {
+                    throw new Exception('Cilindro no disponible');
+                }
+                $cyl->status_id = $cyl::STATUS['EN CLIENTE'];
+                $cyl->save();
 
-        return redirect('budgets');
+                //mov
+                $cylmove = NEW Cylindermove([
+                    'person_id'  => $budget->customer_id,
+                    'movetype_id'=> Cylindermove::MOVETYPE['ENVIO_A_CLIENTE'],
+                    'date_of'    => date('d/m/Y H:i:s')
+                ]);
+                $cyl->moves()->save($cylmove);
+            }
+
+            $budget->operation->status_id = Sale::STATUS['PRESU_RECHAZADO'];
+            $budget->operation->save();
+
+            DB::commit();
+
+            return redirect('budgets');
+
+        }catch(\Exception $e){
+            dd($e);
+            DB::rollBack();
+        }
     }
 
 
@@ -337,7 +367,7 @@ class BudgetController extends Controller
             
             
             /*
-            * DETALLE DE LA FACTURA
+            * DETALLE DEL PRESUPUESTO
             */
             
             $pdf->setXY(5,79);
@@ -369,6 +399,17 @@ class BudgetController extends Controller
                     $pdf->Cell(25, 6, $det->pivot->quantity * $det->pivot->price, $bd, 0, 'R');
                     $pdf->Ln();
                 }
+            }
+
+            foreach($sale->operation->cylinders as $cyl)
+            {
+                $pdf->setX(5);
+                $pdf->Cell(25,6,$cyl->cylindertype->products[0]->code, $bd, 0, 'C');
+                $pdf->Cell(125,6,$cyl->cylindertype->products[0]->product . '. Cod: ' . $cyl->code . '. Capacidad: ' . $cyl->cylindertype->capacity . $cyl->cylindertype->products[0]->unittype->abrev , $bd, 0);
+                $pdf->Cell(25, 6, 1, $bd, 0, 'C');
+                $pdf->Cell(25, 6, round($cyl->cylindertype->capacity * $cyl->cylindertype->products[0]->price,2), $bd, 0, 'R');
+                $pdf->Ln();
+                $quantity++;
             }
 
             
