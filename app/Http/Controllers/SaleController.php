@@ -36,7 +36,7 @@ class SaleController extends Controller
         if (!empty($keyword)) 
         {
             $operations = Sale::whereHas("operation", function($q){
-                $q->wherein('operationtype_id',[1,2,3]);
+                $q->wherein('operationtype_id',[1,2,3,15,16,17,18]);
             })
                 ->WhereHas("customer", function($q) use ($keyword){
                     $q->where('name','like', '%'.$keyword.'%');
@@ -51,7 +51,7 @@ class SaleController extends Controller
         else
         {
             $operations = Sale::whereHas("operation", function($q){
-                $q->wherein('operationtype_id',[1,2,3]);
+                $q->wherein('operationtype_id',[1,2,3,15,16,17,18]);
             })
                 ->with(['customer','operation'])
                 ->latest()
@@ -528,7 +528,7 @@ class SaleController extends Controller
         if(!is_null($request->input('order')))
         {
             $operations = Sale::whereHas("operation", function($q) use ($request){
-                $q->wherein('operationtype_id',[1,2,3]);
+                $q->wherein('operationtype_id',[1,2,3,15,16,17,18]);
                 $q->wherein('status_id', explode(',',$request->input('status_id')));
                 $q->orderby('date_of',$request->input('order'));
             })
@@ -539,7 +539,7 @@ class SaleController extends Controller
         else
         {
             $operations = Sale::whereHas("operation", function($q) use ($request){
-                    $q->wherein('operationtype_id',[1,2,3]);
+                    $q->wherein('operationtype_id',[1,2,3,15,16,17,18]);
                     $q->wherein('status_id', explode(',',$request->input('status_id')));
                 })
                 ->where('customer_id',$customer_id)
@@ -550,6 +550,7 @@ class SaleController extends Controller
         foreach($operations as $sale)
         {
             $sale->operation->operationtype;
+            $sale->operation->operationtype->groupoperationtype;
             $sale->operation->dateof = $sale->operation->date_of;
         }
         return response()->json($operations);

@@ -39,10 +39,10 @@
                             <?php $__currentLoopData = $operations; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $sale): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <tr>
                                     <td><?php echo e(isset($loop->iteration) ? $loop->iteration : $sale->id); ?></td>
-                                    <td><?php echo e($sale->operation->operationtype->letter . $sale->operation->FullNumber); ?></td>
+                                    <td><?php echo e($sale->operation->operationtype->groupoperationtype->abrev .'-' . $sale->operation->operationtype->letter . $sale->operation->FullNumber); ?></td>
                                     <td><?php echo e($sale->operation->date_of); ?></td>
                                     <td><?php echo e(isset($sale->customer->name) ? $sale->customer->name : ''); ?></td>
-                                    <td><?php echo e($sale->operation->amount); ?></td>
+                                    <td><?php echo e(($sale->operation->operationtype_id == 15 || $sale->operation->operationtype_id == 16)?$sale->operation->amount*-1:$sale->operation->amount); ?></td>
                                     <td><?php echo e(isset($sale->operation->status->status) ? $sale->operation->status->status : ''); ?></td>
                                     <td>
                                         <a href="<?php echo e(url('/facturapdf/' . $sale->id)); ?>" target="_blank" title="Ver <?php echo e($modelName); ?>"><button class="btn btn-info btn-sm"><i class="fa fa-print" aria-hidden="true"></i> Imprimir</button></a>

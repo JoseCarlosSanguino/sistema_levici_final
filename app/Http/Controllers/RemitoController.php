@@ -108,7 +108,9 @@ class RemitoController extends Controller
 
         try {
             DB::beginTransaction();
+
             $operation = new Operation($data);
+            $operation->pointofsale = $operation->operationtype->pointofsale;
             $operation->save();
 
             $sale = new Sale($data);
@@ -571,6 +573,7 @@ class RemitoController extends Controller
         $pdf->setFont('Times','',12);
 
         $quantity = 0;
+        $total = 0;
         foreach($sale->operation->products as $det)
         {
             if(count($det->cylindertypes) == 0)
@@ -580,6 +583,7 @@ class RemitoController extends Controller
                 $pdf->Cell(29, 6, $det->pivot->quantity, $bd, 0, 'C');
                 $pdf->Ln();
                 $quantity = $quantity + $det->pivot->quantity;
+                $total = $total + ($quantity * $det->pivot->price);
             }
     	}
 
@@ -592,10 +596,10 @@ class RemitoController extends Controller
             $quantity++;
     	}
 
-        $pdf->SetXY(170,257);
         $pdf->SetFont('Times','B',16);
-        //$pdf->Cell(171,12,"TOTAL",1,0,'R');
-        //$pdf->Line(176,87,176,292);
+        $pdf->SetXY(45,257);
+        $pdf->Cell(50,12, 'Valor declarado: $' . number_format($total,2),0,0,'C');
+        $pdf->SetXY(170,257);
         $pdf->Cell(29,12, $quantity,0,0,'C');
 
         $pdf->Output();

@@ -287,7 +287,13 @@
         					residue = parseFloat(rec.pivot.residue);
         				});
         			}
-        			var number = sale.operation.operationtype.letter + ('0000' + sale.operation.operationtype.pointofsale).slice(-4) + '-'+ ('00000000' + sale.operation.number).slice(-8);
+
+                    if(sale.operation.operationtype_id == 15 || sale.operation.operationtype_id == 16){
+                        residue = residue * -1;
+                        sale.operation.amount = sale.operation.amount * -1;
+                    }
+                    
+        			var number = sale.operation.operationtype.groupoperationtype.abrev +'-'+ sale.operation.operationtype.letter + ('0000' + sale.operation.operationtype.pointofsale).slice(-4) + '-'+ ('00000000' + sale.operation.number).slice(-8);
         			var line = "<tr>"+
         					"<td>"+sale.operation.dateof+
                             "<input type='hidden' id='fact_id' name='fact_id[]' value='"+sale.id+"'>"+

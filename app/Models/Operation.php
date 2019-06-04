@@ -37,6 +37,11 @@ class Operation extends Model
         return str_pad($this->pointofsale,4,0,STR_PAD_LEFT) . '-' . str_pad($this->number, 8,0,STR_PAD_LEFT);
     }
 
+    public function getFullNumberAttributeType(){
+        return $this->operationtype->groupoperationtype->abreb . str_pad($this->pointofsale,4,0,STR_PAD_LEFT) . '-' . str_pad($this->number, 8,0,STR_PAD_LEFT);
+    }
+
+
     public function products()
     {
         return $this->belongsToMany(Product::Class)

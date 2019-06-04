@@ -39,10 +39,10 @@
                             @foreach($operations as $sale)
                                 <tr>
                                     <td>{{ $loop->iteration or $sale->id }}</td>
-                                    <td>{{ $sale->operation->operationtype->letter . $sale->operation->FullNumber}}</td>
+                                    <td>{{ $sale->operation->operationtype->groupoperationtype->abrev .'-' . $sale->operation->operationtype->letter . $sale->operation->FullNumber}}</td>
                                     <td>{{ $sale->operation->date_of }}</td>
                                     <td>{{ $sale->customer->name or '' }}</td>
-                                    <td>{{ $sale->operation->amount }}</td>
+                                    <td>{{ ($sale->operation->operationtype_id == 15 || $sale->operation->operationtype_id == 16)?$sale->operation->amount*-1:$sale->operation->amount  }}</td>
                                     <td>{{ $sale->operation->status->status or '' }}</td>
                                     <td>
                                         <a href="{{ url('/facturapdf/' . $sale->id) }}" target="_blank" title="Ver {{$modelName}}"><button class="btn btn-info btn-sm"><i class="fa fa-print" aria-hidden="true"></i> Imprimir</button></a>
