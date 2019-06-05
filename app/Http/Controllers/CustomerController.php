@@ -181,9 +181,9 @@ class CustomerController extends Controller
             $where = 'and c.name like "%'.$keyword.'%" or c.cuit like "%'.$keyword.'%"';
         }
 
-        $query = 'select sum(amount) monto, count(o.id) cant, customer_id, c.name, c.cuit ';
+        $query = 'select sum(if(operationtype_id=15, amount*-1, if(operationtype_id=16, amount*-1, amount))) monto, count(o.id) cant, customer_id, c.name, c.cuit ';
         $query.= 'From operations o join sales s on (s.operation_id = o.id) join persons c on (c.id = s.customer_id) ';
-        $query.= 'where operationtype_id in (1,2) and status_id in (1) ';
+        $query.= 'where operationtype_id in (1,2,15,16) and status_id in (1) ';
         $query.= $where; 
         $query.= 'group by s.customer_id, c.name, c.cuit order by monto desc ';
 

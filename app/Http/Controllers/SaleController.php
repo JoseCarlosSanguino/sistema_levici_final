@@ -354,7 +354,7 @@ class SaleController extends Controller
             * DATOS DEL CLIENTE
             */
             $pdf->SetXY(5,58);
-            $pdf->Cell(200,20,"",1);
+            $pdf->Cell(200,25,"",1);
             
             //cliente
             $pdf->setXY(6,59);
@@ -391,55 +391,64 @@ class SaleController extends Controller
             $pdf->Cell(177,6,$sale->customer->address .  ' - ' . ' ('. $sale->customer->province->province .')', $bd);
             $pdf->Ln();
             $pdf->SetX(6);
+
+            //direccion
+            $pdf->SetX(6);
+            $pdf->setFont('Times','',12);
+            $pdf->Cell(27,6,utf8_decode("Observaciones: "), $bd);
+            $pdf->setFont('Times','B',12);
+            $pdf->Cell(177,6,$sale->operation->observation, $bd);
+            $pdf->Ln();
+            $pdf->SetX(6);
             
             /*
             * DETALLE DE LA FACTURA
             */
             
-            $pdf->setXY(5,79);
-            $pdf->SetFont('Times','',12);
-            $pdf->Cell(23,8,utf8_decode("Código"), 1,0,'C');
-            $pdf->Cell(58,8,"Producto",1,0,'C');
+            $pdf->setXY(5,84);
+            $pdf->SetFont('Times','',11);
+            $pdf->Cell(20,8,utf8_decode("Código"), 1,0,'C');
+            $pdf->Cell(75,8,"Producto",1,0,'C');
             $pdf->Cell(17,8,"Cantidad",1,0,'C');
-            $pdf->Cell(20,8,"U. Medida",1,0,'C');
-            $pdf->Cell(23,8,"Precio unit",1,0,'C');
+            $pdf->Cell(15,8,"Unidad",1,0,'C');
+            $pdf->Cell(17,8,"$ unit",1,0,'C');
             $pdf->Cell(17,8,"% Bonif",1,0,'C');
             $pdf->Cell(17,8,"$ Bonif",1,0,'C');
-            $pdf->Cell(25,8,"$ Subtotal",1,0,'C');
+            $pdf->Cell(22,8,"$ Subtotal",1,0,'C');
 
             $pdf->SetLineWidth(0.2);
-            $pdf->Line(5,81,5,240);
-            $pdf->Line(28,81,28,240);
-            $pdf->Line(86,81,86,240);
-            $pdf->Line(103,81,103,240);
-            $pdf->Line(123,81,123,240);
-            $pdf->Line(146,81,146,240);
-            $pdf->Line(163,81,163,240);
-            $pdf->Line(180,81,180,240);
-            $pdf->Line(205,81,205,240);
+            $pdf->Line(5,84,5,240);
+            $pdf->Line(25,84,25,240);
+            $pdf->Line(100,84,100,240);
+            $pdf->Line(117,84,117,240);
+            $pdf->Line(132,84,132,240);
+            $pdf->Line(149,84,149,240);
+            $pdf->Line(166,84,166,240);
+            $pdf->Line(183,84,183,240);
+            $pdf->Line(205,84,205,240);
             
             $pdf->Ln();
-            $pdf->SetFont('Times','',11);
+            $pdf->SetFont('Times','',10);
 
             foreach($sale->operation->products as $p)
             {
 
 
                 $pdf->setX(5);
-                $pdf->Cell(23,6,$p->code, $bd, 0, 'C');
-                $pdf->Cell(58,6, utf8_decode($p->product), $bd,0);
+                $pdf->Cell(20,6,$p->code, $bd, 0, 'C');
+                $pdf->Cell(75,6, utf8_decode($p->product), $bd,0);
                 $pdf->Cell(17,6,$p->pivot->quantity, $bd,0,'R');
-                $pdf->Cell(20,6,$p->unittype->abrev, $bd,0,'C');
-                $pdf->Cell(23,6,'$' . $p->pivot->price, $bd,0,'R');
+                $pdf->Cell(15,6,$p->unittype->abrev, $bd,0,'C');
+                $pdf->Cell(17,6,'$' . $p->pivot->price, $bd,0,'R');
                 $pdf->Cell(17,6,($p->pivot->discount * 100 / $p->pivot->price).'%', $bd,0,'C');
                 $pdf->Cell(17,6,'$' . $p->pivot->discount * $p->pivot->quantity, $bd,0,'R');
                 if($sale->operation->operationtype->letter == 'B')
                 {
-                    $pdf->Cell(25,6,"$" . $p->pivot->quantity * ($p->pivot->price + $p->pivot->iva-$p->pivot->discount) , $bd,0,'R');
+                    $pdf->Cell(22,6,"$" . $p->pivot->quantity * ($p->pivot->price + $p->pivot->iva-$p->pivot->discount) , $bd,0,'R');
                 }
                 else
                 {
-                    $pdf->Cell(25,6,"$" . $p->pivot->quantity * ($p->pivot->price-$p->pivot->discount), $bd,0,'R');
+                    $pdf->Cell(22,6,"$" . $p->pivot->quantity * ($p->pivot->price-$p->pivot->discount), $bd,0,'R');
                 }
                 $pdf->Ln();
             }
