@@ -232,20 +232,22 @@ class ProductController extends Controller
 
     public function autocomplete(Request $request)
     {
-        $data = Product::select("id","code","product", "price","cost", "stock","ivatype_id", DB::raw('CONCAT(code," - ",  product) AS name'))
-                    ->with(['cylindertypes','ivatype', 'trademark'])
-                    ->orWhere("product","LIKE","%{$request->input('query')}%")
-                    ->orWhere("code","LIKE","%{$request->input('query')}%")
-                    ->get();
         if(!is_null($request->input('only_cylinder')))
         {
-            foreach($data as $id => $item)
-            {
-                if(count($item->cylindertypes) == 0)
-                {
-                    unset($data[$id]);
-                }
-            }
+            $data = Product::has('cylindertypes')
+                ->select("id","code","product", "price","cost", "stock","ivatype_id", DB::raw('CONCAT(code," - ",  product) AS name'))
+                ->with(['cylindertypes','ivatype','trademark'])
+                ->Where("product","LIKE","%{$request->input('query')}%")
+                //->orWhere("code","LIKE","%{$request->input('query')}%")
+                ->get();
+        }
+        else
+        {
+            $data = Product::select("id","code","product", "price","cost", "stock","ivatype_id", DB::raw('CONCAT(code," - ",  product) AS name'))
+                ->with(['cylindertypes','ivatype', 'trademark'])
+                ->orWhere("product","LIKE","%{$request->input('query')}%")
+                ->orWhere("code","LIKE","%{$request->input('query')}%")
+                ->get();
         }
 
         return response()->json($data);

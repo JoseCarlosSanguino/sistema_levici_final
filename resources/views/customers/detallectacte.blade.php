@@ -30,7 +30,6 @@
                                     $amount = $sale->operation->amount;
                                 }
 
-
                                 @endphp
                                 <tr>
                                     <td>{{ $loop->iteration or $sale->id }}</td>
