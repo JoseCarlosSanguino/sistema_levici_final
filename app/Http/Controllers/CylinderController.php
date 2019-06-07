@@ -183,19 +183,29 @@ class CylinderController extends Controller
      */
     public function json(Request $request)
     {
+
+        //default query
+
+        $select = "select c.id,  c.code, c.external_code, ct.capacity, ct.cylindertype, COALESCE(c.observation,'') as observation ";
+        $from = "from cylinders c join cylindertypes ct on (c.cylindertype_id = ct.id) ";
+        $where = "where c.cylindertype_id IN (".$request->input('cylindertype_id').") ";
+
         if(!is_null($request->input('status_id')))
         {
-            $status_where = ' and c.status_id in ('.$request->input('status_id').')';
+            $where .= ' and c.status_id in ('.$request->input('status_id').') ';
         }
         else
         {
-            $status_where = ' and c.status_id in (10)';
+            $where .= ' and c.status_id in (10) ';
         }
 
-        $query = "select c.id,  c.code, c.external_code, ct.capacity, ct.cylindertype, COALESCE(c.observation,'') as observation ";
-        $query.= "from cylinders c join cylindertypes ct on (c.cylindertype_id = ct.id) ";
-        $query.= "where c.cylindertype_id IN (".$request->input('cylindertype_id').") ";
-        $query.= $status_where;
+        if(!is_null($request->input('customer_id')))
+        {
+            $select .= " ,max(m.date_of) fecha "; 
+            $from .= " join cylindermoves m on (m.cylinder_id = c.id and m.person_id = ".$request->input('customer_id').") ";
+            $where .=" group by 1,2,3,4,5,6";
+        }
+        $query = $select . $from . $where;
 
         $data = DB::select($query);
 

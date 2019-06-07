@@ -45,9 +45,9 @@
                                     <td>{{ $sale->operation->amount }}</td>
                                     <td>{{ $sale->operation->status->status or '' }}</td>
                                     <td>
-                                        <a href="{{ url('/remitopdf/' . $sale->id) }}" target="_blank" title="Ver {{$modelName}}"><button class="btn btn-info btn-sm"><i class="fa fa-print" aria-hidden="true"></i> Imprimir</button></a>
+                                        <a href="{{ url('/remitopdf/' . $sale->id) }}" target="_blank" title="Imprimir {{$modelName}}"><button class="btn btn-info btn-sm"><i class="fa fa-print" aria-hidden="true"></i>Imprimir</button></a>
                                         @if($sale->operation->status_id == 14)
-                                            <a href="{{ url('/facturar/' . $sale->id) }}" title="Ver {{$modelName}}"><button class="btn btn-info btn-sm"><i class="fa fa-check" aria-hidden="true"></i> Facturar</button></a>
+                                            <a href="{{ url('/facturar/' . $sale->id) }}" title="Facturar {{$modelName}}"><button class="btn btn-info btn-sm"><i class="fa fa-check" aria-hidden="true"></i> Facturar</button></a>
                                         @endif
                                     </td>
                                 </tr>

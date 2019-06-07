@@ -598,7 +598,7 @@ class RemitoController extends Controller
 
         $pdf->SetFont('Times','B',16);
         $pdf->SetXY(45,257);
-        $pdf->Cell(50,12, 'Valor declarado: $' . number_format($total,2),0,0,'C');
+        $pdf->Cell(50,12, 'Valor declarado: $' . number_format($total,2,',','.'),0,0,'C');
         $pdf->SetXY(170,257);
         $pdf->Cell(29,12, $quantity,0,0,'C');
 
