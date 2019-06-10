@@ -574,6 +574,7 @@ class RemitoController extends Controller
 
         $quantity = 0;
         $total = 0;
+
         foreach($sale->operation->products as $det)
         {
             if(count($det->cylindertypes) == 0)
@@ -583,8 +584,8 @@ class RemitoController extends Controller
                 $pdf->Cell(29, 6, $det->pivot->quantity, $bd, 0, 'C');
                 $pdf->Ln();
                 $quantity = $quantity + $det->pivot->quantity;
-                $total = $total + ($quantity * $det->pivot->price);
             }
+            $total = $total + ($det->pivot->quantity * $det->pivot->price);
     	}
 
     	foreach($sale->operation->cylinders as $cyl)
