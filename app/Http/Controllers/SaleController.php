@@ -440,7 +440,15 @@ class SaleController extends Controller
                 $pdf->Cell(17,6,$p->pivot->quantity, $bd,0,'R');
                 $pdf->Cell(15,6,$p->unittype->abrev, $bd,0,'C');
                 $pdf->Cell(17,6,'$' . $p->pivot->price, $bd,0,'R');
-                $pdf->Cell(17,6,($p->pivot->discount * 100 / $p->pivot->price).'%', $bd,0,'C');
+                if($p->pivot->price == 0)
+                {
+                    $pdf->Cell(17,6,$p->pivot->price.'%', $bd,0,'C');
+                }
+                else
+                {
+                    $pdf->Cell(17,6,($p->pivot->discount * 100 / $p->pivot->price).'%', $bd,0,'C');
+                }
+                
                 $pdf->Cell(17,6,'$' . $p->pivot->discount * $p->pivot->quantity, $bd,0,'R');
                 if($sale->operation->operationtype->letter == 'B')
                 {
