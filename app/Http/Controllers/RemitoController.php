@@ -493,7 +493,7 @@ class RemitoController extends Controller
         $pdf->Cell(13,6,utf8_decode("Nº ") . $sale->operation->fullNumber,$bd);
         */
         //fecha
-        $pdf->SetXY(145,22);
+        $pdf->SetXY(145,28);
         //$pdf->Cell(38,6,"FECHA: ", $bd,0);
         $pdf->setFont('Arial','B',14);
         $pdf->Cell(20,6,$sale->operation->date_of, $bd,0,'C');
@@ -505,26 +505,26 @@ class RemitoController extends Controller
         /*
         * DATOS DEL CLIENTE
         */
-        $pdf->SetXY(47,50);
+        $pdf->SetXY(50,50);
         //cliente
         //$pdf->setFont('Times','',13);
         //$pdf->Cell(45,6,utf8_decode("Señor(es) destinatarios: ") , $bd);
         $pdf->setFont('Times','B',13);
-        $pdf->Cell(153,8,$sale->customer->name,$bd);
+        $pdf->Cell(153,7,$sale->customer->name,$bd);
         $pdf->Ln();
         $pdf->SetX(30);
         //direccion
         //$pdf->setFont('Times','',13);
         //$pdf->Cell(21,6,utf8_decode("Dirección: "), $bd);
         $pdf->setFont('Times','B',13);
-        $pdf->Cell(177,8,$sale->customer->address .  ' - ' .' ('. $sale->customer->province->province .')', $bd);
+        $pdf->Cell(177,7,$sale->customer->address .  ' - ' .' ('. $sale->customer->province->province .')', $bd);
         $pdf->Ln();
         $pdf->SetX(25);
         //CUIT
         //$pdf->setFont('Times','',13);
         //$pdf->Cell(15,6,utf8_decode("CUIT: "), $bd);
         $pdf->setFont('Times','B',13);
-        $pdf->Cell(183,8,$sale->customer->cuit, $bd);
+        $pdf->Cell(183,7,$sale->customer->cuit, $bd);
         //$pdf->Line(5,67,205,67);
 
         /*
@@ -579,7 +579,7 @@ class RemitoController extends Controller
         {
             if(count($det->cylindertypes) == 0)
             {
-                $pdf->setX(5);
+                $pdf->setX(10);
                 $pdf->Cell(171,6,$det->product . $det->descripcion, $bd, 0);
                 $pdf->Cell(29, 6, $det->pivot->quantity, $bd, 0, 'C');
                 $pdf->Ln();
@@ -598,7 +598,7 @@ class RemitoController extends Controller
     	}
 
         $pdf->SetFont('Times','B',16);
-        $pdf->SetXY(45,257);
+        $pdf->SetXY(45,254);
         $pdf->Cell(50,12, 'Valor declarado: $' . number_format($total,2,',','.'),0,0,'C');
         $pdf->SetXY(170,257);
         $pdf->Cell(29,12, $quantity,0,0,'C');
