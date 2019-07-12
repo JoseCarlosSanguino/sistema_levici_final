@@ -170,7 +170,7 @@
         {
             var path_cylinder = "{{ route('cylinderJson') }}";
         
-            $.get(path_cylinder, { cylindertype_id: $("#prod_cylindertype_id").val() } , function (data) {
+            $.get(path_cylinder, {'status_id':13 , cylindertype_id: $("#prod_cylindertype_id").val() } , function (data) {
                 $("#tableCylinder tbody").empty();
                 $.each(data, function(i, item) {
                     if($.inArray(item.id, cylinders) < 0){

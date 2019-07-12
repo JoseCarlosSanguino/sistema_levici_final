@@ -136,7 +136,7 @@ class ReceptionController extends Controller
                 {
                     $cyl = Cylinder::find($cyl_id);
                     $operation->cylinders()->save($cyl);
-                    $cyl->status_id = $cyl::STATUS['DISPONIBLE'];
+                    $cyl->status_id = $cyl::STATUS['NO DISPONIBLE'];
                     $cyl->save();
 
                     //mov
