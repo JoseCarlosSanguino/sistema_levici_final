@@ -33,7 +33,7 @@ class PurchaseController extends Controller
         if (!empty($keyword)) 
         {
             $operations = Purchase::whereHas("operation", function($q){
-                $q->wherein('operationtype_id',[4,5,6]);
+                $q->wherein('operationtype_id',[4,5,6,22,23]);
             })
                 ->WhereHas("provider", function($q) use ($keyword){
                     $q->where('name','like', '%'.$keyword.'%');
@@ -48,7 +48,7 @@ class PurchaseController extends Controller
         else
         {
             $operations = Purchase::whereHas("operation", function($q){
-                $q->wherein('operationtype_id',[4,5,6]);
+                $q->wherein('operationtype_id',[4,5,6,22,23]);
             })
                 ->with(['provider','operation'])
                 ->latest()
@@ -72,7 +72,7 @@ class PurchaseController extends Controller
         $title              = 'COMPRAS';
         $modelName          = 'Venta';
         $controller         = 'purchases';
-        $operationtypes     = Operationtype::whereIn('id',[4,5,6])->pluck('operationtype','id');
+        $operationtypes     = Operationtype::whereIn('id',[4,5,6,22,23])->pluck('operationtype','id');
 
         return view('purchases.create',compact( 
             'title', 
