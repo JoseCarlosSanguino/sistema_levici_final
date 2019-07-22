@@ -188,7 +188,7 @@ class CylinderController extends Controller
 
         $select = "select c.id,  c.code, c.external_code, ct.capacity, ct.cylindertype, COALESCE(c.observation,'') as observation ";
         $from = "from cylinders c join cylindertypes ct on (c.cylindertype_id = ct.id) ";
-        $where = "where c.cylindertype_id IN (".$request->input('cylindertype_id').") ";
+        $where = "where c.deleted_at is null and c.cylindertype_id IN (".$request->input('cylindertype_id').") ";
 
         if(!is_null($request->input('status_id')))
         {
