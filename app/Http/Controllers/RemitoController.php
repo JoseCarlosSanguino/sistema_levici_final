@@ -140,17 +140,20 @@ class RemitoController extends Controller
                 foreach($data['cylinder_id'] as $cyl_id)
                 {
                     $cyl = Cylinder::find($cyl_id);
-                    $operation->cylinders()->save($cyl);
-                    $cyl->status_id = $cyl::STATUS['EN CLIENTE'];
-                    $cyl->save();
+                    if(!is_null($cyl))
+                    {
+                        $operation->cylinders()->save($cyl);
+                        $cyl->status_id = $cyl::STATUS['EN CLIENTE'];
+                        $cyl->save();
 
-                    //mov
-                    $cylmove = NEW Cylindermove([
-                        'person_id'  => $sale->customer_id,
-                        'movetype_id'=> Cylindermove::MOVETYPE['ENVIO_A_CLIENTE'],
-                        'date_of'    => date('d/m/Y H:i:s')
-                    ]);
-                    $cyl->moves()->save($cylmove);
+                        //mov
+                        $cylmove = NEW Cylindermove([
+                            'person_id'  => $sale->customer_id,
+                            'movetype_id'=> Cylindermove::MOVETYPE['ENVIO_A_CLIENTE'],
+                            'date_of'    => date('d/m/Y H:i:s')
+                        ]);
+                        $cyl->moves()->save($cylmove);
+                    }
                 }
             }
 
