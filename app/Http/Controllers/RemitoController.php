@@ -496,7 +496,7 @@ class RemitoController extends Controller
         $pdf->Cell(13,6,utf8_decode("Nº ") . $sale->operation->fullNumber,$bd);
         */
         //fecha
-        $pdf->SetXY(145,28);
+        $pdf->SetXY(136,28);
         //$pdf->Cell(38,6,"FECHA: ", $bd,0);
         $pdf->setFont('Arial','B',14);
         $pdf->Cell(20,6,$sale->operation->date_of, $bd,0,'C');
@@ -508,7 +508,7 @@ class RemitoController extends Controller
         /*
         * DATOS DEL CLIENTE
         */
-        $pdf->SetXY(50,50);
+        $pdf->SetXY(50,53);
         //cliente
         //$pdf->setFont('Times','',13);
         //$pdf->Cell(45,6,utf8_decode("Señor(es) destinatarios: ") , $bd);
@@ -582,9 +582,9 @@ class RemitoController extends Controller
         {
             if(count($det->cylindertypes) == 0)
             {
-                $pdf->setX(10);
-                $pdf->Cell(171,6,$det->product . $det->descripcion, $bd, 0);
-                $pdf->Cell(29, 6, $det->pivot->quantity, $bd, 0, 'C');
+                $pdf->setX(12);
+                $pdf->Cell(148,6,$det->product . $det->descripcion, $bd, 0);
+                $pdf->Cell(29, 6, $det->pivot->quantity, $bd, 0, 'R');
                 $pdf->Ln();
                 $quantity = $quantity + $det->pivot->quantity;
             }
@@ -593,9 +593,9 @@ class RemitoController extends Controller
 
     	foreach($sale->operation->cylinders as $cyl)
     	{
-    		$pdf->setX(5);
-    		$pdf->Cell(171,6,$cyl->cylindertype->products[0]->product . '. Cod: ' . $cyl->code . '. Capacidad: ' . $cyl->cylindertype->capacity . $cyl->cylindertype->products[0]->unittype->abrev , $bd, 0);
-    		$pdf->Cell(29,6,1,$bd, 0,'C');
+    		$pdf->setX(12);
+    		$pdf->Cell(148,6,$cyl->cylindertype->products[0]->product . '. Cod: ' . $cyl->code . '. Capacidad: ' . $cyl->cylindertype->capacity . $cyl->cylindertype->products[0]->unittype->abrev , $bd, 0);
+    		$pdf->Cell(29,6,1,$bd, 0,'R');
     		$pdf->Ln();
             $quantity++;
     	}
@@ -603,7 +603,7 @@ class RemitoController extends Controller
         $pdf->SetFont('Times','B',16);
         $pdf->SetXY(45,254);
         $pdf->Cell(50,12, 'Valor declarado: $' . number_format($total,2,',','.'),0,0,'C');
-        $pdf->SetXY(170,257);
+        $pdf->SetXY(170,254);
         $pdf->Cell(29,12, $quantity,0,0,'C');
 
         $pdf->Output();

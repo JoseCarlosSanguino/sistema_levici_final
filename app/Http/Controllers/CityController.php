@@ -143,8 +143,9 @@ class CityController extends Controller
     public function json(Request $request)
     {
         $data = City::select("id","city")
-            ->where("province_id",$request->input('province_id'))
-            ->get();
+		->where("province_id",$request->input('province_id'))
+		->orderBy("city")
+	        ->get();
         return response()->json($data);
     }
 }
