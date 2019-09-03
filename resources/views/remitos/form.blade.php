@@ -195,9 +195,6 @@
                 $.get(path_cylinder, { cylindertype_id: $("#prod_cylindertype_id").val() } , function (data) {
                     $("#tableCylinder tbody").empty();
                     $.each(data, function(i, item) {
-                        console.log(cylinders);
-                        console.log(item.id);
-                        console.log($.inArray(item.id, cylinders) );
                         if($.inArray(item.id, cylinders) < 0){
                             var line = "<tr id="+item.id+"><td class='code'>"+item.code+"</td>"+
                                 "<td class='capacity'>"+item.capacity+"</td>"+
