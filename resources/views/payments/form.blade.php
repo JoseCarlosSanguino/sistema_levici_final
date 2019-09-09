@@ -305,7 +305,7 @@
         					"<td id='residue' align='right'>"+residue.toFixed(2)+"</td>"+
         					"<td align='right' id='canceled'>0"+
                             "</td>"+
-                            "<td><input id='checkbox' type='checkbox'></input></td>"+
+                            "<td><input id='checkbox' onclick='descontarFactura()' type='checkbox'></input></td>"+
     					"</tr>";
 
     				$("#facturaDetail tbody").append(line);
@@ -461,7 +461,6 @@
 
         $(this).parents("tr").remove();
     });
-
 
     $("#btnTransfer").click(function(e){
         e.preventDefault();
