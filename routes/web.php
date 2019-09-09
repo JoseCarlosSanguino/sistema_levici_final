@@ -57,7 +57,7 @@ Route::get('customers/detallectacte/{id}', 'CustomerController@detallectacte')->
 Route::get('facturar/{id}', 'SaleController@facturarRemito');
 Route::get('rechazarPresupuesto/{id}', 'BudgetController@rechazar');
 Route::get('purchase', 'PurchaseController@create');
-Route::get('budget'		, 'BudgetController@create' );
+Route::get('budget'  , 'BudgetController@create' );
 
 //Impresiones
 Route::get('remitopdf/{id}','RemitoController@remitoPDF');

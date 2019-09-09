@@ -50,7 +50,7 @@
     	    <table class="table" id="facturaDetail">
     	        <thead>
     	            <tr>
-    	                <th>Fecha</th><th>Número</th><th class="text-right">Total</th><th class="text-right">Pendiente</th><th class="text-right">A cancelar</th>
+    	                <th>Fecha</th><th>Número</th><th class="text-right">Total</th><th class="text-right">Pendiente</th><th class="text-right">A cancelar</th><th></th>
     	            </tr>
     	        </thead>
     	        <tbody>
@@ -295,7 +295,7 @@
                     
         			var number = sale.operation.operationtype.groupoperationtype.abrev +'-'+ sale.operation.operationtype.letter + ('0000' + sale.operation.operationtype.pointofsale).slice(-4) + '-'+ ('00000000' + sale.operation.number).slice(-8);
         			var line = "<tr>"+
-        					"<td>"+sale.operation.dateof+
+                            "<td>"+sale.operation.dateof+
                             "<input type='hidden' id='fact_id' name='fact_id[]' value='"+sale.id+"'>"+
                             "<input type='hidden' id='fact_residue' name='fact_residue[]' value='"+residue+"'>"+
                             "<input type='hidden' id='fact_canceled' name='fact_canceled[]' value='0'>"+
@@ -305,6 +305,7 @@
         					"<td id='residue' align='right'>"+residue.toFixed(2)+"</td>"+
         					"<td align='right' id='canceled'>0"+
                             "</td>"+
+                            "<td><input id='checkbox' type='checkbox'></input></td>"+
     					"</tr>";
 
     				$("#facturaDetail tbody").append(line);
@@ -569,19 +570,25 @@
         $('#facturaDetail tbody tr').each(function () {
             var residue = parseFloat($(this).find("td input[id=fact_residue]").val());
 
-            if(total_tmp > 0){
-                if(total_tmp >= residue){
-                    $(this).find("td").eq(4).html(residue.toFixed(2));
-                    $(this).find("td input[id=fact_canceled]").val(residue.toFixed(2));
-                    total_tmp = total_tmp - residue;
+            if( $(this).find("td input[id=checkbox]").is(':checked') ){
+                if(total_tmp > 0){
+                    if(total_tmp >= residue){
+                        $(this).find("td").eq(4).html(residue.toFixed(2));
+                        $(this).find("td input[id=fact_canceled]").val(residue.toFixed(2));
+                        total_tmp = total_tmp - residue;
+                    }else{
+                        $(this).find("td").eq(4).html(total_tmp.toFixed(2));
+                        $(this).find("td input[id=fact_canceled]").val(total_tmp.toFixed(2));
+                        total_tmp = 0;
+                    }
                 }else{
-                    $(this).find("td").eq(4).html(total_tmp.toFixed(2));
-                    $(this).find("td input[id=fact_canceled]").val(total_tmp.toFixed(2));
-                    total_tmp = 0;
+                    $(this).find("td").eq(4).html(0);
+                    $(this).find("td [id=canceled]").html(0);
                 }
             }else{
                 $(this).find("td").eq(4).html(0);
                 $(this).find("td [id=canceled]").html(0);
+                $(this).find("td input[id=fact_canceled]").val(0);
             }
         });
 
