@@ -59,6 +59,9 @@ Route::get('rechazarPresupuesto/{id}', 'BudgetController@rechazar');
 Route::get('purchase', 'PurchaseController@create');
 Route::get('budget'  , 'BudgetController@create' );
 
+Route::get('increase', 'ProductController@increase');
+Route::post('storeIncrease', 'ProductController@storeIncrease');
+
 //Impresiones
 Route::get('remitopdf/{id}','RemitoController@remitoPDF');
 Route::get('receivepdf/{id}','ReceiveController@reciboPDF');

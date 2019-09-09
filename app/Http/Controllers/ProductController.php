@@ -252,4 +252,75 @@ class ProductController extends Controller
 
         return response()->json($data);
     }
+
+
+    /**
+     * Aumento de precios por proveedor o categoria
+     * 
+     * @return \Illuminate\View\View
+     */
+    public function increase(Request $request)
+    {
+
+        $provider_id    = $request->get('provider_id');
+        $producttype_id = $request->get('producttype_id');
+        $perPage = 25;
+
+        $products = [];
+        if (!empty($provider_id) || !empty($producttype_id)) 
+        {
+            $products = Product::when($provider_id, function ($q) use ($provider_id) {
+                            $q->WhereHas("providers", function($q) use ($provider_id){
+                                $q->where('provider_id','=', $provider_id);
+                            });
+                        })
+                        ->when($producttype_id, function ($q) use ($producttype_id) {
+                                return $q->Where("producttype_id","=", $producttype_id );
+                            })
+                        ->latest()->paginate($perPage);
+        }
+
+        $title      = 'Aumento masivo de precios';
+        $modelName  = 'Producto';
+        $controller = 'products';
+
+        $providers  = Provider::all()->pluck('name','id');
+        $producttypes = Producttype::all()->pluck('producttype','id');
+
+        return view('products.increase',compact('providers','producttypes','products', 'title', 'modelName', 'controller'));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
+    public function storeIncrease(Request $request)
+    {
+
+        try{
+        DB::beginTransaction();
+
+            foreach($request->input('product_id') as $product_id)
+            {
+                $product = Product::find($product_id);
+                if(!is_null($product) && $product->price > 0)
+                {
+                    $product->last_price = $product->price;
+                    $product->price = round($product->price + (($product->price * $request->input('percent')) / 100), 2);
+                    $product->save();
+                }
+            }
+
+            DB::commit();
+        }catch(Exception $e){
+            DB::rollback();
+            return redirect('increase')->with('flash_message', 'Error al actualizar!');
+        }
+
+        return redirect('increase')->with('flash_message', 'Actualización exitosa!');
+    }
+
+
 }
