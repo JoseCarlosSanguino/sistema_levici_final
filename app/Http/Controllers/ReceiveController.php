@@ -389,8 +389,8 @@ Class ReceiveController extends Controller
         $pdf->Cell(140,5,'CHEQUES',1,0,'C');
         $pdf->Ln();
         $pdf->SetX(5);
-        $pdf->Cell(20,5,'Numero',1,0,'C');
-        $pdf->Cell(70,5,'Banco',1,0,'C');
+        $pdf->Cell(25,5,'Numero',1,0,'C');
+        $pdf->Cell(65,5,'Banco',1,0,'C');
         $pdf->Cell(25,5,'Fecha',1,0,'C');
         $pdf->Cell(25,5,'Importe',1,0,'C');
         $pdf->SetFont('Times','',12);
@@ -401,14 +401,14 @@ Class ReceiveController extends Controller
         {
             $pdf->Ln();
             $pdf->SetX(5);
-            $pdf->Cell(20,5,$paycheck->number,0,0,'C');
-            $pdf->Cell(70,5,isset($paycheck->bank->bank)?$paycheck->bank->bank:'',0,0,'C');
+            $pdf->Cell(25,5,$paycheck->number,0,0,'C');
+            $pdf->Cell(65,5,isset($paycheck->bank->bank)?$paycheck->bank->bank:'',0,0,'C');
             $pdf->Cell(25,5,$paycheck->paymentdate,0,0,'C');
             $pdf->Cell(25,5,"$".$paycheck->amount,0,0,'C');
             $total_cheque = $total_cheque + $paycheck->amount;
         }
 
-        $pdf->Line(25,198,25,250);
+        $pdf->Line(30,198,30,250);
         $pdf->Line(95,198,95,250);
         $pdf->Line(120,198,120,250);
         $pdf->Line(145,198,145,250);
