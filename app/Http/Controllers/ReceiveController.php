@@ -402,7 +402,7 @@ Class ReceiveController extends Controller
             $pdf->Ln();
             $pdf->SetX(5);
             $pdf->Cell(25,5,$paycheck->number,0,0,'C');
-            $pdf->Cell(65,5,isset($paycheck->bank->bank)?substr($paycheck->bank->bank,0,27):'',0,0,'C');
+            $pdf->Cell(65,5,isset($paycheck->bank->bank)?substr($paycheck->bank->bank,0,25):'',0,0,'C');
             $pdf->Cell(25,5,$paycheck->paymentdate,0,0,'C');
             $pdf->Cell(25,5,"$".$paycheck->amount,0,0,'C');
             $total_cheque = $total_cheque + $paycheck->amount;
