@@ -386,13 +386,13 @@ Class ReceiveController extends Controller
         //Cheques
         $pdf->SetFont('Times','B',13);
         $pdf->setXY(5,193);
-        $pdf->Cell(120,5,'CHEQUES',1,0,'C');
+        $pdf->Cell(140,5,'CHEQUES',1,0,'C');
         $pdf->Ln();
         $pdf->SetX(5);
-        $pdf->Cell(30,5,'Numero',1,0,'C');
-        $pdf->Cell(30,5,'Banco',1,0,'C');
-        $pdf->Cell(30,5,'Fecha',1,0,'C');
-        $pdf->Cell(30,5,'Importe',1,0,'C');
+        $pdf->Cell(20,5,'Numero',1,0,'C');
+        $pdf->Cell(70,5,'Banco',1,0,'C');
+        $pdf->Cell(25,5,'Fecha',1,0,'C');
+        $pdf->Cell(25,5,'Importe',1,0,'C');
         $pdf->SetFont('Times','',12);
 
         
@@ -401,51 +401,51 @@ Class ReceiveController extends Controller
         {
             $pdf->Ln();
             $pdf->SetX(5);
-            $pdf->Cell(30,5,$paycheck->number,0,0,'C');
-            $pdf->Cell(30,5,isset($paycheck->bank->bank)?$paycheck->bank->bank:'',0,0,'C');
-            $pdf->Cell(30,5,$paycheck->paymentdate,0,0,'C');
-            $pdf->Cell(30,5,"$".$paycheck->amount,0,0,'C');
+            $pdf->Cell(20,5,$paycheck->number,0,0,'C');
+            $pdf->Cell(70,5,isset($paycheck->bank->bank)?$paycheck->bank->bank:'',0,0,'C');
+            $pdf->Cell(25,5,$paycheck->paymentdate,0,0,'C');
+            $pdf->Cell(25,5,"$".$paycheck->amount,0,0,'C');
             $total_cheque = $total_cheque + $paycheck->amount;
         }
 
-        $pdf->Line(35,198,35,250);
-        $pdf->Line(65,198,65,250);
+        $pdf->Line(25,198,25,250);
         $pdf->Line(95,198,95,250);
-        $pdf->Line(125,198,125,250);
+        $pdf->Line(120,198,120,250);
+        $pdf->Line(145,198,145,250);
 
         $pdf->Ln();
         $pdf->SetXY(5,250);
         $pdf->SetFont('Times','B',13);
-        $pdf->Cell(90,5,"TOTAL",1,0,'R');
-        $pdf->Cell(30,5, "$" . $total_cheque, 1,0,'C');
+        $pdf->Cell(115,5,"TOTAL",1,0,'R');
+        $pdf->Cell(25,5, "$" . $total_cheque, 1,0,'C');
             
         //transferencias
         $pdf->SetFont('Times','B',13);
-        $pdf->setXY(125,193);
-        $pdf->Cell(80,5,'TRANSFERENCIAS',1,0,'C');
+        $pdf->setXY(145,193);
+        $pdf->Cell(60,5,'TRANSFERENCIAS',1,0,'C');
         $pdf->Ln();
-        $pdf->SetX(125);
-        $pdf->Cell(50,5,'Numero',1,0,'C');
-        $pdf->Cell(30,5,'Importe',1,0,'C');
+        $pdf->SetX(145);
+        $pdf->Cell(35,5,'Numero',1,0,'C');
+        $pdf->Cell(25,5,'Importe',1,0,'C');
         $pdf->SetFont('Times','',12);
         $total_trans = 0;
 
         foreach($payment->operation->transfers as $transfer)
         {
             $pdf->Ln();
-            $pdf->SetX(125);
-            $pdf->Cell(50,5,$transfer->number,0,0,'C');
-            $pdf->Cell(30,5,"$".$transfer->amount,0,0,'C');
+            $pdf->SetX(145);
+            $pdf->Cell(35,5,$transfer->number,0,0,'C');
+            $pdf->Cell(25,5,"$".$transfer->amount,0,0,'C');
             $total_trans = $total_trans + $transfer->amount;
         }
 
-        $pdf->Line(175,198,175,250);
+        $pdf->Line(180,198,180,250);
         
         $pdf->Ln();
-        $pdf->SetXY(125,250);
+        $pdf->SetXY(145,250);
         $pdf->SetFont('Times','B',13);
-        $pdf->Cell(50,5,"TOTAL",1,0,'R');
-        $pdf->Cell(30,5, "$" . $total_trans, 1,0,'C');
+        $pdf->Cell(35,5,"TOTAL",1,0,'R');
+        $pdf->Cell(25,5, "$" . $total_trans, 1,0,'C');
 
 
         $pdf->Ln();
