@@ -38,7 +38,7 @@
             {!! Form::label('observation', 'Observaciones:'); !!}
         </div>
         <div class="col-xs-10">
-            {!! Form::text('observation', isset($sale->operation->observation) ? $sale->operation->observation : '',['class'=>'form-control']);!!}
+            {!! Form::text('observation_receive', isset($sale->operation->observation) ? $sale->operation->observation : '',['class'=>'form-control']);!!}
         </div>
     </div>
     <br>
@@ -476,8 +476,9 @@
         var observation = $("#transferModal #observation").val();
         var bank_id = $("#transferModal #bank_id").val();
         var bank_text = '';
+
         if(bank_id > 0){
-            bank_text = $("#transferModal #bank_id").text();
+            bank_text = $("#transferModal #bank_id option:selected").text();
         }
 
 

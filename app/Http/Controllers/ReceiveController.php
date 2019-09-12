@@ -98,13 +98,11 @@ Class ReceiveController extends Controller
         $data['amount']     = $data['payment_amount'];
         $data['number']     = $data['payment_number'];
         $data['pointofsale']= Operationtype::Find($data['operationtype_id'])->pointofsale;
+        $data['observation']= $data['observation_receive'];
 
         try {
             DB::beginTransaction();
-
             $operation = new Operation($data);
-
-
             $operation->save();
 
             $payment = new Payment($data);
@@ -331,10 +329,16 @@ Class ReceiveController extends Controller
         $pdf->Cell(15,6,utf8_decode("CUIT: "), $bd);
         $pdf->setFont('Times','B',13);
         $pdf->Cell(183,6,$payment->customer->cuit, $bd);
-        $pdf->Line(5,67,205,67);
+        $pdf->Ln();
+        $pdf->SetX(6);
+        $pdf->setFont('Times','',13);
+        $pdf->Cell(15,6,utf8_decode("Observ: "), $bd);
+        $pdf->setFont('Times','B',13);
+        $pdf->Cell(183,6,$payment->operation->observation, $bd);
+        
             
         //detalles
-        $pdf->setXY(5,67);
+        $pdf->setXY(5,75);
         $pdf->SetFont('Times','B',13);
         $pdf->Cell(200,8,"DETALLE DEL RECIBO", 1,0,'C');
         $pdf->Ln();
@@ -363,10 +367,10 @@ Class ReceiveController extends Controller
             $pdf->Cell(40,5,"$".$sale->pivot->canceled,0,0,'C');
         }
         
-        $pdf->Line(45,84,45,178);
-        $pdf->Line(85,84,85,178);
-        $pdf->Line(125,84,125,178);
-        $pdf->Line(165,84,165,178);
+        $pdf->Line(45,92,45,178);
+        $pdf->Line(85,92,85,178);
+        $pdf->Line(125,92,125,178);
+        $pdf->Line(165,92,165,178);
 
         //totales
         $pdf->SetXY(5,173);
