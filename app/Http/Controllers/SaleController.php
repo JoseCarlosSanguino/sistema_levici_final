@@ -439,24 +439,24 @@ class SaleController extends Controller
                 $pdf->Cell(75,6, utf8_decode($p->product), $bd,0);
                 $pdf->Cell(17,6,$p->pivot->quantity, $bd,0,'R');
                 $pdf->Cell(15,6,$p->unittype->abrev, $bd,0,'C');
-                $pdf->Cell(17,6,'$' . $p->pivot->price, $bd,0,'R');
+                $pdf->Cell(17,6,'$' . round($p->pivot->price,2), $bd,0,'R');
                 if($p->pivot->price == 0)
                 {
-                    $pdf->Cell(17,6,$p->pivot->price.'%', $bd,0,'C');
+                    $pdf->Cell(17,6,round($p->pivot->price,2).'%', $bd,0,'C');
                 }
                 else
                 {
-                    $pdf->Cell(17,6,($p->pivot->discount * 100 / $p->pivot->price).'%', $bd,0,'C');
+                    $pdf->Cell(17,6,round(($p->pivot->discount * 100 / $p->pivot->price),2).'%', $bd,0,'C');
                 }
                 
-                $pdf->Cell(17,6,'$' . $p->pivot->discount * $p->pivot->quantity, $bd,0,'R');
+                $pdf->Cell(17,6,'$' . round($p->pivot->discount * $p->pivot->quantity,2), $bd,0,'R');
                 if($sale->operation->operationtype->letter == 'B')
                 {
-                    $pdf->Cell(22,6,"$" . $p->pivot->quantity * ($p->pivot->price + $p->pivot->iva-$p->pivot->discount) , $bd,0,'R');
+                    $pdf->Cell(22,6,"$" . round($p->pivot->quantity * ($p->pivot->price + $p->pivot->iva-$p->pivot->discount),2) , $bd,0,'R');
                 }
                 else
                 {
-                    $pdf->Cell(22,6,"$" . $p->pivot->quantity * ($p->pivot->price-$p->pivot->discount), $bd,0,'R');
+                    $pdf->Cell(22,6,"$" . round($p->pivot->quantity * ($p->pivot->price-$p->pivot->discount),2), $bd,0,'R');
                 }
                 $pdf->Ln();
             }
@@ -493,13 +493,13 @@ class SaleController extends Controller
             $pdf->SetFont('Times','B',11);
             $pdf->Cell(40,5,utf8_decode('Bonificación: '));
             $pdf->SetFont('Times','',11);
-            $pdf->Cell(35, 5 , $sale->operation->discount, 0,0,'R');
+            $pdf->Cell(35, 5 , round($sale->operation->discount,2), 0,0,'R');
             $pdf->Ln();
             $pdf->setX(130);
             $pdf->SetFont('Times','B',12);
             $pdf->Cell(40,5,"Importe total: $");
             $pdf->SetFont('Times','B',12);
-            $pdf->Cell(35, 5 , $sale->operation->amount, 0,0,'R');
+            $pdf->Cell(35, 5 , round($sale->operation->amount,2), 0,0,'R');
             $pdf->Ln();
 
 
