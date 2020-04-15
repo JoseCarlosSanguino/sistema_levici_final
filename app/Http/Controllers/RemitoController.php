@@ -496,7 +496,7 @@ class RemitoController extends Controller
         $pdf->Cell(13,6,utf8_decode("Nº ") . $sale->operation->fullNumber,$bd);
         */
         //fecha
-        $pdf->SetXY(136,28);
+        $pdf->SetXY(136,24);
         //$pdf->Cell(38,6,"FECHA: ", $bd,0);
         $pdf->setFont('Arial','B',14);
         $pdf->Cell(20,6,$sale->operation->date_of, $bd,0,'C');
