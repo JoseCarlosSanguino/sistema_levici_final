@@ -62,6 +62,8 @@ Route::get('budget'  , 'BudgetController@create' );
 Route::get('increase', 'ProductController@increase');
 Route::post('storeIncrease', 'ProductController@storeIncrease');
 
+Route::get('remito_anular/{id}', 'RemitoController@remitoAnular');
+
 //Impresiones
 Route::get('remitopdf/{id}','RemitoController@remitoPDF');
 Route::get('receivepdf/{id}','ReceiveController@reciboPDF');

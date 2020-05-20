@@ -2,6 +2,7 @@
 
 namespace app\Http\Controllers;
 
+use app\Models\Status;
 use Illuminate\Http\Request;
 use app\Models\Customer;
 use app\Models\Operationtype;
@@ -179,6 +180,7 @@ class RemitoController extends Controller
     public function show($id)
     {
         //
+        dd($id);
     }
 
     /**
@@ -210,9 +212,10 @@ class RemitoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($remito)
     {
         //
+        dd($remito);
     }
 
 
@@ -631,4 +634,29 @@ class RemitoController extends Controller
         return response()->json($nextNumber);
     }
 
+    public function remitoAnular ($id)
+    {
+        $sale = Sale::find($id);
+        $operation = Operation::find($sale->operation->id);
+        $operation->status_id = 27;
+        $operation->save();
+
+        foreach($operation->cylinders as $cylinder)
+        {
+            $cylinder->status_id = 10;
+            $cylinder->save();
+            $cylinder_movement = new Cylindermove([
+                'person_id'  => $sale->customer_id,
+                'movetype_id'=> 3,
+                'date_of'    => date('d/m/Y H:i:s')
+                ]);
+            $cylinder->moves()->save($cylinder_movement);
+            $type = $cylinder->cylindertype;
+            $product = $type->products()->where('cylindertype_id', $type->id)->first();
+            $product->stock = $product->stock + 1;
+            $product->save();
+            }
+
+        return redirect('remitos');
+    }
 }
