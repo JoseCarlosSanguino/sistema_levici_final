@@ -10,15 +10,15 @@ class Sale extends Model
 	use SoftDeletes;
 
     CONST STATUS = [
-       /* 'REM_PENDIENTE'     => 14,
-        'REM_CANCELADO'     => 15,*/
+        'REM_PENDIENTE'     => 14,
+        'REM_CANCELADO'     => 15,
         'REM_ANULADO'       => 27,
-       /* 'VTA_PENTIENTE'     => 1,
+        'VTA_PENTIENTE'     => 1,
         'VTA_COBRO_PARCIAL' => 2,
         'VTA_COBRO_TOTAL'   => 3,
         'PRESU_PENDIENTE'   => 23,
         'PRESU_RECHAZADO'   => 24,
-        'REC_CILINDRO_OK'   => 26*/
+        'REC_CILINDRO_OK'   => 26
     ];
 
     CONST CONDITION = [

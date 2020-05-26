@@ -638,25 +638,29 @@ class RemitoController extends Controller
     {
         $sale = Sale::find($id);
         $operation = Operation::find($sale->operation->id);
-        $operation->status_id = 27;
+        $operation->status_id = Sale::STATUS['REM_ANULADO'];
         $operation->save();
-
-        foreach($operation->cylinders as $cylinder)
+        $stock_refound = null;
+        foreach($operation->products as $prod)
         {
-            $cylinder->status_id = 10;
-            $cylinder->save();
-            $cylinder_movement = new Cylindermove([
-                'person_id'  => $sale->customer_id,
-                'movetype_id'=> 3,
-                'date_of'    => date('d/m/Y H:i:s')
-                ]);
-            $cylinder->moves()->save($cylinder_movement);
-            $type = $cylinder->cylindertype;
-            $product = $type->products()->where('cylindertype_id', $type->id)->first();
-            $product->stock = $product->stock + 1;
+            $product = Product::find($prod->id);
+            $product->stock = $product->stock + $prod->pivot->quantity;
             $product->save();
+        }
+        if(!$operation->cylinders->isEmpty())
+        {
+            foreach ($operation->cylinders as $cylinder)
+            {
+                $cylinder->status_id = Cylinder::STATUS['DISPONIBLE'];
+                $cylinder->save();
+                $cylinder_movement = new Cylindermove([
+                    'person_id'  => $sale->customer_id,
+                    'movetype_id'=> Cylindermove::MOVETYPE['EN_DEPOSITO'],
+                    'date_of'    => date('d/m/Y H:i:s')
+                ]);
+                $cylinder->moves()->save($cylinder_movement);
             }
-
+        }
         return redirect('remitos');
     }
 }

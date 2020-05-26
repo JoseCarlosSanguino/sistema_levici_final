@@ -63,6 +63,7 @@ Route::get('increase', 'ProductController@increase');
 Route::post('storeIncrease', 'ProductController@storeIncrease');
 
 Route::get('remito_anular/{id}', 'RemitoController@remitoAnular');
+Route::get('detail_purchase/{id}', 'PurchaseController@detailPurchase');
 
 //Impresiones
 Route::get('remitopdf/{id}','RemitoController@remitoPDF');

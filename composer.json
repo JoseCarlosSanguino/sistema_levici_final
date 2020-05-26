@@ -7,7 +7,7 @@
     "require": {
         "php": ">=7.0.0",
         "afipsdk/afip.php": "^0.5.3",
-        "barryvdh/laravel-dompdf": "^0.8.3",
+        "barryvdh/laravel-dompdf": "^0.8.6",
         "fideloper/proxy": "~3.3",
         "fpdf/fpdf": "^1.81",
         "laravel/framework": "5.5.*",

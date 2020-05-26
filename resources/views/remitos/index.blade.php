@@ -31,18 +31,24 @@
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>#</th><th>Número</th><th>Fecha</th><th>Cliente</th><th>Importe</th><th>Estado</th><th>Acciones</th>
+                                    <th>#</th>
+                                    <th>Número</th>
+                                    <th>Fecha</th>
+                                    <th>Cliente</th>
+                                    <th>Importe</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                             @foreach($operations as $sale)
                                 <tr>
-                                    <td>{{ $sale->id }}</td>
+                                    <td>{{ $itinerator->loop or $sale->id }}</td>
                                     <td>{{ $sale->operation->FullNumber or ''}}</td>
                                     <td>{{ $sale->operation->date_of }}</td>
                                     <td>{{ $sale->customer->name or '' }}</td>
                                     <td>{{ $sale->operation->amount }}</td>
-                                    <td>{{ $sale->operation->status->status }}</td>
+                                    <td>{{ $sale->operation->status->status or '' }}</td>
                                     <td>
                                         @if($sale->operation->status_id != 27)
                                         <a href="{{ url('/remitopdf/' . $sale->id) }}" target="_blank" title="Imprimir {{$modelName}}"><button class="btn btn-info btn-sm"><i class="fa fa-print" aria-hidden="true"></i>Imprimir</button></a>
