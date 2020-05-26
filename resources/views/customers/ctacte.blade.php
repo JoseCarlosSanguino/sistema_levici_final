@@ -36,7 +36,7 @@
                                         <td>{{ $item->name }}</td><td>{{ $item->cuit }}</td><td>{{ $item->cant }}</td><td>${{ $item->monto }}</td>
                                         <td>
                                             <a href="{{ url('/'.$controller.'/detallectacte/' . $item->customer_id) }}" title="Ver {{$modelName}}"><button class="btn btn-info btn-sm"><i class="fa fa-eye" aria-hidden="true"></i> Ver</button></a>
-                                            <a href="{{ url('/'.$controller.'/ctactepdf/' . $item->customer_id) }}" title="Ver {{$modelName}}"><button class="btn btn-info btn-sm"><i class="fa fa-print" aria-hidden="true"></i> Imprimir</button></a>
+                                            <a href="{{ url('/'.$controller.'/ctactepdf/' . $item->customer_id) }}" target="_blank" title="Ver {{$modelName}}"><button class="btn btn-info btn-sm"><i class="fa fa-print" aria-hidden="true"></i> Imprimir</button></a>
 
                                         </td>
                                     </tr>
