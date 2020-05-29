@@ -221,4 +221,23 @@ class CustomerController extends Controller
 
         return view('customers.detallectacte',compact('customers', 'title', 'modelName', 'controller','operations'));
     }
+
+    public function ctactepdf($id)
+    {
+        $operations = Sale::whereHas("operation", function($q){
+            $q->wherein('operationtype_id',[1,2,3, 15,16,17,18]);
+            $q->wherein('status_id', [1,2]);
+        })
+            ->where('customer_id',$id)
+            ->with(['customer','operation'])
+            ->latest()
+            ->get();
+
+        $data = [
+            'operations' => $operations
+        ];
+        $pdf = \PDF::loadView('customers.ctactepdf', $data);
+
+        return $pdf->stream('ctactepdf.pdf');
+    }
 }

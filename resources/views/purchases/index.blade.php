@@ -49,6 +49,7 @@
                                         <a href="{{ url('/facturapdf/' . $sale->id) }}" target="_blank" title="Ver {{$modelName}}"><button class="btn btn-info btn-sm"><i class="fa fa-eye" aria-hidden="true"></i> Ver</button></a>
                                         -->
                                         <a href="{{ url('/pagarFactura/' . $sale->id) }}" target="_blank" title="Ver {{$modelName}}"><button class="btn btn-info btn-sm"><i class="fa fa-check" aria-hidden="true"></i> Pagar</button></a>
+                                        <a href="{{ url('/detail_purchase/' . $sale->id) }}" target="_blank" title="Imprimir {{$modelName}}"><button class="btn btn-primary btn-sm"><i class="fa fa-print" aria-hidden="true"></i> Imprimir Detalle</button></a>
                                     </td>
                                 </tr>
                             @endforeach

@@ -8,8 +8,6 @@
                     <div class="card-header"><h3>{{$title}}</h3></div>
                     <br/>
                     <div class="card-body">
-                    
-                            
                         <a href="{{ url('/'. $controller . '/create') }}" class="btn btn-success btn-sm" title="Nuevo {{$modelName}}">
                             <i class="fa fa-plus" aria-hidden="true"></i> Nuevo 
                         </a>

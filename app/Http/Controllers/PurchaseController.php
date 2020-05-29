@@ -420,4 +420,16 @@ class PurchaseController extends Controller
         return response()->json($operations);
     }
 
+    public function detailPurchase($id)
+    {
+        $purchase = Purchase::findOrFail($id);
+        $data = [
+            'purchase' => $purchase
+        ];
+        $pdf = \PDF::loadView('purchases.report.detailPurchase', $data);
+
+        return $pdf->stream('archivo.pdf');
+
+    }
+
 }

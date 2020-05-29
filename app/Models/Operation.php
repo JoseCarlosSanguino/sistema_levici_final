@@ -71,7 +71,7 @@ class Operation extends Model
 
     public function status()
     {
-    	return $this->belongsTo(Status::Class);
+    	return $this->belongsTo(Status::Class, 'status_id');
     }
 
     public function user()

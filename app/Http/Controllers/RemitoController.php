@@ -2,6 +2,7 @@
 
 namespace app\Http\Controllers;
 
+use app\Models\Status;
 use Illuminate\Http\Request;
 use app\Models\Customer;
 use app\Models\Operationtype;
@@ -179,6 +180,7 @@ class RemitoController extends Controller
     public function show($id)
     {
         //
+        dd($id);
     }
 
     /**
@@ -210,9 +212,10 @@ class RemitoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($remito)
     {
         //
+        dd($remito);
     }
 
 
@@ -631,4 +634,33 @@ class RemitoController extends Controller
         return response()->json($nextNumber);
     }
 
+    public function remitoAnular ($id)
+    {
+        $sale = Sale::find($id);
+        $operation = Operation::find($sale->operation->id);
+        $operation->status_id = Sale::STATUS['REM_ANULADO'];
+        $operation->save();
+        $stock_refound = null;
+        foreach($operation->products as $prod)
+        {
+            $product = Product::find($prod->id);
+            $product->stock = $product->stock + $prod->pivot->quantity;
+            $product->save();
+        }
+        if(!$operation->cylinders->isEmpty())
+        {
+            foreach ($operation->cylinders as $cylinder)
+            {
+                $cylinder->status_id = Cylinder::STATUS['DISPONIBLE'];
+                $cylinder->save();
+                $cylinder_movement = new Cylindermove([
+                    'person_id'  => $sale->customer_id,
+                    'movetype_id'=> Cylindermove::MOVETYPE['EN_DEPOSITO'],
+                    'date_of'    => date('d/m/Y H:i:s')
+                ]);
+                $cylinder->moves()->save($cylinder_movement);
+            }
+        }
+        return redirect('remitos');
+    }
 }

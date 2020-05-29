@@ -7,7 +7,6 @@
                 <div class="card-header"><h3>{{$title}}</h3></div>
                 <br/>
                 <div class="card-body">
-                
                         
                     <a href="{{ url('/'. $controller . '/create') }}" class="btn btn-success btn-sm" title="Nuevo {{$modelName}}">
                         <i class="fa fa-plus" aria-hidden="true"></i> Nuevo 
@@ -32,23 +31,33 @@
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>#</th><th>Número</th><th>Fecha</th><th>Cliente</th><th>Importe</th><th>Estado</th><th>Acciones</th>
+                                    <th>#</th>
+                                    <th>Número</th>
+                                    <th>Fecha</th>
+                                    <th>Cliente</th>
+                                    <th>Importe</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                             @foreach($operations as $sale)
                                 <tr>
-                                    <td>{{ $loop->iteration or $sale->id }}</td>
+                                    <td>{{ $itinerator->loop or $sale->id }}</td>
                                     <td>{{ $sale->operation->FullNumber or ''}}</td>
                                     <td>{{ $sale->operation->date_of }}</td>
                                     <td>{{ $sale->customer->name or '' }}</td>
                                     <td>{{ $sale->operation->amount }}</td>
                                     <td>{{ $sale->operation->status->status or '' }}</td>
                                     <td>
+                                        @if($sale->operation->status_id != 27)
                                         <a href="{{ url('/remitopdf/' . $sale->id) }}" target="_blank" title="Imprimir {{$modelName}}"><button class="btn btn-info btn-sm"><i class="fa fa-print" aria-hidden="true"></i>Imprimir</button></a>
                                         @if($sale->operation->status_id == 14)
                                             <a href="{{ url('/facturar/' . $sale->id) }}" title="Facturar {{$modelName}}"><button class="btn btn-info btn-sm"><i class="fa fa-check" aria-hidden="true"></i> Facturar</button></a>
+                                                <a href="{{ url('/remito_anular/' . $sale->id) }}" title="Anular {{$modelName}}"><button class="btn btn-danger btn-sm"><i class="fa fa-trash" aria-hidden="true"></i>Anular</button></a>
                                         @endif
+
+                                            @endif
                                     </td>
                                 </tr>
                             @endforeach
