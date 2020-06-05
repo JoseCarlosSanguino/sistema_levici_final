@@ -92,7 +92,9 @@ class CustomerController extends Controller
         $controller = 'customers';
 
         $customer = Customer::findOrFail($id);
-        return view('customers.show', compact('customer','title', 'modelName', 'controller'));
+        $sales = Sale::where('customer_id', $customer->id)->get();
+
+        return view('customers.show', compact('customer','title', 'modelName', 'controller', 'sales'));
     }
 
     /**
@@ -236,7 +238,7 @@ class CustomerController extends Controller
         $data = [
             'operations' => $operations
         ];
-        
+
         $pdf = \PDF::loadView('customers.ctactepdf', $data);
 
         return $pdf->stream('Detalle-Cuenta-Corriente-'.$data['operations'][0]->customer->name.'.pdf');

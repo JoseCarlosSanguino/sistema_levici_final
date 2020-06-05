@@ -54,7 +54,70 @@
                                 </tbody>
                             </table>
                         </div>
-
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div>
+                                    <div class="card card-body">
+                                        <div class="table-responsive">
+                                            <table class="table">
+                                                <thead>
+                                                <h4>Cilindros Activos</h4>
+                                                <tr>
+                                                    <th>Fecha</th>
+                                                    <th>Cilindro</th>
+                                                    <th>Estado</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                @foreach($sales as $sale)
+                                                    @foreach($sale->operation->cylinders as $cylinder)
+                                                        @if($cylinder->status_id == 11)
+                                                            <tr>
+                                                                <td>{{ \Carbon\Carbon::parse($cylinder->pivot->created_at)->format('d/m/Y') }}</td>
+                                                                <td>{{ $cylinder->code}}</td>
+                                                                <td>{{ $cylinder->status->status}}</td>
+                                                            </tr>
+                                                        @endif
+                                                    @endforeach
+                                                @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div>
+                                    <div class="card card-body">
+                                        <div class="table-responsive">
+                                            <table class="table">
+                                                <thead>
+                                                <h4>Historial del Cilindros</h4>
+                                                <tr>
+                                                    <th>Fecha</th>
+                                                    <th>Cilindro</th>
+                                                    <th>Estado</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                @foreach($sales as $sale)
+                                                    @foreach($sale->operation->cylinders as $cylinder)
+                                                        @if($cylinder->status_id != 11)
+                                                            <tr>
+                                                                <td>{{ \Carbon\Carbon::parse($cylinder->pivot->created_at)->format('d/m/Y') }}</td>
+                                                                <td>{{ $cylinder->code}}</td>
+                                                                <td>{{ $cylinder->status->status}}</td>
+                                                            </tr>
+                                                        @endif
+                                                    @endforeach
+                                                @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
