@@ -236,8 +236,9 @@ class CustomerController extends Controller
         $data = [
             'operations' => $operations
         ];
+        
         $pdf = \PDF::loadView('customers.ctactepdf', $data);
 
-        return $pdf->stream('ctactepdf.pdf');
+        return $pdf->stream('Detalle-Cuenta-Corriente-'.$data['operations'][0]->customer->name.'.pdf');
     }
 }
