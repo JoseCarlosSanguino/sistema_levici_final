@@ -1,9 +1,25 @@
 <h1 style="text-align: center">Detalle de Cuenta Corriente</h1>
-<h3 style="text-align: left">Cliente: {{ $operations[0]->customer->name }}</h3>
 <table style="width: 100%; align-content: center; border: 1px solid black;" >
     <thead>
     <tr style="text-align: center">
-        <th>Total</th>
+        <th>Cliente</th>
+        <th>CUIT</th>
+        <th>Domicilio</th>
+    </tr>
+    </thead>
+    <tbody style="text-align: center; font-size: 10px">
+    <tr>
+        <td>{{ $operations[0]->customer->name }}</td>
+        <td>{{ $operations[0]->customer->cuit}}</td>
+        <td>{{ $operations[0]->customer->address }}</td>
+    </tr>
+    </tbody>
+</table>
+<br>
+<table style="width: 100%; align-content: center; border: 1px solid black;" >
+    <thead>
+    <tr style="text-align: center">
+        <th>#</th>
         <th>Número</th>
         <th>Fecha</th>
         <th>Importe</th>
