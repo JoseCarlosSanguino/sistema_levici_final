@@ -41,7 +41,7 @@
                                     <td>{{ $loop->iteration or $item->id }}</td>
                                     <td>{{ $item->code }}</td>
                                     <td>{{ $item->external_code or '' }}</td>
-                                    <td>{{ $item->cylindertype->cylindertype }}</td>
+                                    <td> @if(is_null($item->cylindertype))   @else {{$item->cylindertype->cylindertype}} @endif </td>
                                     <td>{{ $item->expiration or '' }}</td>
                                     <td> @if($item->is_own == 1) Propio @else @if(!is_null($item->provider_id)) {{$item->provider->name or ''}} @endif @endif</td>
                                     <td>{{ $item->status->status}}</td>
