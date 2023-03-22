@@ -42,7 +42,7 @@
                                     <td>{{ $sale->operation->FullNumber or ''}}</td>
                                     <td>{{ $sale->operation->date_of }}</td>
                                     <td>{{ $sale->customer->name or '' }}</td>
-                                    <td>{{ $sale->operation->amount }}</td>
+                                    <td>{{ number_format($sale->operation->amount,2,",",".") }}</td>
                                     <td>{{ $sale->operation->status->status or '' }}</td>
                                     <td>
                                         <a href="{{ url('/presupdf/' . $sale->id) }}" target="_blank" title="Ver {{$modelName}}"><button class="btn btn-info btn-sm"><i class="fa fa-print" aria-hidden="true"></i> Imprimir</button></a>

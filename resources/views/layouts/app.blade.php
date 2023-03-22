@@ -13,7 +13,7 @@
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 
     <!-- Scripts -->
-    <!--<script src="{{ asset('js/app.js') }}"></script>-->
+    <script src="{{ asset('js/general.js') }}"></script>
 
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
         

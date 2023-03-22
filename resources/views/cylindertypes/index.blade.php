@@ -40,7 +40,7 @@
                                 <tr>
                                     <td>{{ $loop->iteration or $item->id }}</td>
                                     <td>{{ $item->cylindertype }}</td>
-                                    <td>{{ $item->capacity }}</td>
+                                    <td>{{  number_format($item->capacity,2,",",".") }}</td>
                                     <td>
                                         <a href="{{ url('/'.$controller.'/' . $item->id) }}" title="Ver {{$modelName}}"><button class="btn btn-info btn-sm"><i class="fa fa-eye" aria-hidden="true"></i> Ver</button></a>
                                         <a href="{{ url('/'.$controller.'/' . $item->id . '/edit') }}" title="Editar {{$modelName}}"><button class="btn btn-primary btn-sm"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Editar</button></a>

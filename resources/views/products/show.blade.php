@@ -65,23 +65,23 @@
                                     </tr>
                                     <tr>
                                         <th> Costo </th>
-                                        <td> {{ $product->cost }} </td>
+                                        <td> {{ number_format($product->cost,2,",",".") }} </td>
                                     </tr>
                                     <tr>
                                         <th> Precio </th>
-                                        <td> {{ $product->price }} </td>
+                                        <td> {{ number_format($product->price,2,",",".") }} </td>
                                     </tr>
                                     <tr>
                                         <th> Último Precio </th>
-                                        <td> {{ $product->last_price }} </td>
+                                        <td> {{ number_format($product->last_price,2,",",".") }} </td>
                                     </tr>
                                     <tr>
                                         <th> Costo </th>
-                                        <td> {{ $product->cost }} </td>
+                                        <td> {{ number_format($product->cost,2,",",".") }} </td>
                                     </tr>
                                     <tr>
                                         <th> Último Costo </th>
-                                        <td> {{ $product->last_cost }} </td>
+                                        <td> {{ number_format($product->last_cost,2,",",".") }} </td>
                                     </tr>
                                 </tbody>
                             </table>

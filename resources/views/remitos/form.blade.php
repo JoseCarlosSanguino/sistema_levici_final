@@ -221,12 +221,13 @@
                         "<td>"+$("#prod_product").val()+"</td>"+
                         "<td>"+$("#price").val()+"</td>"+
                         "<td>"+$("#quantity").val()+"</td>"+
-                        "<td>"+parseFloat($("#price").val()*$("#quantity").val()).toFixed(2)+"</td>"+
+                        "<td>"+addCommas(parseFloat($("#price").val()*$("#quantity").val()).toFixed(2))+"</td>"+
                         "<td><a href='#' class='del btn btn-danger' ><i class='add fa fa-minus' aria-hidden='true'></i></a> </td>"+
                         "</tr>";
 
                 total = (parseFloat(total) + parseFloat($("#price").val()*$("#quantity").val())).toFixed(2);
-                $("#tdTotal").html(total); 
+
+                $("#tdTotal").html(addCommas(total));
 
                 $("#productDetail tbody").append(line); 
                 cleanProductElement();
@@ -256,12 +257,12 @@
                 "<td>"+$("#prod_product").val()+" " + cylindertype + "(Cod: " + code + ")</td>"+
                 "<td>"+$("#price").val()+"</td>"+
                 "<td>"+capacity+"</td>"+
-                "<td>"+parseFloat($("#price").val()*parseFloat(capacity)).toFixed(2)+"</td>"+
+                "<td>"+addCommas(parseFloat($("#price").val()*parseFloat(capacity)).toFixed(2))+"</td>"+
                 "<td><a href='#' class='del btn btn-danger' ><i class='fa fa-minus' aria-hidden='true'></i></a> </td>"+
                 "</tr>";
 
         total = (parseFloat(total) + parseFloat($("#price").val()*parseFloat(capacity))).toFixed(2);
-        $("#tdTotal").html(total); 
+        $("#tdTotal").html(addCommas(total));
 
         $("#productDetail tbody").append(line); 
 
@@ -298,7 +299,7 @@
 
         var subt = $(this).closest('tr').find("td input[id='subtotal']").val();
         total = (parseFloat(total) - parseFloat(subt)).toFixed(2);
-        $("#tdTotal").html(total); 
+        $("#tdTotal").html(addCommas(total));
 
         var cyl_id = $(this).closest('tr').find("td input[id='cylinder_id']").val();
         if(cyl_id != null){

@@ -40,7 +40,7 @@
                                 <tr>
                                     <td>{{ $loop->iteration or $item->id }}</td>
                                     <td>{{ $item->number }}</td>
-                                    <td>{{ $item->amount}}</td>
+                                    <td>{{ number_format($item->amount,2,",",".")}}</td>
                                     <td>{{ $item->bank->bank or '' }}</td>
                                     <td>{{ $item->type}}</td>
                                     <td>{{ $item->paymentdate }}</td>

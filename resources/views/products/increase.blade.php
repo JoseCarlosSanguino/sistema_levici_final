@@ -68,7 +68,7 @@
                                 @foreach($products as $item)
                                     <tr>
                                         <td>{{ $loop->iteration or $item->id }}</td>
-                                        <td>{{ $item->code }}</td><td>{{ $item->trademark->trademark or '' }}</td><td>{{ $item->product }}</td><td>{{ $item->producttype->producttype or '' }}</td><td>{{ $item->stock }}</td><td>{{ $item->price }}</td>
+                                        <td>{{ $item->code }}</td><td>{{ $item->trademark->trademark or '' }}</td><td>{{ $item->product }}</td><td>{{ $item->producttype->producttype or '' }}</td><td>{{ $item->stock }}</td><td>{{ number_format($item->price,2,",",".") }}</td>
                                         <td>
                                             {!! Form::checkBox('product_id[]', $item->id, true, ['id' => $item->id]); !!}
                                         </td>

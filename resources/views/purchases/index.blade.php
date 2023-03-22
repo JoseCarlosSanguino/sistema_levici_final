@@ -42,7 +42,7 @@
                                     <td>{{ $sale->operation->operationtype->letter . $sale->operation->FullNumber}}</td>
                                     <td>{{ $sale->operation->date_of }}</td>
                                     <td>{{ $sale->provider->name or '' }}</td>
-                                    <td>{{ $sale->operation->amount }}</td>
+                                    <td>{{ number_format($sale->operation->amount,2,",",".") }}</td>
                                     <td>{{ $sale->operation->status->status or '' }}</td>
                                     <td>
                                         <!--

@@ -48,7 +48,7 @@
                                     <td>{{ $receive->operation->FullNumber or ''}}</td>
                                     <td>{{ $receive->operation->date_of }}</td>
                                     <td>{{ $receive->customer->name or $receive->provider->name  }}</td>
-                                    <td>{{ $receive->operation->amount }}</td>
+                                    <td>{{ number_format($receive->operation->amount,2,",",".") }}</td>
                                     <td>
                                         <a href="{{ url('/receivepdf/' . $receive->id) }}" target="_blank" title="Ver {{$modelName}}"><button class="btn btn-info btn-sm"><i class="fa fa-print" aria-hidden="true"></i> Imprimir</button></a>
                                     </td>

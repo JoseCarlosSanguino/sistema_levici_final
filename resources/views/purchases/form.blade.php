@@ -282,20 +282,20 @@
                         "</td>"+
                         "<td>"+$("#prod_code").val()+"</td>"+
                         "<td>"+$("#prod_product").val()+"</td>"+
-                        "<td>"+price+"</td>"+
+                        "<td>"+addCommas(price)+"</td>"+
                         "<td>"+quant+"</td>"+
-                        "<td>"+subt+"</td>"+
+                        "<td>"+addCommas(subt)+"</td>"+
                         "<td><a href='#' class='del btn btn-danger' ><i class='add fa fa-minus' aria-hidden='true'></i></a> </td>"+
                         "</tr>";
 
-                $("#tdIva105").html(iva105); 
+                $("#tdIva105").html(addCommas(iva105));
                 $("#iva105").val(iva105);
-                $("#tdIva21").html(iva21); 
-                $("#iva21").val(iva21); 
-                $("#tdDescuento").html(desc); 
-                $("#discount").val(desc); 
-                $("#tdTotal").html(total); 
-                $("#amount").val(total); 
+                $("#tdIva21").html(addCommas(iva21));
+                $("#iva21").val(iva21);
+                $("#tdDescuento").html(addCommas(desc));
+                $("#discount").val(desc);
+                $("#tdTotal").html(addCommas(total));
+                $("#amount").val(addCommas(total));
 
                 $("#productDetail tbody").append(line); 
                 cleanProductElement();
@@ -346,20 +346,20 @@
             "</td>"+
             "<td>"+$("#prod_code").val()+"</td>"+
             "<td>"+$("#prod_product").val()+" " + cylindertype + "(Cod: " + code + ")</td>"+
-            "<td>"+price+"</td>"+
+            "<td>"+addCommas(price)+"</td>"+
             "<td>"+capacity+"</td>"+
-            "<td>"+price*parseFloat(capacity).toFixed(2)+"</td>"+
+            "<td>"+addCommas(price*parseFloat(capacity).toFixed(2))+"</td>"+
             "<td><a href='#' class='del btn btn-danger' ><i class='fa fa-minus' aria-hidden='true'></i></a> </td>"+
             "</tr>";
 
-        $("#tdIva105").html(iva105); 
+        $("#tdIva105").html(addCommas(iva105));
         $("#iva105").val(iva105);
-        $("#tdIva21").html(iva21); 
+        $("#tdIva21").html(addCommas(iva21));
         $("#iva21").val(iva21); 
-        $("#tdDescuento").html(desc); 
+        $("#tdDescuento").html(addCommas(desc));
         $("#discount").val(desc); 
-        $("#tdTotal").html(total); 
-        $("#amount").val(total); 
+        $("#tdTotal").html(addCommas(total));
+        $("#amount").val(addCommas(total));
 
         $("#productDetail tbody").append(line); 
 
@@ -378,17 +378,17 @@
 
         var i21 = $(this).closest('tr').find("td input[id='prod_iva21']").val();
         iva21 = (parseFloat(iva21) - parseFloat(i21)).toFixed(2);
-        $("#tdIva21").html(iva21); 
+        $("#tdIva21").html(addCommas(iva21));
         $("#iva21").val(iva21); 
 
         var i105 = $(this).closest('tr').find("td input[id='prod_iva105']").val();
         iva105 = (parseFloat(iva105) - parseFloat(i105)).toFixed(2);
-        $("#tdIva105").html(iva105); 
+        $("#tdIva105").html(addCommas(iva105));
         $("#iva105").val(iva105);
 
         var subt = $(this).closest('tr').find("td input[id='prod_total']").val();
         total = (parseFloat(total) - parseFloat(subt)).toFixed(2);
-        $("#tdTotal").html(total); 
+        $("#tdTotal").html(addCommas(total));
         $("#amount").val(total); 
 
 

@@ -47,7 +47,7 @@
                                     <td>{{ $sale->operation->FullNumber or ''}}</td>
                                     <td>{{ $sale->operation->date_of }}</td>
                                     <td>{{ $sale->customer->name or '' }}</td>
-                                    <td>{{ $sale->operation->amount }}</td>
+                                    <td>{{ number_format($sale->operation->amount,2,",",".") }}</td>
                                     <td>{{ $sale->operation->status->status or '' }}</td>
                                     <td>
                                         @if($sale->operation->status_id != 27)

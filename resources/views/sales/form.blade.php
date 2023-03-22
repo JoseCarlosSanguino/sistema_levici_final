@@ -182,9 +182,9 @@
                             </td>
                         <td>{{$prod->code}}</td>
                         <td>{{$prod->product}}</td>
-                        <td>{{$new_price}}</td>
+                        <td>{{number_format($new_price,2,",",".")}}</td>
                         <td>{{$prod->pivot->quantity}}</td>
-                        <td>{{$subt }}</td>
+                        <td>{{number_format($subt,2,",",".") }}</td>
                         <td><a href='#' class='del btn btn-danger' ><i class='add fa fa-minus' aria-hidden='true'></i></a> </td>
                         </tr>
 
@@ -365,19 +365,19 @@
                     "</td>"+
                     "<td>"+$("#prod_code").val()+"</td>"+
                     "<td>"+$("#prod_product").val()+"</td>"+
-                    "<td>"+$("#price").val()+"</td>"+
+                    "<td>"+addCommas($("#price").val())+"</td>"+
                     "<td>"+$("#quantity").val()+"</td>"+
-                    "<td>"+subt.toFixed(2)+"</td>"+
+                    "<td>"+addCommas(subt.toFixed(2))+"</td>"+
                     "<td><a href='#' class='del btn btn-danger' ><i class='add fa fa-minus' aria-hidden='true'></i></a> </td>"+
                     "</tr>";
 
-            $("#tdIva105").html(iva105);
+            $("#tdIva105").html(addCommas(iva105));
             $("#iva105").val(iva105);
-            $("#tdIva21").html(iva21); 
+            $("#tdIva21").html(addCommas(iva21));
             $("#iva21").val(iva21); 
-            $("#tdDescuento").html(desc.toFixed(2)); 
+            $("#tdDescuento").html(addCommas(desc.toFixed(2));
             $("#discount").val(desc); 
-            $("#tdTotal").html(total.toFixed(2)); 
+            $("#tdTotal").html(addCommas(total.toFixed(2)));
             $("#amount").val(total); 
 
             $("#productDetail tbody").append(line); 
@@ -396,22 +396,22 @@
 
         var i21 = $(this).closest('tr').find("td input[id='prod_iva21']").val();
         iva21 = (parseFloat(iva21) - parseFloat(i21)).toFixed(2);
-        $("#tdIva21").html(iva21); 
+        $("#tdIva21").html(addCommas(iva21));
         $("#iva21").val(iva21); 
 
         var i105 = $(this).closest('tr').find("td input[id='prod_iva105']").val();
         iva105 = (parseFloat(iva105) - parseFloat(i105)).toFixed(2);
-        $("#tdIva105").html(iva105); 
+        $("#tdIva105").html(addCommas(iva105));
         $("#iva105").val(iva105);
 
         var disc_p = $(this).closest('tr').find("td input[id='product_discount']").val();
         desc = (parseFloat(desc) - parseFloat(disc_p)).toFixed(2);
-        $("#tdDescuento").html(desc); 
+        $("#tdDescuento").html(addCommas(desc));
         $("#discount").val(desc); 
 
         var subt = $(this).closest('tr').find("td input[id='prod_total']").val();
         total = (parseFloat(total) - parseFloat(subt)).toFixed(2);
-        $("#tdTotal").html(total); 
+        $("#tdTotal").html(addCommas(total));
         $("#amount").val(total); 
 
         $(this).parents("tr").remove();
@@ -445,10 +445,10 @@
             iva105= 0;
             total = 0;
             desc  = 0;
-            $("#tdTotal").html(total); 
-            $("#tdIva21").html(iva21); 
-            $("#tdIva105").html(iva105); 
-            $("#tdDescuento").html(desc); 
+            $("#tdTotal").html(addCommas(total));
+            $("#tdIva21").html(addCommas(iva21));
+            $("#tdIva105").html(addCommas(iva105));
+            $("#tdDescuento").html(addCommas(desc));
 
             var group_id = $("#groupoperationtype_id").val();
 
