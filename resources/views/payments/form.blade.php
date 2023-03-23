@@ -305,7 +305,7 @@
         					"<td id='residue' align='right'>"+residue.toFixed(2)+"</td>"+
         					"<td align='right' id='canceled'>0"+
                             "</td>"+
-                            "<td><input id='checkbox' onclick='descontarFactura()' type='checkbox'></input></td>"+
+                            "<td><input id='checkbox' onclick='sumarFactura()' type='checkbox'></input></td>"+
     					"</tr>";
 
     				$("#facturaDetail tbody").append(line);
@@ -564,13 +564,17 @@
 
     //calculo de rescuento de facturas
     function descontarFactura(){
+
         var total_tmp = total;
+
+
         $("#payment_amount").val(total);
 
         $('#facturaDetail tbody tr').each(function () {
             var residue = parseFloat($(this).find("td input[id=fact_residue]").val());
 
             if( $(this).find("td input[id=checkbox]").is(':checked') ){
+
                 if(total_tmp > 0){
                     if(total_tmp >= residue){
                         $(this).find("td").eq(4).html(residue.toFixed(2));
@@ -593,6 +597,35 @@
         });
 
     };
+
+    /**************************************************************************************************************/
+    function sumarFactura(){
+
+            var total_tmp = 0;
+
+
+            $("#payment_amount").val(total);
+
+            $('#facturaDetail tbody tr').each(function () {
+                var residue = parseFloat($(this).find("td input[id=fact_residue]").val());
+
+                if( $(this).find("td input[id=checkbox]").is(':checked') ){
+                    total_tmp = total_tmp+ residue;
+
+                }
+            });
+            if(total_tmp<0){
+                total_tmp = total_tmp*-1.00;
+            }
+
+            $("#tdTotal").html(addCommas(total_tmp.toFixed(2)));
+
+        };
+
+
+    /***************************************************************************************************************/
+
+
 
 
 
