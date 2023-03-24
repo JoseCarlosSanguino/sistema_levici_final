@@ -66,6 +66,8 @@ Class ReceiveController extends Controller
      */
     public function create(Request $request)
     {
+        $saldo_favor = \Auth::user()->saldo_favor;
+
         $title              = 'RECIBO';
         $modelName          = 'Recibo';
         $controller         = 'receives';
@@ -77,7 +79,8 @@ Class ReceiveController extends Controller
             'modelName', 
             'controller',
             'operationtype_id',
-            'banks'
+            'banks',
+            'saldo_favor'
         ));
     }
 
@@ -90,13 +93,14 @@ Class ReceiveController extends Controller
     public function store(Request $request)
     {
         $data = $request->all();
-
+        //dd(var_dump($data));
         //remito
         $data['user_id']    = \Auth::user()->id;
         $data['status_id']  = Payment::STATUS['COBRO_EMITIDO'];
         $data['customer_id']= $data['person_id'];
         $data['amount']     = $data['payment_amount'];
         $data['number']     = $data['payment_number'];
+        
         $data['pointofsale']= Operationtype::Find($data['operationtype_id'])->pointofsale;
         $data['observation']= $data['observation_receive'];
 
