@@ -84,6 +84,22 @@
         </div>
         </br>
 
+        <div class="form-group">
+
+            <div class="col-xs-2">
+                {!! Form::label('saldo','Saldo:'); !!}
+            </div>
+            <div class="col-xs-4">
+                {!! Form::text('saldo_favor',number_format($saldo_favor,2,",","."),['id' => 'saldo_favor',  'class'=>'form-control','readonly']); !!}
+                {!! Form::hidden('saldo_favor_origen', $saldo_favor, ['id' => 'saldo_favor_origen']) !!}
+                {!! Form::hidden('saldo_favor_final', '', ['id' => 'saldo_favor_final']) !!}
+            </div>
+        
+
+            
+        </div>
+        </br>
+
 
         {!! Form::label('check','Cheques'); !!}
         <div class="table-responsive">
@@ -125,6 +141,10 @@
     <table class="table" id="totalDetail">
         <tbody>
             <tr>
+                <td width="70%" align="right"><b>Total Seleccionado</b></td>
+                <td id="tdTotalSeleccionado" style="font-size: 16px; font-weight: bold">0</td>
+            </tr>
+            <tr>
                 <td width="70%" align="right"><b>Cheques</b></td>
                 <td id="tdCheque" style="font-size: 16px; font-weight: bold">0</td>
             </tr>
@@ -139,6 +159,10 @@
             <tr>
                 <td width="70%" align="right"><b>TOTAL</b></td>
                 <td id="tdTotal" style="font-size: 16px; font-weight: bold">0</td>
+            </tr>
+             <tr>
+                <td width="70%" align="right"><b>Saldo a favor</b></td>
+                <td id="tdSaldoFinal" style="font-size: 16px; font-weight: bold">0</td>
             </tr>
         </tbody>
     </table>
@@ -334,7 +358,7 @@
                         if($.inArray(item.id, paychecks) < 0){
                             var line = "<tr id="+item.id+"><td class='number'>"+item.number+"</td>"+
                                 "<td class='paymentdate'>"+item.paymentdate+"</td>"+
-                                "<td class='amount'>"+item.amount+"</td>"+
+                                "<td class='amount'>"+addCommas(item.amount)+"</td>"+
                                 "<td class='bank'>"+item.bank+"</td>"+
                                 "<td class='owner_name'>"+item.owner_name+"</td>"+
                                 "<td class='type'>"+item.type+"</td>"+
@@ -617,8 +641,10 @@
             if(total_tmp<0){
                 total_tmp = total_tmp*-1.00;
             }
+            total_tmp = total_tmp - $("#saldo_favor_origen").val();
+            $("#tdTotalSeleccionado").html(addCommas(total_tmp.toFixed(2)));
 
-            $("#tdTotal").html(addCommas(total_tmp.toFixed(2)));
+            var saldo_favor = $("#saldo_favor").val();
 
         };
 
