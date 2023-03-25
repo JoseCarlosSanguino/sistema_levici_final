@@ -10,6 +10,7 @@ use app\Models\Transfer;
 use app\Models\Bank;
 use app\Models\Operation;
 use app\Models\Operationtype;
+use app\Models\User;
 
 use DB;
 use Fpdf\Fpdf;
@@ -93,7 +94,7 @@ Class ReceiveController extends Controller
     public function store(Request $request)
     {
         $data = $request->all();
-        //dd(var_dump($data));
+
         //remito
         $data['user_id']    = \Auth::user()->id;
         $data['status_id']  = Payment::STATUS['COBRO_EMITIDO'];
@@ -103,6 +104,8 @@ Class ReceiveController extends Controller
         
         $data['pointofsale']= Operationtype::Find($data['operationtype_id'])->pointofsale;
         $data['observation']= $data['observation_receive'];
+        $saldo =$data['saldo_favor_final'];
+
 
         try {
             DB::beginTransaction();
@@ -179,7 +182,7 @@ Class ReceiveController extends Controller
                     $sale->operation->save();
                 }
             }
-
+             User::where('id',$data['user_id'])->update(['saldo_favor'=>$saldo]);
             DB::commit();
             return redirect('receives');
 

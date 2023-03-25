@@ -93,6 +93,8 @@
                 {!! Form::text('saldo_favor',number_format($saldo_favor,2,",","."),['id' => 'saldo_favor',  'class'=>'form-control','readonly']); !!}
                 {!! Form::hidden('saldo_favor_origen', $saldo_favor, ['id' => 'saldo_favor_origen']) !!}
                 {!! Form::hidden('saldo_favor_final', '', ['id' => 'saldo_favor_final']) !!}
+
+
             </div>
         
 
@@ -325,8 +327,8 @@
                             "<input type='hidden' id='fact_canceled' name='fact_canceled[]' value='0'>"+
                             "</td>"+
         					"<td>"+number+"</td>"+
-        					"<td align='right'>"+sale.operation.amount+"</td>"+
-        					"<td id='residue' align='right'>"+residue.toFixed(2)+"</td>"+
+        					"<td align='right'>"+addCommas(sale.operation.amount)+"</td>"+
+        					"<td id='residue' align='right'>"+addCommas(residue)+"</td>"+
         					"<td align='right' id='canceled'>0"+
                             "</td>"+
                             "<td><input id='checkbox' onclick='sumarFactura()' type='checkbox'></input></td>"+
@@ -358,7 +360,7 @@
                         if($.inArray(item.id, paychecks) < 0){
                             var line = "<tr id="+item.id+"><td class='number'>"+item.number+"</td>"+
                                 "<td class='paymentdate'>"+item.paymentdate+"</td>"+
-                                "<td class='amount'>"+addCommas(item.amount)+"</td>"+
+                                "<td class='amount'>"+addCommas(item.amount.toFixed(2))+"</td>"+
                                 "<td class='bank'>"+item.bank+"</td>"+
                                 "<td class='owner_name'>"+item.owner_name+"</td>"+
                                 "<td class='type'>"+item.type+"</td>"+
@@ -406,8 +408,9 @@
         $(this).parents("tr").remove();
         paychecks.push(parseInt(paycheckid));
 
-        $("#tdTotal").html(total); 
-        $("#tdCheque").html(paycheckTotal); 
+        $("#tdTotal").html(addCommas((total.toFixed(2))));
+        $("#tdCheque").html(addCommas(paycheckTotal.toFixed(2)));
+        saldoAFavor(total.toFixed(2));
 
     });
 
@@ -455,10 +458,11 @@
         total = total + amount;
         descontarFactura();
 
-        $("#tdTotal").html(total.toFixed(2)); 
-        $("#tdCheque").html(paycheckTotal.toFixed(2)); 
+        $("#tdTotal").html(addCommas(total.toFixed(2)));
+        $("#tdCheque").html(addCommas(paycheckTotal.toFixed(2)));
 
         $("#chequeModalAlta").find('input').val('');
+        saldoAFavor(total.toFixed(2));
 
     });
 
@@ -479,9 +483,9 @@
         paycheckTotal = paycheckTotal - subt;
         descontarFactura();
         
-        $("#tdTotal").html(total); 
-        $("#tdCheque").html(paycheckTotal); 
-        
+        $("#tdTotal").html(addCommas(total.toFixed(2)));
+        $("#tdCheque").html(addCommas(paycheckTotal.toFixed(2)));
+        saldoAFavor(total.toFixed(2));
 
         $(this).parents("tr").remove();
     });
@@ -529,10 +533,11 @@
         total = total + amount;
         descontarFactura();
 
-        $("#tdTotal").html(total.toFixed(2)); 
-        $("#tdTransfer").html(transferTotal.toFixed(2)); 
+        $("#tdTotal").html(addCommas(total.toFixed(2)));
+        $("#tdTransfer").html(addCommas(transferTotal.toFixed(2)));
 
         $("#transferModal").find('input').val('');
+        saldoAFavor(total.toFixed(2));
 
     });
 
@@ -546,11 +551,12 @@
         var subt = parseFloat($(this).closest('tr').find("td input[id='transfer_amount']").val()).toFixed(2);
         total = total -subt;
         transferTotal = transferTotal - subt;
-        $("#tdTotal").html(total); 
-        $("#tdTransfer").html(transferTotal); 
+        $("#tdTotal").html(addCommas(total.toFixed(2)));
+        $("#tdTransfer").html(addCommas(transferTotal.toFixed(2)));
         descontarFactura();
 
         $(this).parents("tr").remove();
+        saldoAFavor(total.toFixed(2));
 
     });
 
@@ -564,9 +570,10 @@
         cashDebTotal = parseFloat(efect + debit);
         total = parseFloat(total) + cashDebTotal;
 
-        $("#tdCash").html(cashDebTotal);
-        $("#tdTotal").html(total); 
+        $("#tdCash").html(addCommas(cashDebTotal.toFixed(2)));
+        $("#tdTotal").html(addCommas(total.toFixed(2)));
         descontarFactura();
+        saldoAFavor(total.toFixed(2));
     });
 
     $("#debit").change(function(){
@@ -580,9 +587,10 @@
         cashDebTotal = efect + debit;
         total = total + cashDebTotal;
 
-        $("#tdCash").html(cashDebTotal);
-        $("#tdTotal").html(total); 
+        $("#tdCash").html(addCommas(cashDebTotal.toFixed(2)));
+        $("#tdTotal").html(addCommas(total.toFixed(2)));
         descontarFactura();
+        saldoAFavor(total.toFixed(2));
     });
 
 
@@ -620,6 +628,7 @@
             }
         });
 
+
     };
 
     /**************************************************************************************************************/
@@ -641,17 +650,55 @@
             if(total_tmp<0){
                 total_tmp = total_tmp*-1.00;
             }
-            total_tmp = total_tmp - $("#saldo_favor_origen").val();
-            $("#tdTotalSeleccionado").html(addCommas(total_tmp.toFixed(2)));
 
-            var saldo_favor = $("#saldo_favor").val();
+            total_tmp = total_tmp - $("#saldo_favor_origen").val();
+            if(total_tmp>0){
+                $("#tdTotalSeleccionado").html(addCommas(total_tmp.toFixed(2)));
+            }else{
+                $("#tdTotalSeleccionado").html(addCommas(0,00));
+            }
+
+
+            saldoAFavor();
 
         };
 
 
     /***************************************************************************************************************/
 
+    function saldoAFavor(total){
+       var total_tmp = 0;
 
+
+                    $("#payment_amount").val(total);
+
+                    $('#facturaDetail tbody tr').each(function () {
+                        var residue = parseFloat($(this).find("td input[id=fact_residue]").val());
+
+                        if( $(this).find("td input[id=checkbox]").is(':checked') ){
+                            total_tmp = total_tmp+ residue;
+
+                        }
+                    });
+                    if(total_tmp<0){
+                        total_tmp = total_tmp*-1.00;
+                    }
+
+                    total_tmp = total_tmp - $("#saldo_favor_origen").val();
+
+        var diferencia  = total - total_tmp ;
+
+        if(total!=undefined){
+
+
+             diferencia = diferencia.toFixed(2);
+             $("#saldo_favor_final").val(diferencia);
+            $("#tdSaldoFinal").html(addCommas(diferencia));
+        }
+
+
+
+    }
 
 
 
