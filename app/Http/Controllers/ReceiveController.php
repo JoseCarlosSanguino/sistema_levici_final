@@ -81,7 +81,7 @@ Class ReceiveController extends Controller
             'controller',
             'operationtype_id',
             'banks',
-            'saldo_favor'
+            'saldo_favor'-
         ));
     }
 
