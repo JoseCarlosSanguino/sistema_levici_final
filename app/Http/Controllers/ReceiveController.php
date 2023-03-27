@@ -368,7 +368,8 @@ Class ReceiveController extends Controller
             $pdf->Ln();
             $pdf->SetX(5);
             $pdf->Cell(40,5,$sale->operation->operationtype->letter . $sale->operation->fullNumber,0,0,'C');
-            $pdf->Cell(40,5,$sale->operation->date_of,0,0,'C');
+            $date=date_create($sale->created_at);
+            $pdf->Cell(40,5,date_format($date,"d/m/Y"),0,0,'C');
             $pdf->Cell(40,5,"$".$sale->operation->amount,0,0,'C');
             $pdf->Cell(40,5,"$".$sale->pivot->residue,0,0,'C');
             $pdf->Cell(40,5,"$".$sale->pivot->canceled,0,0,'C');
