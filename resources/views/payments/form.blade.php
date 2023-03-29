@@ -29,6 +29,7 @@
         <div class="col-xs-4">
             {!! Form::text('person_ac', '',['id'=>'person_ac', 'autocomplete' => 'off' ,'class'=>'typeahead form-control']); !!}
             {!! Form::hidden('person_id', '', ['id' => 'person_id']) !!}
+            {!! Form::hidden('person_saldo_favor', '', ['id' => 'person_saldo_favor']) !!}
         </div>
     </div>
     </br>
@@ -90,9 +91,9 @@
                 {!! Form::label('saldo','Saldo:'); !!}
             </div>
             <div class="col-xs-4">
-                {!! Form::text('saldo_favor',number_format($saldo_favor,2,",","."),['id' => 'saldo_favor',  'class'=>'form-control','readonly']); !!}
-                {!! Form::hidden('saldo_favor_origen', $saldo_favor, ['id' => 'saldo_favor_origen']) !!}
-                {!! Form::hidden('saldo_favor_final', '', ['id' => 'saldo_favor_final']) !!}
+                {!! Form::text('saldo_favor','0',['id' => 'saldo_favor',  'class'=>'form-control','readonly']); !!}
+                {!! Form::hidden('saldo_favor_origen', '0', ['id' => 'saldo_favor_origen']) !!}
+                {!! Form::hidden('saldo_favor_final', '0', ['id' => 'saldo_favor_final']) !!}
 
 
             </div>
@@ -294,7 +295,9 @@
             });
         },
         updater: function(item){
+
             $("#person_id").val(item.id);
+            
 
             //busco las facturas
             $("#facturaDetail tbody").empty();
@@ -313,6 +316,9 @@
         					residue = parseFloat(rec.pivot.residue);
         				});
         			}
+                    $("#person_saldo_favor").val(sale.customer.saldo_favor);
+                    $("#saldo_favor").val(addCommas(sale.customer.saldo_favor));
+                    $("#saldo_favor_origen").val((sale.customer.saldo_favor));
 
                     if(sale.operation.operationtype_id == 15 || sale.operation.operationtype_id == 16){
                         residue = residue * -1;
@@ -658,9 +664,11 @@
                 $("#tdTotalSeleccionado").html(addCommas(0,00));
             }
 
-
-            saldoAFavor();
-
+            //alert($("#tdTotal").html());
+           //alert(total_tmp);
+           //var solucion = $("#tdTotal").html() - total_tmp;
+           //$("#tdTotal").html(solucion);
+           saldoAFavor($("#tdTotal").html().replace(".", ""));
         };
 
 
@@ -685,12 +693,15 @@
                     }
 
                     total_tmp = total_tmp - $("#saldo_favor_origen").val();
-
-        var diferencia  = total - total_tmp ;
+        
+        
 
         if(total!=undefined){
-
-
+                total = total.replace(",",".");
+                alert("total:"+total);
+                alert(total_tmp);
+                var diferencia  = total - total_tmp ;
+                alert(diferencia);
              diferencia = diferencia.toFixed(2);
              $("#saldo_favor_final").val(diferencia);
             $("#tdSaldoFinal").html(addCommas(diferencia));

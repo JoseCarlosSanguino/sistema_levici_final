@@ -11,6 +11,7 @@ use app\Models\Bank;
 use app\Models\Operation;
 use app\Models\Operationtype;
 use app\Models\User;
+use app\Models\Person;
 
 use DB;
 use Fpdf\Fpdf;
@@ -94,6 +95,7 @@ Class ReceiveController extends Controller
     public function store(Request $request)
     {
         $data = $request->all();
+
 
         //remito
         $data['user_id']    = \Auth::user()->id;
@@ -182,7 +184,8 @@ Class ReceiveController extends Controller
                     $sale->operation->save();
                 }
             }
-             User::where('id',$data['user_id'])->update(['saldo_favor'=>$saldo]);
+            // User::where('id',$data['user_id'])->update(['saldo_favor'=>$saldo]);
+            Person::where('id',$data['person_id'])->update(['saldo_favor'=>$saldo]);
             DB::commit();
             return redirect('receives');
 
