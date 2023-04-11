@@ -346,7 +346,9 @@ class SaleController extends Controller
             //fecha
             $pdf->SetXY(120,31);
             $pdf->Cell(35,6,"FECHA: ", $bd,0);
-            $pdf->Cell(40,6,$sale->operation->date_of, $bd,0,'R');
+            //$pdf->Cell(40,6,$sale->operation->date_of, $bd,0,'R');
+            $newValue = substr($sale->created_at,8,2) . '/' . substr($sale->created_at,5,2) . '/' . substr($sale->created_at,0,4);
+            $pdf->Cell(40,6,$newValue, $bd,0,'R');
             $pdf->Ln();
                     
 
@@ -569,6 +571,7 @@ class SaleController extends Controller
             $sale->operation->operationtype;
             $sale->operation->operationtype->groupoperationtype;
             $sale->operation->dateof = $sale->operation->date_of;
+            $sale->created_at = $sale->created_at;
         }
         return response()->json($operations);
     }

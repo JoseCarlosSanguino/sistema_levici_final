@@ -40,7 +40,7 @@
                                 <tr>
                                     <td>{{ $loop->iteration or $sale->id }}</td>
                                     <td>{{ $sale->operation->operationtype->groupoperationtype->abrev .'-' . $sale->operation->operationtype->letter . $sale->operation->FullNumber}}</td>
-                                    <td>{{ $sale->operation->date_of }}</td>
+                                    <td>{{ substr($sale->created_at,8,2) . '/' . substr($sale->created_at,5,2) . '/' . substr($sale->created_at,0,4) }}</td>
                                     <td>{{ $sale->customer->name or '' }}</td>
                                     <td>{{ ($sale->operation->operationtype_id == 15 || $sale->operation->operationtype_id == 16)?number_format($sale->operation->amount*-1,2,",","."):number_format($sale->operation->amount,2,",",".")  }}</td>
                                     <td>{{ $sale->operation->status->status or '' }}</td>

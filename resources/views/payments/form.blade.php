@@ -324,7 +324,7 @@
                         residue = residue * -1;
                         sale.operation.amount = sale.operation.amount * -1;
                     }
-                    
+                    //alert(sale.created_at);
         			var number = sale.operation.operationtype.groupoperationtype.abrev +'-'+ sale.operation.operationtype.letter + ('0000' + sale.operation.operationtype.pointofsale).slice(-4) + '-'+ ('00000000' + sale.operation.number).slice(-8);
         			var line = "<tr>"+
                             "<td>"+sale.operation.dateof+
@@ -698,10 +698,10 @@
 
         if(total!=undefined){
                 total = total.replace(",",".");
-                alert("total:"+total);
-                alert(total_tmp);
+                //alert("total:"+total);
+                //alert(total_tmp);
                 var diferencia  = total - total_tmp ;
-                alert(diferencia);
+                //alert(diferencia);
              diferencia = diferencia.toFixed(2);
              $("#saldo_favor_final").val(diferencia);
             $("#tdSaldoFinal").html(addCommas(diferencia));
